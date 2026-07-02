@@ -237,41 +237,6 @@
   .report-body ul{ margin:0 0 14px 18px; color:var(--ink-dim); font-size:14.5px; }
   .report-body li{ margin-bottom:6px; }
 
-  /* ===== ROADMAP ===== */
-  .roadmap{ position:relative; }
-  .roadmap-track{
-    position:absolute; left:29px; top:8px; bottom:8px; width:2px;
-    background:linear-gradient(to bottom, var(--amber), var(--blue), var(--violet));
-    opacity:0.35;
-  }
-  @media (max-width:700px){ .roadmap-track{ display:none; } }
-  .rm-item{ display:grid; grid-template-columns:60px 1fr; gap:20px; margin-bottom:20px; position:relative;}
-  @media (max-width:700px){ .rm-item{ grid-template-columns:1fr; } }
-  .rm-marker{
-    width:60px; height:60px; border-radius:14px; background:var(--card-2); border:1px solid var(--line);
-    display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:2;
-  }
-  .rm-marker .mo{ font-family:'Unbounded'; font-size:12px; font-weight:600; color:var(--ink);}
-  .rm-marker .yr{ font-family:'JetBrains Mono'; font-size:9.5px; color:var(--ink-mute); }
-  .rm-card{
-    background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px 22px;
-    border-top:2px solid var(--rm-accent, var(--amber));
-  }
-  .rm-card .rm-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;}
-  .rm-tag{
-    font-family:'JetBrains Mono'; font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em;
-    color:var(--rm-accent, var(--amber)); background:var(--rm-tag-bg, rgba(255,122,69,0.12));
-    border:1px solid var(--rm-tag-border, rgba(255,122,69,0.3));
-    padding:3px 9px; border-radius:100px; display:inline-block; margin-bottom:8px;
-  }
-  .rm-card h4{ font-family:'Unbounded'; font-size:16px; font-weight:600; margin-bottom:6px;}
-  .rm-card p.rm-desc{ color:var(--ink-dim); font-size:13.5px; margin-bottom:12px; }
-  .rm-budget{ font-family:'JetBrains Mono'; font-size:12px; color:var(--ink-mute); }
-  .rm-budget b{ color:var(--ink); }
-  .rm-list{ list-style:none; display:flex; flex-direction:column; gap:6px; }
-  .rm-list li{ font-size:13px; color:var(--ink-dim); padding-left:16px; position:relative;}
-  .rm-list li::before{ content:"→"; position:absolute; left:0; color:var(--rm-accent, var(--amber)); }
-
   /* ===== ROADMAP TABS ===== */
   .rm-tabs{ display:flex; gap:8px; margin-bottom:28px; flex-wrap:wrap; }
   .rm-tab-btn{
@@ -354,7 +319,7 @@
   .donut-svg circle.dimmed{ opacity:0.35; }
   .donut-svg circle.emph{ stroke-width:17; }
 
-  .rm-card, .avg-table tr, .rank-row{ scroll-margin-top:80px; }
+  .avg-table tr, .rank-row{ scroll-margin-top:80px; }
   .highlight-flash{ animation:highlightFlash 1.1s ease; }
   @keyframes highlightFlash{ 0%{ background:rgba(255,122,69,0.18);} 100%{ background:transparent;} }
 </style>
@@ -588,18 +553,51 @@
         <div class="sec-eyebrow">06 · План действий</div>
         <div class="sec-title">Роадмап на второе полугодие 2026</div>
       </div>
-      <div class="sec-note">Июль – декабрь 2026. Готовый прогноз по трендам 2025 года — и место для ваших собственных статей.</div>
+      <div class="sec-note">Июль – декабрь 2026. Плановые статьи расходов — и место для ваших собственных.</div>
     </div>
 
     <div class="rm-tabs">
-      <button class="rm-tab-btn active" data-tab="trend" onclick="switchRmTab('trend')">Прогноз по трендам</button>
+      <button class="rm-tab-btn active" data-tab="trend" onclick="switchRmTab('trend')">Статьи расходов</button>
       <button class="rm-tab-btn" data-tab="custom" onclick="switchRmTab('custom')">Мои статьи расходов</button>
     </div>
 
     <div class="rm-pane active" id="rm-pane-trend">
-      <div class="roadmap">
-        <div class="roadmap-track"></div>
-        <div id="roadmapList"></div>
+      <div class="card">
+        <div class="cc-table-wrap">
+          <table class="cc-table">
+            <thead>
+              <tr>
+                <th>Статья расходов</th>
+                <th>Июл</th><th>Авг</th><th>Сен</th><th>Окт</th><th>Ноя</th><th>Дек</th>
+                <th>Итого</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Реклама на телевидении</td>
+                <td class="num">220 000 ₽</td><td class="num">220 000 ₽</td><td class="num">220 000 ₽</td><td class="num">220 000 ₽</td><td class="num">220 000 ₽</td><td class="num">220 000 ₽</td>
+                <td class="num">1 320 000 ₽</td>
+              </tr>
+              <tr>
+                <td>Реклама у блогеров (SMM)</td>
+                <td class="num">100 000–150 000 ₽</td><td class="num">100 000–150 000 ₽</td><td class="num">100 000–150 000 ₽</td><td class="num">100 000–150 000 ₽</td><td class="num">100 000–150 000 ₽</td><td class="num">100 000–150 000 ₽</td>
+                <td class="num">600 000–900 000 ₽</td>
+              </tr>
+              <tr>
+                <td>Изготовление видеороликов</td>
+                <td class="num">50 000 ₽</td><td class="num">50 000 ₽</td><td class="num">50 000 ₽</td><td class="num">50 000 ₽</td><td class="num">50 000 ₽</td><td class="num">50 000 ₽</td>
+                <td class="num">300 000 ₽</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td>Итого по месяцам</td>
+                <td class="num">370 000–420 000 ₽</td><td class="num">370 000–420 000 ₽</td><td class="num">370 000–420 000 ₽</td><td class="num">370 000–420 000 ₽</td><td class="num">370 000–420 000 ₽</td><td class="num">370 000–420 000 ₽</td>
+                <td class="num">2 220 000–2 520 000 ₽</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -852,67 +850,6 @@ function setDonutHover(i){
       <td class="num">${fmt(avgActive)} ₽</td>
       <td class="num">${active}</td>`;
     el.appendChild(tr);
-  });
-})();
-
-// ---------- Roadmap ----------
-const ROADMAP = [
-  {mo:'Июль', yr:'2026', accent:'#FF7A45', tag:'Подготовка', title:'Креативный резерв на осень',
-   desc:'Исторически самый тихий месяц (130,9 тыс. ₽ в 2025) — используем паузу для производства, а не для простоя. С июля добавлена реклама на телевидении.',
-   items:['Реклама на телевидении — 220 000 ₽/мес (новая статья)','Реклама у блогеров (SMM) — 100 000 – 150 000 ₽/мес (новая статья)','Изготовление видеороликов — 50 000 ₽/мес (новая статья)','Съёмка и монтаж видеороликов для осенней волны','Обновление дизайн-макетов для торговых залов','Пересмотр условий с поставщиками для «Совместной рекламы»'],
-   budget:'520 000 – 620 000 ₽'},
-  {mo:'Авг', yr:'2026', accent:'#4DA8FF', tag:'Подготовка', title:'Финализация партнёрских кампаний',
-   desc:'Второй «тихий» месяц (148,7 тыс. ₽ в 2025). Закрываем договорённости к сентябрьскому старту.',
-   items:['Реклама на телевидении — 220 000 ₽/мес','Реклама у блогеров (SMM) — 100 000 – 150 000 ₽/мес','Изготовление видеороликов — 50 000 ₽/мес','Согласование бюджетов совместной рекламы с ключевыми поставщиками','Тест форматов на Авито и локальных площадках','Ревизия программы лояльности'],
-   budget:'530 000 – 630 000 ₽'},
-  {mo:'Сен', yr:'2026', accent:'#3ECF8E', tag:'Запуск волны', title:'Старт осеннего сезона ремонта',
-   desc:'В 2025 сентябрь дал рост до 397 тыс. ₽ — точка входа в осенний пик. Активируем «Совместную рекламу».',
-   items:['Реклама на телевидении — 220 000 ₽/мес','Реклама у блогеров (SMM) — 100 000 – 150 000 ₽/мес','Изготовление видеороликов — 50 000 ₽/мес','Запуск совместных кампаний с поставщиками (аналог октября-2025)','Флаеры и буклеты к сезону','Обновление рекламных носителей в залах'],
-   budget:'750 000 – 840 000 ₽'},
-  {mo:'Окт', yr:'2026', accent:'#9B8CFF', tag:'Пиковый месяц', title:'Пик осенней активности',
-   desc:'Октябрь 2025 — третий по величине месяц года (631,7 тыс. ₽), драйвер — совместная реклама и оформление зала.',
-   items:['Реклама на телевидении — 220 000 ₽/мес','Реклама у блогеров (SMM) — 100 000 – 150 000 ₽/мес','Изготовление видеороликов — 50 000 ₽/мес','Максимальный бюджет на совместную рекламу с поставщиками','Полное обновление оформления торгового зала','Спецмероприятие в зале для привлечения трафика'],
-   budget:'970 000 – 1 070 000 ₽'},
-  {mo:'Ноя', yr:'2026', accent:'#FFC24D', tag:'Удержание', title:'Чёрная пятница и предновогодний разогрев',
-   desc:'В 2025 ноябрь держался на уровне 419 тыс. ₽ за счёт стабильных статей — усиливаем промо-активностью.',
-   items:['Реклама на телевидении — 220 000 ₽/мес','Реклама у блогеров (SMM) — 100 000 – 150 000 ₽/мес','Изготовление видеороликов — 50 000 ₽/мес','Кампания к «чёрной пятнице» — розыгрыши и акции','Расширение рекламы на Авито под сезон подарков','Продление совместной рекламы с поставщиками'],
-   budget:'790 000 – 900 000 ₽'},
-  {mo:'Дек', yr:'2026', accent:'#FF6B6B', tag:'Финал года', title:'Новогодняя кампания и закрытие года',
-   desc:'Декабрь 2025 закрыл год на 456,9 тыс. ₽ — сезонный подъём перед паузой в январе-феврале.',
-   items:['Реклама на телевидении — 220 000 ₽/мес','Реклама у блогеров (SMM) — 100 000 – 150 000 ₽/мес','Изготовление видеороликов — 50 000 ₽/мес','Новогоднее оформление торговых залов','Финальная волна совместной рекламы с поставщиками','Итоговый отчёт и планирование бюджета на 2027'],
-   budget:'810 000 – 910 000 ₽'},
-];
-
-function hexToRgba(hex, alpha){
-  const h = hex.replace('#','');
-  const r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16);
-  return `rgba(${r},${g},${b},${alpha})`;
-}
-
-(function(){
-  const el = document.getElementById('roadmapList');
-  ROADMAP.forEach(r=>{
-    const item = document.createElement('div');
-    item.className='rm-item';
-    const tagBg = hexToRgba(r.accent, 0.12);
-    const tagBorder = hexToRgba(r.accent, 0.3);
-    item.innerHTML = `
-      <div class="rm-marker">
-        <div class="mo">${r.mo}</div>
-        <div class="yr">${r.yr}</div>
-      </div>
-      <div class="rm-card" style="--rm-accent:${r.accent}; --rm-tag-bg:${tagBg}; --rm-tag-border:${tagBorder}">
-        <div class="rm-top">
-          <div>
-            <span class="rm-tag">${r.tag}</span>
-            <h4>${r.title}</h4>
-          </div>
-          <div class="rm-budget">Ориентир: <b>${r.budget}</b></div>
-        </div>
-        <p class="rm-desc">${r.desc}</p>
-        <ul class="rm-list">${r.items.map(i=>`<li>${i}</li>`).join('')}</ul>
-      </div>`;
-    el.appendChild(item);
   });
 })();
 
