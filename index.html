@@ -271,6 +271,8 @@
   .cc-empty{ color:var(--ink-mute); font-size:13.5px; text-align:center; padding:30px 20px; border:1px dashed var(--line); border-radius:14px; }
   .cc-table-wrap{ overflow-x:auto; }
   .cc-table{ width:100%; border-collapse:collapse; min-width:760px; }
+  .cc-table.matrix-table{ min-width:1080px; }
+  .cc-table.matrix-table td:first-child, .cc-table.matrix-table th:first-child{ position:sticky; left:0; background:var(--card); }
   .cc-table th{
     text-align:right; font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-mute);
     padding:0 8px 10px; font-weight:500; border-bottom:1px solid var(--line); white-space:nowrap;
@@ -339,6 +341,7 @@
       <a href="#pulse">Обзор</a>
       <a href="#dynamics">Динамика</a>
       <a href="#structure">Структура</a>
+      <a href="#matrix">По месяцам</a>
       <a href="#report">Отчёт</a>
       <a href="#roadmap">Роадмап</a>
     </div>
@@ -484,12 +487,41 @@
   </div>
 </section>
 
+<!-- ================= MONTHLY × CATEGORY MATRIX ================= -->
+<section id="matrix">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">05 · Полная разбивка</div>
+        <div class="sec-title">Расход по каждой категории за каждый месяц</div>
+      </div>
+      <div class="sec-note">Фактические суммы (не средние) по всем 17 статьям и 12 месяцам 2025 года, из бухгалтерской выгрузки.</div>
+    </div>
+    <div class="card reveal">
+      <div class="cc-table-wrap">
+        <table class="cc-table matrix-table">
+          <thead>
+            <tr>
+              <th>Статья расходов</th>
+              <th>Янв</th><th>Фев</th><th>Мар</th><th>Апр</th><th>Май</th><th>Июн</th>
+              <th>Июл</th><th>Авг</th><th>Сен</th><th>Окт</th><th>Ноя</th><th>Дек</th>
+              <th>Итого</th>
+            </tr>
+          </thead>
+          <tbody id="matrixTableBody"></tbody>
+          <tfoot id="matrixTableFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ================= DETAILED REPORT ================= -->
 <section id="report">
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="sec-eyebrow">05 · Аналитика</div>
+        <div class="sec-eyebrow">06 · Аналитика</div>
         <div class="sec-title">Подробный отчёт</div>
       </div>
     </div>
@@ -550,7 +582,7 @@
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="sec-eyebrow">06 · План действий</div>
+        <div class="sec-eyebrow">07 · План действий</div>
         <div class="sec-title">Роадмап на второе полугодие 2026</div>
       </div>
       <div class="sec-note">Июль – декабрь 2026. Плановые статьи расходов — и место для ваших собственных.</div>
@@ -681,6 +713,25 @@ const DATA = {
     "Услуги дизайна":5, "Офлайн спецмероприятия":3, "САЙТ":12,
     "Госпошлина, регистрация товарного знака":2, "Изготовление видеоролика":1,
     "Флаер, буклет":1, "Озвучка аудиороликов":2
+  },
+  monthlyByCategory: {
+    "Совместная реклама с поставщиками": [0,148500,0,0,0,123900,0,0,230400,360900,231450,306600],
+    "Реклама": [62000,492558.40,50000,0,165000,0,50000,44000,4000,0,50000,48700],
+    "Розыгрыши и акции": [0,116935.07,0,105990,0,407446.76,0,0,0,0,0,0],
+    "Аренда рекламных носителей": [82000,82000,86000,38000,38000,38000,38000,28000,70000,28000,28000,28000],
+    "Состязание ТЗ": [211000,15000,5860,25000,15000,15000,10000,20000,15000,15000,15000,15000],
+    "ЛК Авито 305247622": [17900,15000,15000,30000,17900,15000,17900,32900,30000,22900,42900,20000],
+    "Оформление торгового зала": [1400,43000,1700,5400,8500,7550,4050,2800,6217,74945,31885,20694],
+    "Маркетинг, прочее": [12549,900,52538.52,4534,900,2280,4400,900,5400,64500,9681,900],
+    "Печать банеров, обновление носителей": [18500,0,58000,22000,0,4500,0,0,9200,0,0,13200],
+    "Программа лояльности (бонусная система)": [19900,2000,6000,35820,0,5000,0,5000,5000,35820,0,0],
+    "Услуги дизайна": [0,0,0,0,0,0,5400,5000,10000,12000,7900,0],
+    "Офлайн спецмероприятия": [0,0,27550,0,0,0,0,0,0,10414,800,0],
+    "САЙТ": [6100,6100,1100,1100,1100,4100,1100,1100,4400,7200,1500,3800],
+    "Госпошлина, регистрация товарного знака": [0,0,0,0,5000,5000,0,0,0,0,0,0],
+    "Изготовление видеоролика": [0,0,0,0,0,0,0,9000,0,0,0,0],
+    "Флаер, буклет": [0,0,0,0,0,0,0,0,7560,0,0,0],
+    "Озвучка аудиороликов": [0,0,700,700,0,0,0,0,0,0,0,0]
   }
 };
 
@@ -851,6 +902,27 @@ function setDonutHover(i){
       <td class="num">${active}</td>`;
     el.appendChild(tr);
   });
+})();
+
+// ---------- Monthly × category matrix ----------
+(function(){
+  const body = document.getElementById('matrixTableBody');
+  const foot = document.getElementById('matrixTableFoot');
+  sorted.forEach((c,i)=>{
+    const color = i < topN ? PALETTE[i] : '#3A4452';
+    const vals = DATA.monthlyByCategory[c.name] || Array(12).fill(0);
+    const cells = vals.map(v => `<td class="num">${v ? fmt(v)+' ₽' : '—'}</td>`).join('');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="name"><span class="swatch" style="background:${color}"></span>${c.name}</td>
+      ${cells}
+      <td class="num" style="color:var(--ink);font-weight:600;">${fmt(c.total)} ₽</td>`;
+    body.appendChild(tr);
+  });
+
+  const monthTotals = DATA.monthly;
+  const footCells = monthTotals.map(v => `<td class="num">${fmt(v)} ₽</td>`).join('');
+  foot.innerHTML = `<tr><td>Итого по месяцам</td>${footCells}<td class="num">${fmt(DATA.grand)} ₽</td></tr>`;
 })();
 
 // ---------- Roadmap tabs ----------
