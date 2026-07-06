@@ -75,6 +75,11 @@
   .page-pane{ display:none; }
   .page-pane.active{ display:block; }
 
+  /* ===== YEAR TABS (inside Финансы) ===== */
+  .year-tabs{ margin-bottom:0; }
+  .year-pane{ display:none; }
+  .year-pane.active{ display:block; }
+
   /* ===== HOME PAGE ===== */
   .home-hero{ padding:76px 0 40px; }
   .home-cards{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-top:20px; }
@@ -315,6 +320,14 @@
   .cc-bulk-row label{ font-size:12.5px; color:var(--ink-dim); cursor:pointer; }
   .cc-fade-in{ animation:ccFadeIn .35s ease; }
   @keyframes ccFadeIn{ from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:translateY(0);} }
+  .cc-cell-input{
+    width:100%; background:transparent; border:1px solid transparent; border-radius:6px;
+    padding:4px 6px; font-family:'JetBrains Mono'; font-size:13px; color:var(--ink); text-align:right;
+  }
+  .cc-cell-input:hover{ border-color:var(--line); }
+  .cc-cell-input:focus{ outline:none; border-color:var(--amber); background:var(--bg-alt); }
+  .cc-cell-name{ font-family:'Inter'; text-align:left; min-width:150px; }
+  .cc-name-cell{ display:flex; align-items:center; gap:4px; }
 
   /* ===== FOOTER ===== */
   footer{ padding:36px 0 60px; }
@@ -400,6 +413,15 @@
 
 <!-- ================= FINANCE PAGE ================= -->
 <div class="page-pane" id="page-finance">
+
+<div class="wrap" style="padding-top:24px;">
+  <div class="page-tabs year-tabs">
+    <button class="page-tab-btn year-tab-btn active" data-year="2025" onclick="switchYear('2025')">2025 · Отчёт</button>
+    <button class="page-tab-btn year-tab-btn" data-year="2026" onclick="switchYear('2026')">2026 · Бюджет и роадмап</button>
+  </div>
+</div>
+
+<div class="year-pane active" id="year-2025">
 
 <header class="hero">
   <div class="wrap">
@@ -601,12 +623,16 @@
   </div>
 </section>
 
+</div><!-- /year-2025 -->
+
+<div class="year-pane" id="year-2026">
+
 <!-- ================= ROADMAP ================= -->
 <section id="roadmap" style="border-bottom:none;">
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="sec-eyebrow">06 · План действий</div>
+        <div class="sec-eyebrow">01 · План действий</div>
         <div class="sec-title">Роадмап на второе полугодие 2026</div>
       </div>
       <div class="sec-note">Июль – декабрь 2026. Целевой бюджет: 450 000 ₽/мес · 2 700 000 ₽ на полгода — распределите его по статьям ниже.</div>
@@ -639,9 +665,11 @@
     </div>
 
     <div id="ccContent"></div>
-    <div class="cc-note">Строки ниже — стартовые (продолжение статей из 2025 года плюс новые на 2026-й), отредактируйте, удалите или добавляйте свои. Всё сохраняется прямо в браузере на этом устройстве (localStorage) — при открытии файла позже данные останутся на месте. Если откроете с другого устройства, список нужно будет ввести заново.</div>
+    <div class="cc-note">Каждая ячейка редактируется прямо в таблице — кликните и вводите число. Строки ниже — стартовые (продолжение статей из 2025 года плюс новые на 2026-й), меняйте, удаляйте или добавляйте свои. Всё сохраняется прямо в браузере на этом устройстве (localStorage) — при открытии файла позже данные останутся на месте. Если откроете с другого устройства, список нужно будет ввести заново.</div>
   </div>
 </section>
+
+</div><!-- /year-2026 -->
 
 </div><!-- /page-finance -->
 
@@ -728,13 +756,27 @@ function showErrorBanner(text){
 }
 
 window.switchPage = function(page){
-  document.querySelectorAll('.page-tab-btn').forEach(b=> b.classList.toggle('active', b.dataset.page===page));
+  document.querySelectorAll('.page-tab-btn:not(.year-tab-btn)').forEach(b=> b.classList.toggle('active', b.dataset.page===page));
   document.querySelectorAll('.page-pane').forEach(p=> p.classList.remove('active'));
   const target = document.getElementById('page-'+page);
   if(!target) return;
   target.classList.add('active');
   window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
   // display:none hides elements from IntersectionObserver, so force-reveal on first visit to this page
+  target.querySelectorAll('.reveal:not(.revealed)').forEach(el=>{
+    el.classList.add('revealed');
+    el.querySelectorAll('[data-count]').forEach(c => typeof animateCounter === 'function' && animateCounter(c));
+  });
+  if(typeof growBars === 'function') growBars();
+  if(typeof growDonut === 'function') growDonut();
+};
+
+window.switchYear = function(year){
+  document.querySelectorAll('.year-tab-btn').forEach(b=> b.classList.toggle('active', b.dataset.year===year));
+  document.querySelectorAll('.year-pane').forEach(p=> p.classList.remove('active'));
+  const target = document.getElementById('year-'+year);
+  if(!target) return;
+  target.classList.add('active');
   target.querySelectorAll('.reveal:not(.revealed)').forEach(el=>{
     el.classList.add('revealed');
     el.querySelectorAll('[data-count]').forEach(c => typeof animateCounter === 'function' && animateCounter(c));
@@ -803,6 +845,7 @@ const PALETTE = ["#FF7A45","#4DA8FF","#3ECF8E","#9B8CFF","#FFC24D","#FF6B6B","#4
                   "#8FA6C2","#E8935A","#6FA8DC","#B08968","#7BC96F","#F28FAD","#A0A8B8","#D6A2E8","#6C7A89"];
 
 function fmt(n){ return Math.round(n).toLocaleString('ru-RU'); }
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 const topN = 7;
 const sorted = [...DATA.categories].sort((a,b)=>b.total-a.total);
@@ -1063,6 +1106,20 @@ window.removeCustomCategory = function(idx){
   renderCustomCategories();
 };
 
+window.updateCcValue = function(idx, monthIdx, val){
+  const v = parseFloat(val);
+  ccList[idx].values[monthIdx] = isNaN(v) ? 0 : v;
+  ccSave(ccList);
+  renderCustomCategories();
+};
+
+window.updateCcName = function(idx, val){
+  const name = val.trim();
+  if(name) ccList[idx].name = name;
+  ccSave(ccList);
+  renderCustomCategories();
+};
+
 
 function renderBudgetCard(monthTotals, grandTotal){
   const card = document.getElementById('rmBudgetCard');
@@ -1106,9 +1163,9 @@ function renderCustomCategories(){
 
   let rows = ccList.map((c,idx)=>{
     const rowTotal = c.values.reduce((s,v)=>s+v,0);
-    const cells = c.values.map(v => `<td class="num">${v ? fmt(v)+' ₽' : '—'}</td>`).join('');
+    const cells = c.values.map((v,mi) => `<td class="num"><input type="number" class="cc-cell-input" value="${v || ''}" min="0" step="1000" placeholder="0" onchange="updateCcValue(${idx},${mi},this.value)"></td>`).join('');
     return `<tr>
-      <td>${c.name} <button class="cc-del" onclick="removeCustomCategory(${idx})" title="Удалить">✕</button></td>
+      <td class="cc-name-cell"><input type="text" class="cc-cell-input cc-cell-name" value="${escapeHtml(c.name)}" onchange="updateCcName(${idx},this.value)"><button class="cc-del" onclick="removeCustomCategory(${idx})" title="Удалить">✕</button></td>
       ${cells}
       <td class="num" style="color:var(--ink);font-weight:600;">${fmt(rowTotal)} ₽</td>
     </tr>`;
