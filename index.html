@@ -195,7 +195,9 @@
   .kpi .kpi-sub b{ color:var(--kpi-accent, var(--amber)); font-family:'JetBrains Mono'; font-weight:600;}
 
   /* ===== CHART CARD ===== */
-  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:26px; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:26px; box-shadow:0 16px 40px -20px rgba(0,0,0,0.55); }
+  .cc-table tbody tr{ transition:background .15s ease; }
+  .cc-table tbody tr:hover{ background:rgba(255,255,255,0.025); }
   .card-title{ font-family:'Golos Text'; font-size:16px; font-weight:600; margin-bottom:4px;}
   .card-desc{ color:var(--ink-mute); font-size:12.5px; margin-bottom:18px;}
 
@@ -363,6 +365,8 @@
     background:var(--card-2); border:1px solid var(--line); border-radius:8px; padding:8px 12px;
     font-size:13px; color:var(--ink-dim);
   }
+  .cc-deleted-item span{ flex:1; min-width:0; overflow-wrap:break-word; }
+  .cc-deleted-item .cc-restore-btn{ flex-shrink:0; }
   .cc-restore-btn{
     background:none; border:1px solid var(--line); color:var(--ink-dim); border-radius:6px;
     padding:4px 10px; font-size:12px; cursor:pointer; white-space:nowrap; transition:.15s;
@@ -376,8 +380,9 @@
   }
   .cc-cell-input:hover{ border-color:var(--line); }
   .cc-cell-input:focus{ outline:none; border-color:var(--amber); background:var(--bg-alt); }
-  .cc-cell-name{ font-family:'Inter'; text-align:left; min-width:150px; }
-  .cc-name-cell{ display:flex; align-items:center; gap:4px; }
+  .cc-cell-name{ font-family:'Inter'; text-align:left; min-width:220px; }
+  .cc-name-cell{ display:flex; align-items:center; gap:4px; min-width:260px; }
+  .cc-wrap{ white-space:normal !important; word-break:break-word; max-width:260px; }
   .col-total{ background:rgba(255,122,69,0.08); }
   th.col-total{ color:var(--ink); font-weight:700; }
   .cc-table tfoot tr, .avg-table tfoot tr{ background:rgba(255,122,69,0.06); }
@@ -734,7 +739,10 @@
         <input type="checkbox" id="ccBulkToggle" onchange="toggleBulkMode()">
         <label for="ccBulkToggle">Одна сумма сразу на все 6 месяцев</label>
       </div>
-      <button class="cc-undo-btn" id="ccUndoBtn" onclick="ccUndo()" disabled title="Отменить последнее действие">↶ Отменить</button>
+      <div style="display:flex; gap:8px;">
+        <button class="cc-undo-btn" onclick="ccRestoreMissingDefaults()" title="Вернуть статьи 2025 года, если какие-то пропали">↺ Вернуть статьи 2025</button>
+        <button class="cc-undo-btn" id="ccUndoBtn" onclick="ccUndo()" disabled title="Отменить последнее действие">↶ Отменить</button>
+      </div>
     </div>
     <div class="cc-form">
       <div class="cc-field" style="grid-column:span 1;">
@@ -838,6 +846,25 @@ function showErrorBanner(text){
   document.body.insertBefore(b, document.body.firstChild);
 }
 
+function storageWorks(){
+  try{
+    const k = '__ober_storage_test__';
+    localStorage.setItem(k, '1');
+    const ok = localStorage.getItem(k) === '1';
+    localStorage.removeItem(k);
+    return ok;
+  }catch(e){ return false; }
+}
+
+function showStorageWarning(){
+  if(document.getElementById('storage-warning-banner')) return;
+  const b = document.createElement('div');
+  b.id = 'storage-warning-banner';
+  b.style.cssText = 'position:fixed; bottom:16px; left:16px; right:16px; z-index:9998; max-width:640px; margin:0 auto; background:#3a2a14; color:#ffd9a8; font-size:13px; padding:14px 18px; border-radius:12px; border:1px solid #6b4a1e; box-shadow:0 10px 30px rgba(0,0,0,0.4);';
+  b.innerHTML = 'Браузер не сохраняет изменения на этом сайте (localStorage недоступен — возможно, включён приватный режим или запрещено хранение данных сайтов). Всё, что вы добавите или удалите в «Роадмапе» и «Статистике», <b>пропадёт после перезагрузки страницы</b>. Отключите приватный режим или разрешите хранение данных для этого сайта. <span style="cursor:pointer; text-decoration:underline; margin-left:8px;" onclick="this.parentElement.remove()">Скрыть</span>';
+  document.body.appendChild(b);
+}
+
 window.switchPage = function(page){
   document.querySelectorAll('.page-tab-btn:not(.year-tab-btn)').forEach(b=> b.classList.toggle('active', b.dataset.page===page));
   document.querySelectorAll('.page-pane').forEach(p=> p.classList.remove('active'));
@@ -869,6 +896,8 @@ window.switchYear = function(year){
 };
 
 try{
+
+if(!storageWorks()) showStorageWarning();
 
 const DATA = {
   months: ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"],
@@ -1104,7 +1133,7 @@ function setDonutHover(i){
     const cells = vals.map(v => `<td class="num">${v ? fmt(v)+' ₽' : '—'}</td>`).join('');
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="name"><span class="swatch" style="background:${color}"></span>${c.name}</td>
+      <td class="name cc-wrap"><span class="swatch" style="background:${color}"></span>${c.name}</td>
       ${cells}
       <td class="num col-total" style="color:var(--ink);font-weight:600;">${fmt(c.total)} ₽</td>`;
     body.appendChild(tr);
@@ -1147,6 +1176,18 @@ function ccLoad(){
 function ccSave(list){
   try{ localStorage.setItem(CC_STORAGE_KEY, JSON.stringify(list)); }catch(e){}
 }
+
+window.ccRestoreMissingDefaults = function(){
+  const defaults = ccDefaultSeed();
+  const existingNames = new Set(ccList.map(c=>c.name));
+  const missing = defaults.filter(d => !existingNames.has(d.name));
+  if(missing.length === 0){ alert('Все стартовые статьи 2025–2026 уже на месте.'); return; }
+  ccPushUndo();
+  ccList = [...ccList, ...missing];
+  ccSave(ccList);
+  renderCustomCategories();
+  alert('Добавлено недостающих статей: ' + missing.length + ' (' + missing.map(m=>m.name).join(', ') + ')');
+};
 
 let ccList = ccLoad();
 let ccUndoStack = [];
@@ -1454,10 +1495,10 @@ function renderSocial(){
   const total = snList.reduce((s,c)=> s + (c.spend||0), 0);
   const rows = snList.map((c,idx)=> `
     <tr>
-      <td>${c.name} <button class="cc-del" onclick="removeSocial(${idx})" title="Удалить">✕</button></td>
-      <td style="text-align:left;">${c.link ? c.link : '—'}</td>
+      <td class="cc-wrap">${c.name} <button class="cc-del" onclick="removeSocial(${idx})" title="Удалить">✕</button></td>
+      <td class="cc-wrap" style="text-align:left;">${c.link ? c.link : '—'}</td>
       <td class="num">${c.spend ? fmt(c.spend)+' ₽' : '—'}</td>
-      <td style="text-align:left;">${c.note ? c.note : '—'}</td>
+      <td class="cc-wrap" style="text-align:left;">${c.note ? c.note : '—'}</td>
     </tr>`).join('');
   el.innerHTML = `
     <div class="cc-table-wrap">
