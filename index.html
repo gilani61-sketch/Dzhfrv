@@ -349,6 +349,25 @@
   .cc-note{ color:var(--ink-mute); font-size:12px; margin-top:14px; }
   .cc-bulk-row{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
   .cc-bulk-row label{ font-size:12.5px; color:var(--ink-dim); cursor:pointer; }
+  .cc-undo-btn{
+    font-family:'Golos Text'; font-size:12.5px; font-weight:600; color:var(--ink-dim);
+    background:var(--card-2); border:1px solid var(--line); padding:7px 14px; border-radius:100px;
+    cursor:pointer; transition:.15s; white-space:nowrap;
+  }
+  .cc-undo-btn:hover:not(:disabled){ color:var(--ink); border-color:var(--amber); }
+  .cc-undo-btn:disabled{ opacity:0.4; cursor:not-allowed; }
+  .cc-deleted-title{ font-size:11.5px; color:var(--ink-mute); text-transform:uppercase; letter-spacing:0.04em; margin:16px 0 8px; }
+  .cc-deleted-list{ display:flex; flex-direction:column; gap:6px; }
+  .cc-deleted-item{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--card-2); border:1px solid var(--line); border-radius:8px; padding:8px 12px;
+    font-size:13px; color:var(--ink-dim);
+  }
+  .cc-restore-btn{
+    background:none; border:1px solid var(--line); color:var(--ink-dim); border-radius:6px;
+    padding:4px 10px; font-size:12px; cursor:pointer; white-space:nowrap; transition:.15s;
+  }
+  .cc-restore-btn:hover{ color:var(--green); border-color:var(--green); }
   .cc-fade-in{ animation:ccFadeIn .35s ease; }
   @keyframes ccFadeIn{ from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:translateY(0);} }
   .cc-cell-input{
@@ -710,9 +729,12 @@
 
     <div class="card" style="margin-bottom:16px;" id="rmBudgetCard"></div>
 
-    <div class="cc-bulk-row">
-      <input type="checkbox" id="ccBulkToggle" onchange="toggleBulkMode()">
-      <label for="ccBulkToggle">Одна сумма сразу на все 6 месяцев</label>
+    <div class="cc-bulk-row" style="justify-content:space-between;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="ccBulkToggle" onchange="toggleBulkMode()">
+        <label for="ccBulkToggle">Одна сумма сразу на все 6 месяцев</label>
+      </div>
+      <button class="cc-undo-btn" id="ccUndoBtn" onclick="ccUndo()" disabled title="Отменить последнее действие">↶ Отменить</button>
     </div>
     <div class="cc-form">
       <div class="cc-field" style="grid-column:span 1;">
@@ -735,6 +757,7 @@
     </div>
 
     <div id="ccContent"></div>
+    <div id="ccDeletedLog"></div>
     <div class="cc-note">Каждая ячейка редактируется прямо в таблице — кликните и вводите число. Строки ниже — стартовые (продолжение статей из 2025 года плюс новые на 2026-й), меняйте, удаляйте или добавляйте свои. Всё сохраняется прямо в браузере на этом устройстве (localStorage) — при открытии файла позже данные останутся на месте. Если откроете с другого устройства, список нужно будет ввести заново.</div>
   </div>
 </section>
@@ -755,8 +778,14 @@
       <div class="sec-note">Площадки продвижения, расход в месяц и заметки — не связано с финансовым отчётом.</div>
     </div>
     <div class="card reveal">
-      <div class="card-title">Мои социальные сети</div>
-      <div class="card-desc">Добавьте площадки, где ведётся продвижение — ссылка, расход в месяц и заметка. Сохраняется в этом браузере.</div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+        <div>
+          <div class="card-title">Мои социальные сети</div>
+          <div class="card-desc" style="margin-bottom:0;">Добавьте площадки, где ведётся продвижение — ссылка, расход в месяц и заметка. Сохраняется в этом браузере.</div>
+        </div>
+        <button class="cc-undo-btn" id="snUndoBtn" onclick="snUndo()" disabled title="Отменить последнее действие">↶ Отменить</button>
+      </div>
+      <div style="height:14px;"></div>
       <div class="cc-form" style="grid-template-columns:1fr 1.2fr 0.8fr 1.2fr auto;">
         <div class="cc-field">
           <label>Платформа</label>
@@ -777,6 +806,7 @@
         <button class="cc-add-btn" onclick="addSocial()">+ Добавить</button>
       </div>
       <div id="snContent"></div>
+      <div id="snDeletedLog"></div>
       <div class="cc-note">Данные сохраняются в этом браузере (localStorage) — на других устройствах список нужно будет ввести заново.</div>
     </div>
   </div>
@@ -1119,6 +1149,61 @@ function ccSave(list){
 }
 
 let ccList = ccLoad();
+let ccUndoStack = [];
+const CC_DELETED_KEY = 'ober-roadmap-deleted-log';
+let ccDeletedLog = (function(){
+  try{ const raw = localStorage.getItem(CC_DELETED_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+  return [];
+})();
+
+function ccSaveDeletedLog(){
+  try{ localStorage.setItem(CC_DELETED_KEY, JSON.stringify(ccDeletedLog)); }catch(e){}
+}
+
+function ccPushUndo(){
+  ccUndoStack.push(JSON.parse(JSON.stringify(ccList)));
+  if(ccUndoStack.length > 15) ccUndoStack.shift();
+  updateCcUndoBtn();
+}
+
+function updateCcUndoBtn(){
+  const btn = document.getElementById('ccUndoBtn');
+  if(btn) btn.disabled = ccUndoStack.length === 0;
+}
+
+window.ccUndo = function(){
+  if(ccUndoStack.length === 0) return;
+  ccList = ccUndoStack.pop();
+  ccSave(ccList);
+  renderCustomCategories();
+  updateCcUndoBtn();
+};
+
+window.ccRestoreDeleted = function(logIdx){
+  const item = ccDeletedLog[logIdx];
+  if(!item) return;
+  ccPushUndo();
+  ccList.push({ name:item.name, values:item.values });
+  ccSave(ccList);
+  ccDeletedLog.splice(logIdx,1);
+  ccSaveDeletedLog();
+  renderCustomCategories();
+};
+
+function renderCcDeletedLog(){
+  const el = document.getElementById('ccDeletedLog');
+  if(!el) return;
+  if(ccDeletedLog.length === 0){ el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <div class="cc-deleted-title">Недавно удалённые статьи</div>
+    <div class="cc-deleted-list">
+      ${ccDeletedLog.map((item,i)=>`
+        <div class="cc-deleted-item">
+          <span>${escapeHtml(item.name)}</span>
+          <button class="cc-restore-btn" onclick="ccRestoreDeleted(${i})">↺ Восстановить</button>
+        </div>`).join('')}
+    </div>`;
+}
 
 window.toggleBulkMode = function(){
   const bulk = document.getElementById('ccBulkToggle').checked;
@@ -1144,6 +1229,7 @@ window.addCustomCategory = function(){
       return isNaN(v) ? 0 : v;
     });
   }
+  ccPushUndo();
   ccList.push({ name, values });
   ccSave(ccList);
   nameEl.value = '';
@@ -1157,12 +1243,17 @@ window.removeCustomCategory = function(idx){
   const item = ccList[idx];
   if(!item) return;
   if(!confirm(`Удалить статью «${item.name}»?`)) return;
+  ccPushUndo();
   ccList.splice(idx,1);
   ccSave(ccList);
+  ccDeletedLog.unshift({ name:item.name, values:item.values, deletedAt:Date.now() });
+  if(ccDeletedLog.length > 15) ccDeletedLog.length = 15;
+  ccSaveDeletedLog();
   renderCustomCategories();
 };
 
 window.updateCcValue = function(idx, monthIdx, val){
+  ccPushUndo();
   const v = parseFloat(val);
   ccList[idx].values[monthIdx] = isNaN(v) ? 0 : v;
   ccSave(ccList);
@@ -1170,6 +1261,7 @@ window.updateCcValue = function(idx, monthIdx, val){
 };
 
 window.updateCcName = function(idx, val){
+  ccPushUndo();
   const name = val.trim();
   if(name) ccList[idx].name = name;
   ccSave(ccList);
@@ -1206,6 +1298,8 @@ function renderBudgetCard(monthTotals, grandTotal){
 }
 
 function renderCustomCategories(){
+  updateCcUndoBtn();
+  renderCcDeletedLog();
   const monthTotals = [0,0,0,0,0,0];
   ccList.forEach(c => c.values.forEach((v,i)=> monthTotals[i]+=v));
   const grandTotal = monthTotals.reduce((s,v)=>s+v,0);
@@ -1264,6 +1358,57 @@ function snSave(list){
 }
 
 let snList = snLoad();
+let snUndoStack = [];
+const SN_DELETED_KEY = 'ober-social-deleted-log';
+let snDeletedLog = (function(){
+  try{ const raw = localStorage.getItem(SN_DELETED_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+  return [];
+})();
+
+function snSaveDeletedLog(){
+  try{ localStorage.setItem(SN_DELETED_KEY, JSON.stringify(snDeletedLog)); }catch(e){}
+}
+
+function snPushUndo(){
+  snUndoStack.push(JSON.parse(JSON.stringify(snList)));
+  if(snUndoStack.length > 15) snUndoStack.shift();
+  const btn = document.getElementById('snUndoBtn');
+  if(btn) btn.disabled = snUndoStack.length === 0;
+}
+
+window.snUndo = function(){
+  if(snUndoStack.length === 0) return;
+  snList = snUndoStack.pop();
+  snSave(snList);
+  renderSocial();
+};
+
+window.snRestoreDeleted = function(logIdx){
+  const item = snDeletedLog[logIdx];
+  if(!item) return;
+  snPushUndo();
+  const { deletedAt, ...clean } = item;
+  snList.push(clean);
+  snSave(snList);
+  snDeletedLog.splice(logIdx,1);
+  snSaveDeletedLog();
+  renderSocial();
+};
+
+function renderSnDeletedLog(){
+  const el = document.getElementById('snDeletedLog');
+  if(!el) return;
+  if(snDeletedLog.length === 0){ el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <div class="cc-deleted-title">Недавно удалённые площадки</div>
+    <div class="cc-deleted-list">
+      ${snDeletedLog.map((item,i)=>`
+        <div class="cc-deleted-item">
+          <span>${escapeHtml(item.name)}</span>
+          <button class="cc-restore-btn" onclick="snRestoreDeleted(${i})">↺ Восстановить</button>
+        </div>`).join('')}
+    </div>`;
+}
 
 window.addSocial = function(){
   const nameEl = document.getElementById('snName');
@@ -1273,6 +1418,7 @@ window.addSocial = function(){
   const spendRaw = parseFloat(document.getElementById('snSpend').value);
   const spend = isNaN(spendRaw) ? 0 : spendRaw;
   const note = document.getElementById('snNote').value.trim();
+  snPushUndo();
   snList.push({ name, link, spend, note });
   snSave(snList);
   nameEl.value = '';
@@ -1287,12 +1433,19 @@ window.removeSocial = function(idx){
   const item = snList[idx];
   if(!item) return;
   if(!confirm(`Удалить площадку «${item.name}»?`)) return;
+  snPushUndo();
   snList.splice(idx,1);
   snSave(snList);
+  snDeletedLog.unshift({ ...item, deletedAt:Date.now() });
+  if(snDeletedLog.length > 15) snDeletedLog.length = 15;
+  snSaveDeletedLog();
   renderSocial();
 };
 
 function renderSocial(){
+  const btn = document.getElementById('snUndoBtn');
+  if(btn) btn.disabled = snUndoStack.length === 0;
+  renderSnDeletedLog();
   const el = document.getElementById('snContent');
   if(snList.length === 0){
     el.innerHTML = '<div class="cc-empty">Пока нет добавленных площадок. Заполните форму выше.</div>';
