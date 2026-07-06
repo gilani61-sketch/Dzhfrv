@@ -383,12 +383,18 @@
   .cc-name-cell{ display:flex; align-items:center; gap:4px; min-width:260px; }
   .cc-wrap{ white-space:normal !important; word-break:break-word; max-width:260px; }
   .col-total{ background:rgba(255,122,69,0.08); }
-  th.col-total{ color:var(--ink); font-weight:700; }
   .cc-table tfoot tr, .avg-table tfoot tr{ background:rgba(255,122,69,0.06); }
   tfoot .col-total{ background:rgba(255,122,69,0.18); }
+  .cc-table th.col-month, .cc-table th.col-total{
+    border-radius:6px; padding:6px 8px 8px; box-sizing:border-box; vertical-align:middle;
+  }
   th.col-month{
-    color:var(--blue); border:1px solid rgba(77,168,255,0.35) !important;
-    border-radius:6px; background:rgba(77,168,255,0.06);
+    color:var(--blue); border:1px solid rgba(77,168,255,0.35);
+    background:rgba(77,168,255,0.06);
+  }
+  th.col-total{
+    color:var(--ink); font-weight:700;
+    border:1px solid rgba(255,122,69,0.35); background:rgba(255,122,69,0.08);
   }
 
   /* ===== FOOTER ===== */
