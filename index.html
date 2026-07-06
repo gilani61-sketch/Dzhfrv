@@ -387,6 +387,10 @@
   th.col-total{ color:var(--ink); font-weight:700; }
   .cc-table tfoot tr, .avg-table tfoot tr{ background:rgba(255,122,69,0.06); }
   tfoot .col-total{ background:rgba(255,122,69,0.18); }
+  th.col-month{
+    color:var(--blue); border:1px solid rgba(77,168,255,0.35) !important;
+    border-radius:6px; background:rgba(77,168,255,0.06);
+  }
 
   /* ===== FOOTER ===== */
   footer{ padding:36px 0 60px; }
@@ -704,8 +708,8 @@
           <thead>
             <tr>
               <th>Статья расходов</th>
-              <th>Янв</th><th>Фев</th><th>Мар</th><th>Апр</th><th>Май</th><th>Июн</th>
-              <th>Июл</th><th>Авг</th><th>Сен</th><th>Окт</th><th>Ноя</th><th>Дек</th>
+              <th class="col-month">Янв</th><th class="col-month">Фев</th><th class="col-month">Мар</th><th class="col-month">Апр</th><th class="col-month">Май</th><th class="col-month">Июн</th>
+              <th class="col-month">Июл</th><th class="col-month">Авг</th><th class="col-month">Сен</th><th class="col-month">Окт</th><th class="col-month">Ноя</th><th class="col-month">Дек</th>
               <th class="col-total">Итого</th>
             </tr>
           </thead>
@@ -1370,7 +1374,7 @@ function renderCustomCategories(){
         <thead>
           <tr>
             <th>Статья</th>
-            ${CC_MONTHS.map(m=>`<th>${m}</th>`).join('')}
+            ${CC_MONTHS.map(m=>`<th class="col-month">${m}</th>`).join('')}
             <th class="col-total">Итого</th>
           </tr>
         </thead>
