@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
 <title>Маркетинг «Обер» · Отчёт 2025</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -236,18 +237,6 @@
   .report-body .callout b{ color:var(--amber); }
   .report-body ul{ margin:0 0 14px 18px; color:var(--ink-dim); font-size:14.5px; }
   .report-body li{ margin-bottom:6px; }
-
-  /* ===== ROADMAP TABS ===== */
-  .rm-tabs{ display:flex; gap:8px; margin-bottom:28px; flex-wrap:wrap; }
-  .rm-tab-btn{
-    font-family:'Unbounded'; font-size:13px; font-weight:500; color:var(--ink-dim);
-    background:var(--card); border:1px solid var(--line); padding:10px 18px; border-radius:100px;
-    cursor:pointer; transition:.15s;
-  }
-  .rm-tab-btn:hover{ color:var(--ink); border-color:#2E3946; }
-  .rm-tab-btn.active{ color:#0A0D12; background:var(--amber); border-color:var(--amber); }
-  .rm-pane{ display:none; }
-  .rm-pane.active{ display:block; }
 
   /* ===== CUSTOM CATEGORIES TOOL ===== */
   .cc-form{
@@ -513,6 +502,32 @@
         </table>
       </div>
     </div>
+
+    <div class="card reveal" style="margin-top:16px;">
+      <div class="card-title">Мои социальные сети</div>
+      <div class="card-desc">Добавьте площадки, где ведётся продвижение — ссылка, расход в месяц и заметка. Сохраняется в этом браузере.</div>
+      <div class="cc-form" style="grid-template-columns:1fr 1.2fr 0.8fr 1.2fr auto;">
+        <div class="cc-field">
+          <label>Платформа</label>
+          <input type="text" id="snName" placeholder="Например: Instagram">
+        </div>
+        <div class="cc-field">
+          <label>Ссылка / логин</label>
+          <input type="text" id="snLink" placeholder="@ober_stroy">
+        </div>
+        <div class="cc-field">
+          <label>Расход/мес, ₽</label>
+          <input type="number" id="snSpend" min="0" step="1000" placeholder="0">
+        </div>
+        <div class="cc-field">
+          <label>Заметка</label>
+          <input type="text" id="snNote" placeholder="Например: ведёт агентство">
+        </div>
+        <button class="cc-add-btn" onclick="addSocial()">+ Добавить</button>
+      </div>
+      <div id="snContent"></div>
+      <div class="cc-note">Данные сохраняются в этом браузере (localStorage) — на других устройствах список нужно будет ввести заново.</div>
+    </div>
   </div>
 </section>
 
@@ -585,72 +600,27 @@
         <div class="sec-eyebrow">07 · План действий</div>
         <div class="sec-title">Роадмап на второе полугодие 2026</div>
       </div>
-      <div class="sec-note">Июль – декабрь 2026. Плановые статьи расходов — и место для ваших собственных.</div>
+      <div class="sec-note">Июль – декабрь 2026. Целевой бюджет: 450 000 ₽/мес · 2 700 000 ₽ на полгода — распределите его по статьям ниже.</div>
     </div>
 
-    <div class="rm-tabs">
-      <button class="rm-tab-btn active" data-tab="trend" onclick="switchRmTab('trend')">Статьи расходов</button>
-      <button class="rm-tab-btn" data-tab="custom" onclick="switchRmTab('custom')">Мои статьи расходов</button>
-    </div>
+    <div class="card" style="margin-bottom:16px;" id="rmBudgetCard"></div>
 
-    <div class="rm-pane active" id="rm-pane-trend">
-      <div class="card">
-        <div class="cc-table-wrap">
-          <table class="cc-table">
-            <thead>
-              <tr>
-                <th>Статья расходов</th>
-                <th>Июл</th><th>Авг</th><th>Сен</th><th>Окт</th><th>Ноя</th><th>Дек</th>
-                <th>Итого</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Реклама на телевидении</td>
-                <td class="num">220 000 ₽</td><td class="num">220 000 ₽</td><td class="num">220 000 ₽</td><td class="num">220 000 ₽</td><td class="num">220 000 ₽</td><td class="num">220 000 ₽</td>
-                <td class="num">1 320 000 ₽</td>
-              </tr>
-              <tr>
-                <td>Реклама у блогеров (SMM)</td>
-                <td class="num">100 000–150 000 ₽</td><td class="num">100 000–150 000 ₽</td><td class="num">100 000–150 000 ₽</td><td class="num">100 000–150 000 ₽</td><td class="num">100 000–150 000 ₽</td><td class="num">100 000–150 000 ₽</td>
-                <td class="num">600 000–900 000 ₽</td>
-              </tr>
-              <tr>
-                <td>Изготовление видеороликов</td>
-                <td class="num">50 000 ₽</td><td class="num">50 000 ₽</td><td class="num">50 000 ₽</td><td class="num">50 000 ₽</td><td class="num">50 000 ₽</td><td class="num">50 000 ₽</td>
-                <td class="num">300 000 ₽</td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td>Итого по месяцам</td>
-                <td class="num">370 000–420 000 ₽</td><td class="num">370 000–420 000 ₽</td><td class="num">370 000–420 000 ₽</td><td class="num">370 000–420 000 ₽</td><td class="num">370 000–420 000 ₽</td><td class="num">370 000–420 000 ₽</td>
-                <td class="num">2 220 000–2 520 000 ₽</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+    <div class="cc-form">
+      <div class="cc-field" style="grid-column:span 1;">
+        <label>Название статьи</label>
+        <input type="text" id="ccName" placeholder="Например: SMM-продвижение">
       </div>
+      <div class="cc-field"><label>Июл</label><input type="number" id="ccM0" min="0" step="1000" placeholder="0"></div>
+      <div class="cc-field"><label>Авг</label><input type="number" id="ccM1" min="0" step="1000" placeholder="0"></div>
+      <div class="cc-field"><label>Сен</label><input type="number" id="ccM2" min="0" step="1000" placeholder="0"></div>
+      <div class="cc-field"><label>Окт</label><input type="number" id="ccM3" min="0" step="1000" placeholder="0"></div>
+      <div class="cc-field"><label>Ноя</label><input type="number" id="ccM4" min="0" step="1000" placeholder="0"></div>
+      <div class="cc-field"><label>Дек</label><input type="number" id="ccM5" min="0" step="1000" placeholder="0"></div>
+      <button class="cc-add-btn" onclick="addCustomCategory()">+ Добавить</button>
     </div>
 
-    <div class="rm-pane" id="rm-pane-custom">
-      <div class="cc-form">
-        <div class="cc-field" style="grid-column:span 1;">
-          <label>Название статьи</label>
-          <input type="text" id="ccName" placeholder="Например: SMM-продвижение">
-        </div>
-        <div class="cc-field"><label>Июл</label><input type="number" id="ccM0" min="0" step="1000" placeholder="0"></div>
-        <div class="cc-field"><label>Авг</label><input type="number" id="ccM1" min="0" step="1000" placeholder="0"></div>
-        <div class="cc-field"><label>Сен</label><input type="number" id="ccM2" min="0" step="1000" placeholder="0"></div>
-        <div class="cc-field"><label>Окт</label><input type="number" id="ccM3" min="0" step="1000" placeholder="0"></div>
-        <div class="cc-field"><label>Ноя</label><input type="number" id="ccM4" min="0" step="1000" placeholder="0"></div>
-        <div class="cc-field"><label>Дек</label><input type="number" id="ccM5" min="0" step="1000" placeholder="0"></div>
-        <button class="cc-add-btn" onclick="addCustomCategory()">+ Добавить</button>
-      </div>
-
-      <div id="ccContent"></div>
-      <div class="cc-note">Данные сохраняются прямо в браузере на этом устройстве (localStorage) — при открытии файла позже они останутся на месте. Если вы разместите файл на GitHub Pages или откроете с другого устройства, список нужно будет ввести заново.</div>
-    </div>
+    <div id="ccContent"></div>
+    <div class="cc-note">Строки ниже (реклама на ТВ, у блогеров, видеоролики) — стартовые, отредактируйте или удалите их и добавляйте свои. Всё сохраняется прямо в браузере на этом устройстве (localStorage) — при открытии файла позже данные останутся на месте. Если откроете с другого устройства, список нужно будет ввести заново.</div>
   </div>
 </section>
 
@@ -925,24 +895,23 @@ function setDonutHover(i){
   foot.innerHTML = `<tr><td>Итого по месяцам</td>${footCells}<td class="num">${fmt(DATA.grand)} ₽</td></tr>`;
 })();
 
-// ---------- Roadmap tabs ----------
-window.switchRmTab = function(tab){
-  document.querySelectorAll('.rm-tab-btn').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
-  document.getElementById('rm-pane-trend').classList.toggle('active', tab==='trend');
-  document.getElementById('rm-pane-custom').classList.toggle('active', tab==='custom');
-};
-
 // ---------- Custom categories tool (add your own H2 2026 budget lines) ----------
 const CC_MONTHS = ['Июл','Авг','Сен','Окт','Ноя','Дек'];
-const CC_STORAGE_KEY = 'ober-roadmap-custom-categories-h2-2026';
+const CC_STORAGE_KEY = 'ober-roadmap-custom-categories-h2-2026-v2';
+const CC_BUDGET_MONTHLY = 450000;
+const CC_BUDGET_TOTAL = CC_BUDGET_MONTHLY * 6;
 
 function ccLoad(){
   try{
     const raw = localStorage.getItem(CC_STORAGE_KEY);
     if(raw) return JSON.parse(raw);
   }catch(e){}
-  // Значение по умолчанию: реклама на телевидении 220 000 ₽/мес на все 6 месяцев
-  return [{ name:'Реклама на телевидении', values:[220000,220000,220000,220000,220000,220000] }];
+  // Стартовые статьи по умолчанию — отредактируйте или удалите
+  return [
+    { name:'Реклама на телевидении', values:[220000,220000,220000,220000,220000,220000] },
+    { name:'Реклама у блогеров (SMM)', values:[125000,125000,125000,125000,125000,125000] },
+    { name:'Изготовление видеороликов', values:[50000,50000,50000,50000,50000,50000] }
+  ];
 }
 function ccSave(list){
   try{ localStorage.setItem(CC_STORAGE_KEY, JSON.stringify(list)); }catch(e){}
@@ -973,15 +942,45 @@ window.removeCustomCategory = function(idx){
 };
 
 
+function renderBudgetCard(monthTotals, grandTotal){
+  const card = document.getElementById('rmBudgetCard');
+  const pct = grandTotal / CC_BUDGET_TOTAL * 100;
+  const over = grandTotal > CC_BUDGET_TOTAL;
+  const color = over ? 'var(--red)' : 'var(--green)';
+  const statusText = over
+    ? `Превышение на ${fmt(grandTotal - CC_BUDGET_TOTAL)} ₽`
+    : `Остаток: ${fmt(CC_BUDGET_TOTAL - grandTotal)} ₽`;
+  const monthCells = monthTotals.map((v,i)=>{
+    const mOver = v > CC_BUDGET_MONTHLY;
+    return `<div style="flex:1; min-width:70px;">
+      <div style="color:var(--ink-mute); font-size:11px; text-transform:uppercase;">${CC_MONTHS[i]}</div>
+      <div class="mono" style="font-size:13px; font-weight:600; color:${mOver?'var(--red)':'var(--ink)'};">${fmt(v)} ₽</div>
+    </div>`;
+  }).join('');
+  card.innerHTML = `
+    <div class="card-title">Целевой бюджет на полугодие</div>
+    <div class="card-desc">450 000 ₽/мес × 6 месяцев = 2 700 000 ₽ — распределите его по статьям в таблице ниже.</div>
+    <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:12px;">
+      <div class="display" style="font-size:22px; font-weight:700;">${fmt(grandTotal)} ₽</div>
+      <div style="color:var(--ink-mute); font-size:13px;">из ${fmt(CC_BUDGET_TOTAL)} ₽ (${pct.toFixed(0)}%)</div>
+      <div class="mono" style="color:${color}; font-size:13px; font-weight:600;">${statusText}</div>
+    </div>
+    <div class="bar-mini" style="height:8px; margin-bottom:16px;"><i style="width:${Math.min(pct,100).toFixed(1)}%; background:${color};"></i></div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">${monthCells}</div>
+  `;
+}
+
 function renderCustomCategories(){
+  const monthTotals = [0,0,0,0,0,0];
+  ccList.forEach(c => c.values.forEach((v,i)=> monthTotals[i]+=v));
+  const grandTotal = monthTotals.reduce((s,v)=>s+v,0);
+  renderBudgetCard(monthTotals, grandTotal);
+
   const el = document.getElementById('ccContent');
   if(ccList.length === 0){
     el.innerHTML = '<div class="cc-empty">Пока нет добавленных статей. Заполните форму выше — категория появится здесь, с разбивкой по месяцам и итогом.</div>';
     return;
   }
-  const monthTotals = [0,0,0,0,0,0];
-  ccList.forEach(c => c.values.forEach((v,i)=> monthTotals[i]+=v));
-  const grandTotal = monthTotals.reduce((s,v)=>s+v,0);
 
   let rows = ccList.map((c,idx)=>{
     const rowTotal = c.values.reduce((s,v)=>s+v,0);
@@ -1014,6 +1013,76 @@ function renderCustomCategories(){
 }
 
 renderCustomCategories();
+
+// ---------- Social networks tool ----------
+const SN_STORAGE_KEY = 'ober-social-networks';
+
+function snLoad(){
+  try{
+    const raw = localStorage.getItem(SN_STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return [];
+}
+function snSave(list){
+  try{ localStorage.setItem(SN_STORAGE_KEY, JSON.stringify(list)); }catch(e){}
+}
+
+let snList = snLoad();
+
+window.addSocial = function(){
+  const nameEl = document.getElementById('snName');
+  const name = nameEl.value.trim();
+  if(!name){ nameEl.focus(); nameEl.style.borderColor = 'var(--red)'; setTimeout(()=>nameEl.style.borderColor='',900); return; }
+  const link = document.getElementById('snLink').value.trim();
+  const spendRaw = parseFloat(document.getElementById('snSpend').value);
+  const spend = isNaN(spendRaw) ? 0 : spendRaw;
+  const note = document.getElementById('snNote').value.trim();
+  snList.push({ name, link, spend, note });
+  snSave(snList);
+  nameEl.value = '';
+  document.getElementById('snLink').value = '';
+  document.getElementById('snSpend').value = '';
+  document.getElementById('snNote').value = '';
+  renderSocial();
+  nameEl.focus();
+};
+
+window.removeSocial = function(idx){
+  snList.splice(idx,1);
+  snSave(snList);
+  renderSocial();
+};
+
+function renderSocial(){
+  const el = document.getElementById('snContent');
+  if(snList.length === 0){
+    el.innerHTML = '<div class="cc-empty">Пока нет добавленных площадок. Заполните форму выше.</div>';
+    return;
+  }
+  const total = snList.reduce((s,c)=> s + (c.spend||0), 0);
+  const rows = snList.map((c,idx)=> `
+    <tr>
+      <td>${c.name} <button class="cc-del" onclick="removeSocial(${idx})" title="Удалить">✕</button></td>
+      <td style="text-align:left;">${c.link ? c.link : '—'}</td>
+      <td class="num">${c.spend ? fmt(c.spend)+' ₽' : '—'}</td>
+      <td style="text-align:left;">${c.note ? c.note : '—'}</td>
+    </tr>`).join('');
+  el.innerHTML = `
+    <div class="cc-table-wrap">
+      <table class="cc-table">
+        <thead>
+          <tr><th>Платформа</th><th style="text-align:left;">Ссылка / логин</th><th>Расход/мес</th><th style="text-align:left;">Заметка</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+        <tfoot>
+          <tr><td>Итого расход/мес</td><td></td><td class="num">${fmt(total)} ₽</td><td></td></tr>
+        </tfoot>
+      </table>
+    </div>`;
+}
+
+renderSocial();
 
 // ---------- Animation engine: counters + scroll reveal + chart grow-in ----------
 function animateCounter(el){
