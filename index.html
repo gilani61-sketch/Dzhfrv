@@ -30,9 +30,10 @@
   html{scroll-behavior:smooth;}
   body{
     background:
-      radial-gradient(ellipse 900px 500px at 85% -10%, rgba(255,122,69,0.10), transparent),
-      radial-gradient(ellipse 700px 500px at 5% 10%, rgba(77,168,255,0.08), transparent),
-      linear-gradient(165deg, #0D1017 0%, #0A0D12 45%, #0B0E14 75%, #0E1119 100%);
+      radial-gradient(ellipse 1000px 600px at 88% -8%, rgba(255,122,69,0.16), transparent),
+      radial-gradient(ellipse 800px 600px at 2% 8%, rgba(77,168,255,0.14), transparent),
+      radial-gradient(ellipse 900px 700px at 50% 105%, rgba(155,140,255,0.09), transparent),
+      linear-gradient(155deg, #05060A 0%, #0A0D14 18%, #12151E 42%, #1A1A26 62%, #0D0F17 82%, #05060A 100%);
     background-attachment:fixed;
     color:var(--ink);
     font-family:'Inter', sans-serif;
@@ -328,6 +329,9 @@
   .cc-cell-input:focus{ outline:none; border-color:var(--amber); background:var(--bg-alt); }
   .cc-cell-name{ font-family:'Inter'; text-align:left; min-width:150px; }
   .cc-name-cell{ display:flex; align-items:center; gap:4px; }
+  .col-total{ background:rgba(255,122,69,0.08); }
+  th.col-total{ color:var(--amber); }
+  tfoot .col-total{ background:rgba(255,122,69,0.16); }
 
   /* ===== FOOTER ===== */
   footer{ padding:36px 0 60px; }
@@ -402,7 +406,7 @@
         <div class="home-card" onclick="switchPage('stats')">
           <div class="hc-icon" style="--hc-accent:var(--blue)">Σ</div>
           <h3>Статистика</h3>
-          <p>Полная разбивка расходов по месяцам и категориям, плюс учёт социальных сетей и площадок продвижения.</p>
+          <p>Учёт аккаунтов, социальных сетей и площадок продвижения — отдельно от финансового отчёта.</p>
           <div class="hc-arrow">Открыть →</div>
         </div>
       </div>
@@ -549,7 +553,7 @@
         <thead>
           <tr>
             <th>Статья расходов</th>
-            <th class="num">Итого за год</th>
+            <th class="num col-total">Итого за год</th>
             <th class="num">Доля</th>
             <th class="num">Средн. / мес (÷12)</th>
             <th class="num">Средн. / актив. мес.</th>
@@ -623,6 +627,35 @@
   </div>
 </section>
 
+<!-- ================= MONTHLY × CATEGORY MATRIX ================= -->
+<section id="matrix" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">06 · Полная разбивка</div>
+        <div class="sec-title">Расход по каждой категории за каждый месяц</div>
+      </div>
+      <div class="sec-note">Фактические суммы (не средние) по всем 17 статьям и 12 месяцам 2025 года, из бухгалтерской выгрузки.</div>
+    </div>
+    <div class="card reveal">
+      <div class="cc-table-wrap">
+        <table class="cc-table matrix-table">
+          <thead>
+            <tr>
+              <th>Статья расходов</th>
+              <th>Янв</th><th>Фев</th><th>Мар</th><th>Апр</th><th>Май</th><th>Июн</th>
+              <th>Июл</th><th>Авг</th><th>Сен</th><th>Окт</th><th>Ноя</th><th>Дек</th>
+              <th class="col-total">Итого</th>
+            </tr>
+          </thead>
+          <tbody id="matrixTableBody"></tbody>
+          <tfoot id="matrixTableFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
 </div><!-- /year-2025 -->
 
 <div class="year-pane" id="year-2026">
@@ -673,36 +706,19 @@
 
 </div><!-- /page-finance -->
 
-<!-- ================= STATS PAGE ================= -->
+<!-- ================= STATS PAGE (accounts & social) ================= -->
 <div class="page-pane" id="page-stats">
-<section id="matrix">
+<section id="social-section" style="border-bottom:none;">
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="sec-eyebrow">01 · Полная разбивка</div>
-        <div class="sec-title">Расход по каждой категории за каждый месяц</div>
+        <div class="sec-eyebrow">01 · Статистика</div>
+        <div class="sec-title">Аккаунты и социальные сети</div>
       </div>
-      <div class="sec-note">Фактические суммы (не средние) по всем 17 статьям и 12 месяцам 2025 года, из бухгалтерской выгрузки.</div>
+      <div class="sec-note">Площадки продвижения, расход в месяц и заметки — не связано с финансовым отчётом.</div>
     </div>
     <div class="card reveal">
-      <div class="cc-table-wrap">
-        <table class="cc-table matrix-table">
-          <thead>
-            <tr>
-              <th>Статья расходов</th>
-              <th>Янв</th><th>Фев</th><th>Мар</th><th>Апр</th><th>Май</th><th>Июн</th>
-              <th>Июл</th><th>Авг</th><th>Сен</th><th>Окт</th><th>Ноя</th><th>Дек</th>
-              <th>Итого</th>
-            </tr>
-          </thead>
-          <tbody id="matrixTableBody"></tbody>
-          <tfoot id="matrixTableFoot"></tfoot>
-        </table>
-      </div>
-    </div>
-
-    <div class="card reveal" style="margin-top:16px;">
-      <div class="card-title">02 · Мои социальные сети</div>
+      <div class="card-title">Мои социальные сети</div>
       <div class="card-desc">Добавьте площадки, где ведётся продвижение — ссылка, расход в месяц и заметка. Сохраняется в этом браузере.</div>
       <div class="cc-form" style="grid-template-columns:1fr 1.2fr 0.8fr 1.2fr auto;">
         <div class="cc-field">
@@ -1002,7 +1018,7 @@ function setDonutHover(i){
       <td class="name"><span class="swatch" style="background:${color}"></span>${c.name}
         <div style="flex:1"></div>
       </td>
-      <td class="num">${fmt(c.total)} ₽<div class="bar-mini"><i style="width:${barW}%; background:${color}"></i></div></td>
+      <td class="num col-total">${fmt(c.total)} ₽<div class="bar-mini"><i style="width:${barW}%; background:${color}"></i></div></td>
       <td class="num">${pct}%</td>
       <td class="num">${fmt(avg12)} ₽</td>
       <td class="num">${fmt(avgActive)} ₽</td>
@@ -1023,13 +1039,13 @@ function setDonutHover(i){
     tr.innerHTML = `
       <td class="name"><span class="swatch" style="background:${color}"></span>${c.name}</td>
       ${cells}
-      <td class="num" style="color:var(--ink);font-weight:600;">${fmt(c.total)} ₽</td>`;
+      <td class="num col-total" style="color:var(--ink);font-weight:600;">${fmt(c.total)} ₽</td>`;
     body.appendChild(tr);
   });
 
   const monthTotals = DATA.monthly;
   const footCells = monthTotals.map(v => `<td class="num">${fmt(v)} ₽</td>`).join('');
-  foot.innerHTML = `<tr><td>Итого по месяцам</td>${footCells}<td class="num">${fmt(DATA.grand)} ₽</td></tr>`;
+  foot.innerHTML = `<tr><td>Итого по месяцам</td>${footCells}<td class="num col-total">${fmt(DATA.grand)} ₽</td></tr>`;
 })();
 
 // ---------- Custom categories tool (add your own H2 2026 budget lines) ----------
@@ -1167,7 +1183,7 @@ function renderCustomCategories(){
     return `<tr>
       <td class="cc-name-cell"><input type="text" class="cc-cell-input cc-cell-name" value="${escapeHtml(c.name)}" onchange="updateCcName(${idx},this.value)"><button class="cc-del" onclick="removeCustomCategory(${idx})" title="Удалить">✕</button></td>
       ${cells}
-      <td class="num" style="color:var(--ink);font-weight:600;">${fmt(rowTotal)} ₽</td>
+      <td class="num col-total" style="color:var(--ink);font-weight:600;">${fmt(rowTotal)} ₽</td>
     </tr>`;
   }).join('');
 
@@ -1180,12 +1196,12 @@ function renderCustomCategories(){
           <tr>
             <th>Статья</th>
             ${CC_MONTHS.map(m=>`<th>${m}</th>`).join('')}
-            <th>Итого</th>
+            <th class="col-total">Итого</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
         <tfoot>
-          <tr><td>Итого по месяцам</td>${footCells}<td class="num">${fmt(grandTotal)} ₽</td></tr>
+          <tr><td>Итого по месяцам</td>${footCells}<td class="num col-total">${fmt(grandTotal)} ₽</td></tr>
         </tfoot>
       </table>
     </div>`;
