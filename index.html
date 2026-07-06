@@ -317,12 +317,13 @@
   @media (max-width:900px){ .cc-form{ grid-template-columns:1fr 1fr; } }
   .cc-field{ display:flex; flex-direction:column; gap:6px; }
   .cc-field label{ font-size:10.5px; color:var(--ink-mute); text-transform:uppercase; letter-spacing:0.04em; }
-  .cc-field input{
+  .cc-field input, .cc-field select{
     background:var(--bg-alt); border:1px solid var(--line); border-radius:8px; padding:9px 10px;
     color:var(--ink); font-family:'JetBrains Mono'; font-size:13px; width:100%;
   }
-  .cc-field input:focus{ outline:none; border-color:var(--amber); }
+  .cc-field input:focus, .cc-field select:focus{ outline:none; border-color:var(--amber); }
   .cc-field input[type="text"]{ font-family:'Inter'; }
+  .cc-field select{ font-family:'Inter'; cursor:pointer; }
   .cc-add-btn{
     background:var(--amber); color:#0A0D12; border:none; border-radius:8px; padding:10px 16px;
     font-family:'Golos Text'; font-size:12.5px; font-weight:600; cursor:pointer; white-space:nowrap; height:38px;
@@ -372,8 +373,6 @@
     padding:4px 10px; font-size:12px; cursor:pointer; white-space:nowrap; transition:.15s;
   }
   .cc-restore-btn:hover{ color:var(--green); border-color:var(--green); }
-  .cc-fade-in{ animation:ccFadeIn .35s ease; }
-  @keyframes ccFadeIn{ from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:translateY(0);} }
   .cc-cell-input{
     width:100%; background:transparent; border:1px solid transparent; border-radius:6px;
     padding:4px 6px; font-family:'JetBrains Mono'; font-size:13px; color:var(--ink); text-align:right;
@@ -738,35 +737,33 @@
 
     <div class="card" style="margin-bottom:16px;" id="rmBudgetCard"></div>
 
-    <div class="cc-bulk-row" style="justify-content:space-between;">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <input type="checkbox" id="ccBulkToggle" onchange="toggleBulkMode()">
-        <label for="ccBulkToggle">Одна сумма сразу на все 6 месяцев</label>
-      </div>
-      <div style="display:flex; gap:8px;">
-        <button class="cc-undo-btn" onclick="ccRestoreMissingDefaults()" title="Вернуть статьи 2025 года, если какие-то пропали">↺ Вернуть статьи 2025</button>
-        <button class="cc-undo-btn" id="ccUndoBtn" onclick="ccUndo()" disabled title="Отменить последнее действие">↶ Отменить</button>
-      </div>
+    <div class="cc-bulk-row" style="justify-content:flex-end;">
+      <button class="cc-undo-btn" onclick="ccRestoreMissingDefaults()" title="Вернуть статьи 2025 года, если какие-то пропали">↺ Вернуть статьи 2025</button>
+      <button class="cc-undo-btn" id="ccUndoBtn" onclick="ccUndo()" disabled title="Отменить последнее действие">↶ Отменить</button>
     </div>
-    <div class="cc-form">
-      <div class="cc-field" style="grid-column:span 1;">
+    <div class="cc-form" style="grid-template-columns:1.4fr 1fr 1fr auto;">
+      <div class="cc-field">
         <label>Название статьи</label>
         <input type="text" id="ccName" placeholder="Например: SMM-продвижение">
       </div>
-      <div id="ccMonthsFields" style="display:contents;">
-        <div class="cc-field"><label>Июл</label><input type="number" id="ccM0" min="0" step="1000" placeholder="0"></div>
-        <div class="cc-field"><label>Авг</label><input type="number" id="ccM1" min="0" step="1000" placeholder="0"></div>
-        <div class="cc-field"><label>Сен</label><input type="number" id="ccM2" min="0" step="1000" placeholder="0"></div>
-        <div class="cc-field"><label>Окт</label><input type="number" id="ccM3" min="0" step="1000" placeholder="0"></div>
-        <div class="cc-field"><label>Ноя</label><input type="number" id="ccM4" min="0" step="1000" placeholder="0"></div>
-        <div class="cc-field"><label>Дек</label><input type="number" id="ccM5" min="0" step="1000" placeholder="0"></div>
+      <div class="cc-field">
+        <label>Месяц</label>
+        <select id="ccMonthSelect">
+          <option value="0">Июль</option>
+          <option value="1">Август</option>
+          <option value="2">Сентябрь</option>
+          <option value="3">Октябрь</option>
+          <option value="4">Ноябрь</option>
+          <option value="5">Декабрь</option>
+        </select>
       </div>
-      <div class="cc-field" id="ccBulkField" style="display:none; grid-column:span 6;">
-        <label>Сумма/мес на все полгода</label>
-        <input type="number" id="ccBulkValue" min="0" step="1000" placeholder="0">
+      <div class="cc-field">
+        <label>Сумма, ₽</label>
+        <input type="number" id="ccAmount" min="0" step="1000" placeholder="0">
       </div>
       <button class="cc-add-btn" onclick="addCustomCategory()">+ Добавить</button>
     </div>
+    <div class="cc-note" style="margin-top:0; margin-bottom:16px;">Статья добавится с суммой в выбранном месяце — остальные месяцы можно заполнить прямо в таблице ниже, кликнув в нужную ячейку.</div>
 
     <div id="ccContent"></div>
     <div id="ccDeletedLog"></div>
@@ -1250,36 +1247,20 @@ function renderCcDeletedLog(){
     </div>`;
 }
 
-window.toggleBulkMode = function(){
-  const bulk = document.getElementById('ccBulkToggle').checked;
-  document.getElementById('ccMonthsFields').style.display = bulk ? 'none' : 'contents';
-  const bulkField = document.getElementById('ccBulkField');
-  bulkField.style.display = bulk ? 'flex' : 'none';
-  if(bulk) bulkField.classList.add('cc-fade-in');
-  else bulkField.classList.remove('cc-fade-in');
-};
-
 window.addCustomCategory = function(){
   const nameEl = document.getElementById('ccName');
   const name = nameEl.value.trim();
   if(!name){ nameEl.focus(); nameEl.style.borderColor = 'var(--red)'; setTimeout(()=>nameEl.style.borderColor='',900); return; }
-  const bulk = document.getElementById('ccBulkToggle').checked;
-  let values;
-  if(bulk){
-    const v = parseFloat(document.getElementById('ccBulkValue').value);
-    values = Array(6).fill(isNaN(v) ? 0 : v);
-  } else {
-    values = [0,1,2,3,4,5].map(i => {
-      const v = parseFloat(document.getElementById('ccM'+i).value);
-      return isNaN(v) ? 0 : v;
-    });
-  }
+  const monthIdx = parseInt(document.getElementById('ccMonthSelect').value, 10);
+  const amountRaw = parseFloat(document.getElementById('ccAmount').value);
+  const amount = isNaN(amountRaw) ? 0 : amountRaw;
+  const values = Array(6).fill(0);
+  values[monthIdx] = amount;
   ccPushUndo();
   ccList.push({ name, values });
   ccSave(ccList);
   nameEl.value = '';
-  [0,1,2,3,4,5].forEach(i => document.getElementById('ccM'+i).value = '');
-  document.getElementById('ccBulkValue').value = '';
+  document.getElementById('ccAmount').value = '';
   renderCustomCategories();
   nameEl.focus();
 };
