@@ -1118,6 +1118,9 @@ window.addCustomCategory = function(){
 };
 
 window.removeCustomCategory = function(idx){
+  const item = ccList[idx];
+  if(!item) return;
+  if(!confirm(`Удалить статью «${item.name}»?`)) return;
   ccList.splice(idx,1);
   ccSave(ccList);
   renderCustomCategories();
@@ -1245,6 +1248,9 @@ window.addSocial = function(){
 };
 
 window.removeSocial = function(idx){
+  const item = snList[idx];
+  if(!item) return;
+  if(!confirm(`Удалить площадку «${item.name}»?`)) return;
   snList.splice(idx,1);
   snSave(snList);
   renderSocial();
