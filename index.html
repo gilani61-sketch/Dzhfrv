@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
-<title>Маркетинг «Обер» · Отчёт 2025</title>
+<title>Обер · Маркетинг</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#0A0D12;
@@ -32,14 +32,15 @@
     background:
       radial-gradient(ellipse 900px 500px at 85% -10%, rgba(255,122,69,0.10), transparent),
       radial-gradient(ellipse 700px 500px at 5% 10%, rgba(77,168,255,0.08), transparent),
-      var(--bg);
+      linear-gradient(165deg, #0D1017 0%, #0A0D12 45%, #0B0E14 75%, #0E1119 100%);
+    background-attachment:fixed;
     color:var(--ink);
     font-family:'Inter', sans-serif;
     line-height:1.5;
     -webkit-font-smoothing:antialiased;
   }
   .mono{ font-family:'JetBrains Mono', monospace; }
-  .display{ font-family:'Unbounded', sans-serif; }
+  .display{ font-family:'Golos Text', sans-serif; }
 
   .wrap{ max-width:1180px; margin:0 auto; padding:0 28px; }
 
@@ -56,14 +57,46 @@
     width:30px; height:30px; border-radius:8px;
     background:linear-gradient(135deg, var(--amber), #C9501F);
     display:flex; align-items:center; justify-content:center;
-    font-family:'Unbounded'; font-weight:700; font-size:14px; color:#0A0D12;
+    font-family:'Golos Text'; font-weight:700; font-size:14px; color:#0A0D12;
   }
-  .brand-name{ font-family:'Unbounded'; font-weight:600; font-size:15px; letter-spacing:0.2px;}
+  .brand-name{ font-family:'Golos Text'; font-weight:600; font-size:15px; letter-spacing:0.2px;}
   .brand-sub{ color:var(--ink-mute); font-size:12px; }
-  .navlinks{ display:flex; gap:28px; }
-  .navlinks a{ color:var(--ink-dim); text-decoration:none; font-size:13.5px; font-weight:500; transition:color .15s;}
-  .navlinks a:hover{ color:var(--ink); }
-  @media (max-width:820px){ .navlinks{ display:none; } }
+  .page-tabs{ display:flex; gap:6px; }
+  .page-tab-btn{
+    font-family:'Golos Text'; font-size:13.5px; font-weight:600; color:var(--ink-dim);
+    background:none; border:1px solid transparent; padding:8px 16px; border-radius:100px;
+    cursor:pointer; transition:.15s;
+  }
+  .page-tab-btn:hover{ color:var(--ink); }
+  .page-tab-btn.active{ color:#0A0D12; background:var(--amber); }
+  @media (max-width:640px){ .page-tab-btn{ padding:8px 11px; font-size:12.5px; } }
+
+  /* ===== PAGES (Главная / Финансы / Статистика) ===== */
+  .page-pane{ display:none; }
+  .page-pane.active{ display:block; }
+
+  /* ===== HOME PAGE ===== */
+  .home-hero{ padding:76px 0 40px; }
+  .home-cards{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-top:20px; }
+  @media (max-width:760px){ .home-cards{ grid-template-columns:1fr; } }
+  .home-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:28px;
+    cursor:pointer; transition:transform .2s ease, border-color .2s ease; text-align:left;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .home-card:hover{ transform:translateY(-3px); border-color:#2E3946; }
+  .home-card .hc-icon{
+    width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    font-family:'Golos Text'; font-weight:700; font-size:17px; color:#0A0D12;
+    background:var(--hc-accent, var(--amber));
+  }
+  .home-card h3{ font-family:'Golos Text'; font-size:19px; font-weight:700; }
+  .home-card p{ color:var(--ink-dim); font-size:13.5px; }
+  .home-card .hc-arrow{ color:var(--ink-mute); font-size:13px; margin-top:auto; }
+  .home-soon{
+    border:1px dashed var(--line); border-radius:var(--radius); padding:22px 28px; margin-top:16px;
+    color:var(--ink-mute); font-size:13.5px; text-align:center;
+  }
 
   /* ===== HERO ===== */
   .hero{ padding:76px 0 56px; border-bottom:1px solid var(--line); position:relative; overflow:hidden;}
@@ -76,7 +109,7 @@
   .eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--amber); box-shadow:0 0 8px var(--amber); animation:pulse 2s infinite;}
   @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
   h1.hero-title{
-    font-family:'Unbounded'; font-weight:700; font-size:48px; line-height:1.1; letter-spacing:-0.01em;
+    font-family:'Golos Text'; font-weight:700; font-size:48px; line-height:1.1; letter-spacing:-0.01em;
     max-width:760px;
   }
   h1.hero-title span{ color:var(--amber); }
@@ -89,7 +122,7 @@
   }
   .hero-total{ background:var(--card); padding:32px 34px; }
   .hero-total .label{ color:var(--ink-mute); font-size:12.5px; text-transform:uppercase; letter-spacing:0.06em; }
-  .hero-total .value{ font-family:'Unbounded'; font-size:44px; font-weight:700; margin-top:10px; letter-spacing:-0.01em;}
+  .hero-total .value{ font-family:'Golos Text'; font-size:44px; font-weight:700; margin-top:10px; letter-spacing:-0.01em;}
   .hero-total .value sup{ font-size:20px; color:var(--ink-dim); font-weight:500; margin-left:4px;}
   .hero-total .foot{ margin-top:14px; color:var(--ink-dim); font-size:13.5px; display:flex; gap:18px; flex-wrap:wrap;}
   .hero-total .foot b{ color:var(--green); font-family:'JetBrains Mono'; }
@@ -105,7 +138,7 @@
   section{ padding:64px 0; border-bottom:1px solid var(--line); }
   .sec-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:34px; gap:20px; flex-wrap:wrap;}
   .sec-eyebrow{ font-family:'JetBrains Mono'; font-size:12px; color:var(--ink-mute); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;}
-  .sec-title{ font-family:'Unbounded'; font-size:28px; font-weight:600; letter-spacing:-0.01em;}
+  .sec-title{ font-family:'Golos Text'; font-size:28px; font-weight:600; letter-spacing:-0.01em;}
   .sec-note{ color:var(--ink-dim); font-size:13.5px; max-width:340px; text-align:right;}
   @media (max-width:700px){ .sec-note{ text-align:left; } }
 
@@ -121,13 +154,13 @@
     background:var(--kpi-accent, var(--amber));
   }
   .kpi .kpi-label{ color:var(--ink-mute); font-size:12px; text-transform:uppercase; letter-spacing:0.05em;}
-  .kpi .kpi-value{ font-family:'Unbounded'; font-size:24px; font-weight:600; margin-top:10px; color:var(--ink);}
+  .kpi .kpi-value{ font-family:'Golos Text'; font-size:24px; font-weight:600; margin-top:10px; color:var(--ink);}
   .kpi .kpi-sub{ color:var(--ink-dim); font-size:12.5px; margin-top:6px;}
   .kpi .kpi-sub b{ color:var(--kpi-accent, var(--amber)); font-family:'JetBrains Mono'; font-weight:600;}
 
   /* ===== CHART CARD ===== */
   .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:26px; }
-  .card-title{ font-family:'Unbounded'; font-size:16px; font-weight:600; margin-bottom:4px;}
+  .card-title{ font-family:'Golos Text'; font-size:16px; font-weight:600; margin-bottom:4px;}
   .card-desc{ color:var(--ink-mute); font-size:12.5px; margin-bottom:18px;}
 
   /* ---- Pure-CSS bar chart ---- */
@@ -176,7 +209,7 @@
     position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
     text-align:center; pointer-events:none;
   }
-  .donut-center-label .n{ font-family:'Unbounded'; font-size:26px; font-weight:700;}
+  .donut-center-label .n{ font-family:'Golos Text'; font-size:26px; font-weight:700;}
   .donut-center-label .t{ font-size:11px; color:var(--ink-mute); margin-top:2px;}
 
   .rank-list{ display:flex; flex-direction:column; gap:3px; }
@@ -223,7 +256,7 @@
     }
   }
   .report-body h3{
-    font-family:'Unbounded'; font-size:16px; font-weight:600; margin:30px 0 12px;
+    font-family:'Golos Text'; font-size:16px; font-weight:600; margin:30px 0 12px;
     display:flex; align-items:center; gap:10px;
   }
   .report-body h3:first-child{ margin-top:0; }
@@ -254,7 +287,7 @@
   .cc-field input[type="text"]{ font-family:'Inter'; }
   .cc-add-btn{
     background:var(--amber); color:#0A0D12; border:none; border-radius:8px; padding:10px 16px;
-    font-family:'Unbounded'; font-size:12.5px; font-weight:600; cursor:pointer; white-space:nowrap; height:38px;
+    font-family:'Golos Text'; font-size:12.5px; font-weight:600; cursor:pointer; white-space:nowrap; height:38px;
   }
   .cc-add-btn:hover{ background:#FF8A5C; }
   .cc-empty{ color:var(--ink-mute); font-size:13.5px; text-align:center; padding:30px 20px; border:1px dashed var(--line); border-radius:14px; }
@@ -271,13 +304,17 @@
   .cc-table td:first-child{ text-align:left; font-family:'Inter'; }
   .cc-table td.num{ font-family:'JetBrains Mono'; }
   .cc-table tfoot td{ font-weight:700; color:var(--ink); border-bottom:none; border-top:1px solid var(--line); font-family:'JetBrains Mono'; }
-  .cc-table tfoot td:first-child{ font-family:'Unbounded'; font-weight:600; font-size:12.5px; }
+  .cc-table tfoot td:first-child{ font-family:'Golos Text'; font-weight:600; font-size:12.5px; }
   .cc-del{
     background:none; border:none; color:var(--ink-mute); cursor:pointer; font-size:15px; line-height:1;
     padding:2px 6px; border-radius:6px;
   }
   .cc-del:hover{ color:var(--red); background:rgba(255,107,107,0.1); }
   .cc-note{ color:var(--ink-mute); font-size:12px; margin-top:14px; }
+  .cc-bulk-row{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .cc-bulk-row label{ font-size:12.5px; color:var(--ink-dim); cursor:pointer; }
+  .cc-fade-in{ animation:ccFadeIn .35s ease; }
+  @keyframes ccFadeIn{ from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:translateY(0);} }
 
   /* ===== FOOTER ===== */
   footer{ padding:36px 0 60px; }
@@ -323,19 +360,46 @@
       <div class="brand-mark">О</div>
       <div>
         <div class="brand-name">Обер · Маркетинг</div>
-        <div class="brand-sub">финансовый дашборд</div>
+        <div class="brand-sub">центр управления</div>
       </div>
     </div>
-    <div class="navlinks">
-      <a href="#pulse">Обзор</a>
-      <a href="#dynamics">Динамика</a>
-      <a href="#structure">Структура</a>
-      <a href="#matrix">Статистика</a>
-      <a href="#report">Отчёт</a>
-      <a href="#roadmap">Роадмап</a>
+    <div class="page-tabs">
+      <button class="page-tab-btn active" data-page="home" onclick="switchPage('home')">Главная</button>
+      <button class="page-tab-btn" data-page="finance" onclick="switchPage('finance')">Финансы</button>
+      <button class="page-tab-btn" data-page="stats" onclick="switchPage('stats')">Статистика</button>
     </div>
   </div>
 </nav>
+
+<!-- ================= HOME PAGE ================= -->
+<div class="page-pane active" id="page-home">
+  <header class="hero home-hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span>Обер · Маркетинг</div>
+      <h1 class="hero-title">Маркетинг <span>«Обер»</span>: центр управления бюджетом и каналами</h1>
+      <p class="hero-desc">Здесь собрана финансовая отчётность, статистика по каналам и планирование бюджета — всё для управления маркетингом «Обер» в одном месте.</p>
+
+      <div class="home-cards">
+        <div class="home-card" onclick="switchPage('finance')">
+          <div class="hc-icon" style="--hc-accent:var(--amber)">₽</div>
+          <h3>Финансы</h3>
+          <p>Бюджет 2025 года, динамика по месяцам, структура расходов, аналитика и роадмап на второе полугодие 2026 с целевым бюджетом.</p>
+          <div class="hc-arrow">Открыть →</div>
+        </div>
+        <div class="home-card" onclick="switchPage('stats')">
+          <div class="hc-icon" style="--hc-accent:var(--blue)">Σ</div>
+          <h3>Статистика</h3>
+          <p>Полная разбивка расходов по месяцам и категориям, плюс учёт социальных сетей и площадок продвижения.</p>
+          <div class="hc-arrow">Открыть →</div>
+        </div>
+      </div>
+      <div class="home-soon">Новые разделы появятся здесь позже.</div>
+    </div>
+  </header>
+</div>
+
+<!-- ================= FINANCE PAGE ================= -->
+<div class="page-pane" id="page-finance">
 
 <header class="hero">
   <div class="wrap">
@@ -476,67 +540,12 @@
   </div>
 </section>
 
-<!-- ================= MONTHLY × CATEGORY MATRIX ================= -->
-<section id="matrix">
-  <div class="wrap">
-    <div class="sec-head">
-      <div>
-        <div class="sec-eyebrow">05 · Статистика</div>
-        <div class="sec-title">Расход по каждой категории за каждый месяц</div>
-      </div>
-      <div class="sec-note">Фактические суммы (не средние) по всем 17 статьям и 12 месяцам 2025 года, из бухгалтерской выгрузки.</div>
-    </div>
-    <div class="card reveal">
-      <div class="cc-table-wrap">
-        <table class="cc-table matrix-table">
-          <thead>
-            <tr>
-              <th>Статья расходов</th>
-              <th>Янв</th><th>Фев</th><th>Мар</th><th>Апр</th><th>Май</th><th>Июн</th>
-              <th>Июл</th><th>Авг</th><th>Сен</th><th>Окт</th><th>Ноя</th><th>Дек</th>
-              <th>Итого</th>
-            </tr>
-          </thead>
-          <tbody id="matrixTableBody"></tbody>
-          <tfoot id="matrixTableFoot"></tfoot>
-        </table>
-      </div>
-    </div>
-
-    <div class="card reveal" style="margin-top:16px;">
-      <div class="card-title">Мои социальные сети</div>
-      <div class="card-desc">Добавьте площадки, где ведётся продвижение — ссылка, расход в месяц и заметка. Сохраняется в этом браузере.</div>
-      <div class="cc-form" style="grid-template-columns:1fr 1.2fr 0.8fr 1.2fr auto;">
-        <div class="cc-field">
-          <label>Платформа</label>
-          <input type="text" id="snName" placeholder="Например: Instagram">
-        </div>
-        <div class="cc-field">
-          <label>Ссылка / логин</label>
-          <input type="text" id="snLink" placeholder="@ober_stroy">
-        </div>
-        <div class="cc-field">
-          <label>Расход/мес, ₽</label>
-          <input type="number" id="snSpend" min="0" step="1000" placeholder="0">
-        </div>
-        <div class="cc-field">
-          <label>Заметка</label>
-          <input type="text" id="snNote" placeholder="Например: ведёт агентство">
-        </div>
-        <button class="cc-add-btn" onclick="addSocial()">+ Добавить</button>
-      </div>
-      <div id="snContent"></div>
-      <div class="cc-note">Данные сохраняются в этом браузере (localStorage) — на других устройствах список нужно будет ввести заново.</div>
-    </div>
-  </div>
-</section>
-
 <!-- ================= DETAILED REPORT ================= -->
 <section id="report">
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="sec-eyebrow">06 · Аналитика</div>
+        <div class="sec-eyebrow">05 · Аналитика</div>
         <div class="sec-title">Подробный отчёт</div>
       </div>
     </div>
@@ -597,7 +606,7 @@
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="sec-eyebrow">07 · План действий</div>
+        <div class="sec-eyebrow">06 · План действий</div>
         <div class="sec-title">Роадмап на второе полугодие 2026</div>
       </div>
       <div class="sec-note">Июль – декабрь 2026. Целевой бюджет: 450 000 ₽/мес · 2 700 000 ₽ на полгода — распределите его по статьям ниже.</div>
@@ -605,29 +614,98 @@
 
     <div class="card" style="margin-bottom:16px;" id="rmBudgetCard"></div>
 
+    <div class="cc-bulk-row">
+      <input type="checkbox" id="ccBulkToggle" onchange="toggleBulkMode()">
+      <label for="ccBulkToggle">Одна сумма сразу на все 6 месяцев</label>
+    </div>
     <div class="cc-form">
       <div class="cc-field" style="grid-column:span 1;">
         <label>Название статьи</label>
         <input type="text" id="ccName" placeholder="Например: SMM-продвижение">
       </div>
-      <div class="cc-field"><label>Июл</label><input type="number" id="ccM0" min="0" step="1000" placeholder="0"></div>
-      <div class="cc-field"><label>Авг</label><input type="number" id="ccM1" min="0" step="1000" placeholder="0"></div>
-      <div class="cc-field"><label>Сен</label><input type="number" id="ccM2" min="0" step="1000" placeholder="0"></div>
-      <div class="cc-field"><label>Окт</label><input type="number" id="ccM3" min="0" step="1000" placeholder="0"></div>
-      <div class="cc-field"><label>Ноя</label><input type="number" id="ccM4" min="0" step="1000" placeholder="0"></div>
-      <div class="cc-field"><label>Дек</label><input type="number" id="ccM5" min="0" step="1000" placeholder="0"></div>
+      <div id="ccMonthsFields" style="display:contents;">
+        <div class="cc-field"><label>Июл</label><input type="number" id="ccM0" min="0" step="1000" placeholder="0"></div>
+        <div class="cc-field"><label>Авг</label><input type="number" id="ccM1" min="0" step="1000" placeholder="0"></div>
+        <div class="cc-field"><label>Сен</label><input type="number" id="ccM2" min="0" step="1000" placeholder="0"></div>
+        <div class="cc-field"><label>Окт</label><input type="number" id="ccM3" min="0" step="1000" placeholder="0"></div>
+        <div class="cc-field"><label>Ноя</label><input type="number" id="ccM4" min="0" step="1000" placeholder="0"></div>
+        <div class="cc-field"><label>Дек</label><input type="number" id="ccM5" min="0" step="1000" placeholder="0"></div>
+      </div>
+      <div class="cc-field" id="ccBulkField" style="display:none; grid-column:span 6;">
+        <label>Сумма/мес на все полгода</label>
+        <input type="number" id="ccBulkValue" min="0" step="1000" placeholder="0">
+      </div>
       <button class="cc-add-btn" onclick="addCustomCategory()">+ Добавить</button>
     </div>
 
     <div id="ccContent"></div>
-    <div class="cc-note">Строки ниже (реклама на ТВ, у блогеров, видеоролики) — стартовые, отредактируйте или удалите их и добавляйте свои. Всё сохраняется прямо в браузере на этом устройстве (localStorage) — при открытии файла позже данные останутся на месте. Если откроете с другого устройства, список нужно будет ввести заново.</div>
+    <div class="cc-note">Строки ниже — стартовые (продолжение статей из 2025 года плюс новые на 2026-й), отредактируйте, удалите или добавляйте свои. Всё сохраняется прямо в браузере на этом устройстве (localStorage) — при открытии файла позже данные останутся на месте. Если откроете с другого устройства, список нужно будет ввести заново.</div>
   </div>
 </section>
 
+</div><!-- /page-finance -->
+
+<!-- ================= STATS PAGE ================= -->
+<div class="page-pane" id="page-stats">
+<section id="matrix">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">01 · Полная разбивка</div>
+        <div class="sec-title">Расход по каждой категории за каждый месяц</div>
+      </div>
+      <div class="sec-note">Фактические суммы (не средние) по всем 17 статьям и 12 месяцам 2025 года, из бухгалтерской выгрузки.</div>
+    </div>
+    <div class="card reveal">
+      <div class="cc-table-wrap">
+        <table class="cc-table matrix-table">
+          <thead>
+            <tr>
+              <th>Статья расходов</th>
+              <th>Янв</th><th>Фев</th><th>Мар</th><th>Апр</th><th>Май</th><th>Июн</th>
+              <th>Июл</th><th>Авг</th><th>Сен</th><th>Окт</th><th>Ноя</th><th>Дек</th>
+              <th>Итого</th>
+            </tr>
+          </thead>
+          <tbody id="matrixTableBody"></tbody>
+          <tfoot id="matrixTableFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="card reveal" style="margin-top:16px;">
+      <div class="card-title">02 · Мои социальные сети</div>
+      <div class="card-desc">Добавьте площадки, где ведётся продвижение — ссылка, расход в месяц и заметка. Сохраняется в этом браузере.</div>
+      <div class="cc-form" style="grid-template-columns:1fr 1.2fr 0.8fr 1.2fr auto;">
+        <div class="cc-field">
+          <label>Платформа</label>
+          <input type="text" id="snName" placeholder="Например: Instagram">
+        </div>
+        <div class="cc-field">
+          <label>Ссылка / логин</label>
+          <input type="text" id="snLink" placeholder="@ober_stroy">
+        </div>
+        <div class="cc-field">
+          <label>Расход/мес, ₽</label>
+          <input type="number" id="snSpend" min="0" step="1000" placeholder="0">
+        </div>
+        <div class="cc-field">
+          <label>Заметка</label>
+          <input type="text" id="snNote" placeholder="Например: ведёт агентство">
+        </div>
+        <button class="cc-add-btn" onclick="addSocial()">+ Добавить</button>
+      </div>
+      <div id="snContent"></div>
+      <div class="cc-note">Данные сохраняются в этом браузере (localStorage) — на других устройствах список нужно будет ввести заново.</div>
+    </div>
+  </div>
+</section>
+</div><!-- /page-stats -->
+
 <footer>
   <div class="wrap">
-    <div class="f-text">Маркетинг «Обер» · Финансовый дашборд · период 01.01.2025 – 31.12.2025</div>
-    <div class="f-text mono">Сформировано июль 2026</div>
+    <div class="f-text">Обер · Маркетинг · финансы, статистика и планирование</div>
+    <div class="f-text mono">Обновлено июль 2026</div>
   </div>
 </footer>
 
@@ -648,6 +726,22 @@ function showErrorBanner(text){
   b.textContent = 'Ошибка на странице: ' + text + ' (страница всё равно должна частично работать ниже)';
   document.body.insertBefore(b, document.body.firstChild);
 }
+
+window.switchPage = function(page){
+  document.querySelectorAll('.page-tab-btn').forEach(b=> b.classList.toggle('active', b.dataset.page===page));
+  document.querySelectorAll('.page-pane').forEach(p=> p.classList.remove('active'));
+  const target = document.getElementById('page-'+page);
+  if(!target) return;
+  target.classList.add('active');
+  window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+  // display:none hides elements from IntersectionObserver, so force-reveal on first visit to this page
+  target.querySelectorAll('.reveal:not(.revealed)').forEach(el=>{
+    el.classList.add('revealed');
+    el.querySelectorAll('[data-count]').forEach(c => typeof animateCounter === 'function' && animateCounter(c));
+  });
+  if(typeof growBars === 'function') growBars();
+  if(typeof growDonut === 'function') growDonut();
+};
 
 try{
 
@@ -897,21 +991,32 @@ function setDonutHover(i){
 
 // ---------- Custom categories tool (add your own H2 2026 budget lines) ----------
 const CC_MONTHS = ['Июл','Авг','Сен','Окт','Ноя','Дек'];
-const CC_STORAGE_KEY = 'ober-roadmap-custom-categories-h2-2026-v2';
+const CC_STORAGE_KEY = 'ober-roadmap-custom-categories-h2-2026-v3';
 const CC_BUDGET_MONTHLY = 450000;
 const CC_BUDGET_TOTAL = CC_BUDGET_MONTHLY * 6;
+const CC_VIDEO_OVERRIDE = 50000; // план на 2026 выше, чем факт 2025 года
+
+function ccDefaultSeed(){
+  // Продолжаем все 17 статей 2025 года по их среднемесячной сумме
+  const fromHistory = DATA.categories.map(c=>{
+    let monthly = Math.round((c.total/12)/100)*100;
+    if(c.name === 'Изготовление видеоролика') monthly = CC_VIDEO_OVERRIDE;
+    return { name:c.name, values:Array(6).fill(monthly) };
+  });
+  // Плюс новые статьи, которых не было в 2025 году
+  const brandNew = [
+    { name:'Реклама на телевидении', values:[220000,220000,220000,220000,220000,220000] },
+    { name:'Реклама у блогеров (SMM)', values:[125000,125000,125000,125000,125000,125000] }
+  ];
+  return [...brandNew, ...fromHistory].sort((a,b)=> (b.values[0]||0) - (a.values[0]||0));
+}
 
 function ccLoad(){
   try{
     const raw = localStorage.getItem(CC_STORAGE_KEY);
     if(raw) return JSON.parse(raw);
   }catch(e){}
-  // Стартовые статьи по умолчанию — отредактируйте или удалите
-  return [
-    { name:'Реклама на телевидении', values:[220000,220000,220000,220000,220000,220000] },
-    { name:'Реклама у блогеров (SMM)', values:[125000,125000,125000,125000,125000,125000] },
-    { name:'Изготовление видеороликов', values:[50000,50000,50000,50000,50000,50000] }
-  ];
+  return ccDefaultSeed();
 }
 function ccSave(list){
   try{ localStorage.setItem(CC_STORAGE_KEY, JSON.stringify(list)); }catch(e){}
@@ -919,18 +1024,35 @@ function ccSave(list){
 
 let ccList = ccLoad();
 
+window.toggleBulkMode = function(){
+  const bulk = document.getElementById('ccBulkToggle').checked;
+  document.getElementById('ccMonthsFields').style.display = bulk ? 'none' : 'contents';
+  const bulkField = document.getElementById('ccBulkField');
+  bulkField.style.display = bulk ? 'flex' : 'none';
+  if(bulk) bulkField.classList.add('cc-fade-in');
+  else bulkField.classList.remove('cc-fade-in');
+};
+
 window.addCustomCategory = function(){
   const nameEl = document.getElementById('ccName');
   const name = nameEl.value.trim();
   if(!name){ nameEl.focus(); nameEl.style.borderColor = 'var(--red)'; setTimeout(()=>nameEl.style.borderColor='',900); return; }
-  const values = [0,1,2,3,4,5].map(i => {
-    const v = parseFloat(document.getElementById('ccM'+i).value);
-    return isNaN(v) ? 0 : v;
-  });
+  const bulk = document.getElementById('ccBulkToggle').checked;
+  let values;
+  if(bulk){
+    const v = parseFloat(document.getElementById('ccBulkValue').value);
+    values = Array(6).fill(isNaN(v) ? 0 : v);
+  } else {
+    values = [0,1,2,3,4,5].map(i => {
+      const v = parseFloat(document.getElementById('ccM'+i).value);
+      return isNaN(v) ? 0 : v;
+    });
+  }
   ccList.push({ name, values });
   ccSave(ccList);
   nameEl.value = '';
   [0,1,2,3,4,5].forEach(i => document.getElementById('ccM'+i).value = '');
+  document.getElementById('ccBulkValue').value = '';
   renderCustomCategories();
   nameEl.focus();
 };
