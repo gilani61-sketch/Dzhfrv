@@ -782,67 +782,36 @@
     <div class="sec-head">
       <div>
         <div class="sec-eyebrow">01 · Статистика</div>
-        <div class="sec-title">Аккаунты и социальные сети</div>
+        <div class="sec-title">Мои социальные сети</div>
       </div>
-      <div class="sec-note">Площадки продвижения, расход в месяц и заметки — не связано с финансовым отчётом.</div>
+      <div class="sec-note">Заявки в директ / сообщения по месяцам — Instagram, Авито, 2ГИС, Яндекс и другие каналы. Не связано с финансовым отчётом.</div>
     </div>
+
     <div class="card reveal">
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
         <div>
           <div class="card-title">Мои социальные сети</div>
-          <div class="card-desc" style="margin-bottom:0;">Добавьте площадки, где ведётся продвижение — ссылка, расход в месяц и заметка. Сохраняется в этом браузере.</div>
-        </div>
-        <button class="cc-undo-btn" id="snUndoBtn" onclick="snUndo()" disabled title="Отменить последнее действие">↶ Отменить</button>
-      </div>
-      <div style="height:14px;"></div>
-      <div class="cc-form" style="grid-template-columns:1fr 1.2fr 0.8fr 1.2fr auto;">
-        <div class="cc-field">
-          <label>Платформа</label>
-          <input type="text" id="snName" placeholder="Например: Instagram">
-        </div>
-        <div class="cc-field">
-          <label>Ссылка / логин</label>
-          <input type="text" id="snLink" placeholder="@ober_stroy">
-        </div>
-        <div class="cc-field">
-          <label>Расход/мес, ₽</label>
-          <input type="number" id="snSpend" min="0" step="1000" placeholder="0">
-        </div>
-        <div class="cc-field">
-          <label>Заметка</label>
-          <input type="text" id="snNote" placeholder="Например: ведёт агентство">
-        </div>
-        <button class="cc-add-btn" onclick="addSocial()">+ Добавить</button>
-      </div>
-      <div id="snContent"></div>
-      <div id="snDeletedLog"></div>
-      <div class="cc-note">Данные сохраняются в этом браузере (localStorage) — на других устройствах список нужно будет ввести заново.</div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= LEADS BY CHANNEL ================= -->
-<section id="leads-section" style="border-bottom:none;">
-  <div class="wrap">
-    <div class="sec-head">
-      <div>
-        <div class="sec-eyebrow">02 · Заявки</div>
-        <div class="sec-title">Заявки по каналам</div>
-      </div>
-      <div class="sec-note">Количество заявок в директ / сообщения по месяцам — Instagram, Авито, 2ГИС, Яндекс и другие каналы.</div>
-    </div>
-
-    <div class="card reveal">
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-        <div>
-          <div class="card-title">Мои каналы заявок</div>
           <div class="card-desc" style="margin-bottom:0;">Добавьте канал и число заявок за месяц — таблица редактируется прямо в ячейках.</div>
         </div>
-        <div style="display:flex; gap:8px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="cc-undo-btn" onclick="toggleLdImport()" title="Вставить данные из Google Таблиц или текстом">📋 Загрузить данные</button>
           <button class="cc-undo-btn" onclick="ldRestoreMissingDefaults()" title="Вернуть стандартные каналы, если пропали">↺ Вернуть каналы</button>
           <button class="cc-undo-btn" id="ldUndoBtn" onclick="ldUndo()" disabled title="Отменить последнее действие">↶ Отменить</button>
         </div>
       </div>
+
+      <div id="ldImportPanel" style="display:none; margin-top:14px;">
+        <label style="font-size:10.5px; color:var(--ink-mute); text-transform:uppercase; letter-spacing:0.04em; display:block; margin-bottom:6px;">
+          Вставьте данные из Google Таблиц (скопируйте ячейки — Ctrl/Cmd+C — и вставьте сюда) или текстом
+        </label>
+        <textarea id="ldImportText" rows="5" placeholder="Instagram	12	18	9	0	0	0&#10;Авито	5	7	4	0	0	0" style="width:100%; background:var(--bg-alt); border:1px solid var(--line); border-radius:8px; padding:10px; color:var(--ink); font-family:'JetBrains Mono'; font-size:12.5px; resize:vertical;"></textarea>
+        <div class="cc-note" style="margin-top:6px;">Формат: строка на канал. Первая ячейка — название канала, дальше — числа по месяцам подряд, начиная с января (через табуляцию или запятую). Существующий канал с таким же названием обновится, новый — добавится.</div>
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button class="cc-add-btn" onclick="importLdData()">Импортировать</button>
+          <button class="cc-undo-btn" onclick="toggleLdImport()">Отмена</button>
+        </div>
+      </div>
+
       <div style="height:14px;"></div>
       <div class="cc-form" style="grid-template-columns:1.4fr 1fr 1fr auto;">
         <div class="cc-field">
@@ -1448,137 +1417,6 @@ function renderCustomCategories(){
 
 renderCustomCategories();
 
-// ---------- Social networks tool ----------
-const SN_STORAGE_KEY = 'ober-social-networks';
-
-function snLoad(){
-  try{
-    const raw = localStorage.getItem(SN_STORAGE_KEY);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  return [];
-}
-function snSave(list){
-  try{ localStorage.setItem(SN_STORAGE_KEY, JSON.stringify(list)); }catch(e){}
-}
-
-let snList = snLoad();
-let snUndoStack = [];
-const SN_DELETED_KEY = 'ober-social-deleted-log';
-let snDeletedLog = (function(){
-  try{ const raw = localStorage.getItem(SN_DELETED_KEY); if(raw) return JSON.parse(raw); }catch(e){}
-  return [];
-})();
-
-function snSaveDeletedLog(){
-  try{ localStorage.setItem(SN_DELETED_KEY, JSON.stringify(snDeletedLog)); }catch(e){}
-}
-
-function snPushUndo(){
-  snUndoStack.push(JSON.parse(JSON.stringify(snList)));
-  if(snUndoStack.length > 15) snUndoStack.shift();
-  const btn = document.getElementById('snUndoBtn');
-  if(btn) btn.disabled = snUndoStack.length === 0;
-}
-
-window.snUndo = function(){
-  if(snUndoStack.length === 0) return;
-  snList = snUndoStack.pop();
-  snSave(snList);
-  renderSocial();
-};
-
-window.snRestoreDeleted = function(logIdx){
-  const item = snDeletedLog[logIdx];
-  if(!item) return;
-  snPushUndo();
-  const { deletedAt, ...clean } = item;
-  snList.push(clean);
-  snSave(snList);
-  snDeletedLog.splice(logIdx,1);
-  snSaveDeletedLog();
-  renderSocial();
-};
-
-function renderSnDeletedLog(){
-  const el = document.getElementById('snDeletedLog');
-  if(!el) return;
-  if(snDeletedLog.length === 0){ el.innerHTML = ''; return; }
-  el.innerHTML = `
-    <div class="cc-deleted-title">Недавно удалённые площадки</div>
-    <div class="cc-deleted-list">
-      ${snDeletedLog.map((item,i)=>`
-        <div class="cc-deleted-item">
-          <span>${escapeHtml(item.name)}</span>
-          <button class="cc-restore-btn" onclick="snRestoreDeleted(${i})">↺ Восстановить</button>
-        </div>`).join('')}
-    </div>`;
-}
-
-window.addSocial = function(){
-  const nameEl = document.getElementById('snName');
-  const name = nameEl.value.trim();
-  if(!name){ nameEl.focus(); nameEl.style.borderColor = 'var(--red)'; setTimeout(()=>nameEl.style.borderColor='',900); return; }
-  const link = document.getElementById('snLink').value.trim();
-  const spendRaw = parseFloat(document.getElementById('snSpend').value);
-  const spend = isNaN(spendRaw) ? 0 : spendRaw;
-  const note = document.getElementById('snNote').value.trim();
-  snPushUndo();
-  snList.push({ name, link, spend, note });
-  snSave(snList);
-  nameEl.value = '';
-  document.getElementById('snLink').value = '';
-  document.getElementById('snSpend').value = '';
-  document.getElementById('snNote').value = '';
-  renderSocial();
-  nameEl.focus();
-};
-
-window.removeSocial = function(idx){
-  const item = snList[idx];
-  if(!item) return;
-  if(!confirm(`Удалить площадку «${item.name}»?`)) return;
-  snPushUndo();
-  snList.splice(idx,1);
-  snSave(snList);
-  snDeletedLog.unshift({ ...item, deletedAt:Date.now() });
-  if(snDeletedLog.length > 15) snDeletedLog.length = 15;
-  snSaveDeletedLog();
-  renderSocial();
-};
-
-function renderSocial(){
-  const btn = document.getElementById('snUndoBtn');
-  if(btn) btn.disabled = snUndoStack.length === 0;
-  renderSnDeletedLog();
-  const el = document.getElementById('snContent');
-  if(snList.length === 0){
-    el.innerHTML = '<div class="cc-empty">Пока нет добавленных площадок. Заполните форму выше.</div>';
-    return;
-  }
-  const total = snList.reduce((s,c)=> s + (c.spend||0), 0);
-  const rows = snList.map((c,idx)=> `
-    <tr>
-      <td class="cc-wrap">${c.name} <button class="cc-del" onclick="removeSocial(${idx})" title="Удалить">✕</button></td>
-      <td class="cc-wrap" style="text-align:left;">${c.link ? c.link : '—'}</td>
-      <td class="num">${c.spend ? fmt(c.spend)+' ₽' : '—'}</td>
-      <td class="cc-wrap" style="text-align:left;">${c.note ? c.note : '—'}</td>
-    </tr>`).join('');
-  el.innerHTML = `
-    <div class="cc-table-wrap">
-      <table class="cc-table">
-        <thead>
-          <tr><th>Платформа</th><th style="text-align:left;">Ссылка / логин</th><th>Расход/мес</th><th style="text-align:left;">Заметка</th></tr>
-        </thead>
-        <tbody>${rows}</tbody>
-        <tfoot>
-          <tr><td>Итого расход/мес</td><td></td><td class="num">${fmt(total)} ₽</td><td></td></tr>
-        </tfoot>
-      </table>
-    </div>`;
-}
-
-renderSocial();
 
 // ---------- Leads by channel tool ----------
 const LEADS_MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -1633,6 +1471,48 @@ window.ldRestoreMissingDefaults = function(){
   ldSave(ldList);
   renderLeads();
   alert('Добавлено каналов: ' + missing.length + ' (' + missing.map(m=>m.name).join(', ') + ')');
+};
+
+window.toggleLdImport = function(){
+  const panel = document.getElementById('ldImportPanel');
+  const show = panel.style.display === 'none';
+  panel.style.display = show ? 'block' : 'none';
+  if(show) document.getElementById('ldImportText').focus();
+};
+
+window.importLdData = function(){
+  const raw = document.getElementById('ldImportText').value;
+  if(!raw.trim()){ return; }
+  const lines = raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
+  const parsedRows = [];
+  lines.forEach(line=>{
+    const cells = (line.includes('\t') ? line.split('\t') : line.split(',')).map(c=>c.trim()).filter((c,i)=> i===0 || c!=='');
+    if(cells.length < 1) return;
+    const name = cells[0];
+    if(!name) return;
+    const nums = cells.slice(1).map(v => {
+      const n = parseFloat(v.replace(/\s/g,'').replace(',', '.'));
+      return isNaN(n) ? 0 : n;
+    });
+    // skip an obvious header row (e.g. "Канал, Январь, Февраль…" with no numbers at all)
+    if(cells.length > 1 && nums.every(n=>n===0) && cells.slice(1).some(v=>!/^-?\d/.test(v))) return;
+    const values = Array(12).fill(0);
+    nums.slice(0,12).forEach((n,i)=> values[i]=n);
+    parsedRows.push({ name, values });
+  });
+  if(parsedRows.length === 0){ alert('Не удалось распознать данные — проверьте формат.'); return; }
+
+  ldPushUndo();
+  parsedRows.forEach(row=>{
+    const existingIdx = ldList.findIndex(c => c.name.toLowerCase() === row.name.toLowerCase());
+    if(existingIdx >= 0) ldList[existingIdx].values = row.values;
+    else ldList.push(row);
+  });
+  ldSave(ldList);
+  document.getElementById('ldImportText').value = '';
+  document.getElementById('ldImportPanel').style.display = 'none';
+  renderLeads();
+  alert('Импортировано строк: ' + parsedRows.length);
 };
 
 window.addLead = function(){
