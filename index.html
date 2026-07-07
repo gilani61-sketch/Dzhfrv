@@ -464,7 +464,7 @@
         <div class="home-card" onclick="switchPage('finance')">
           <div class="hc-icon" style="--hc-accent:var(--amber)">₽</div>
           <h3>Финансы</h3>
-          <p>Бюджет 2025 года, динамика по месяцам, структура расходов, аналитика и роадмап на второе полугодие 2026 с целевым бюджетом.</p>
+          <p>Бюджет 2025 года, динамика по месяцам, структура расходов, аналитика и Roadmap на второе полугодие 2026 с целевым бюджетом.</p>
           <div class="hc-arrow">Открыть →</div>
         </div>
         <div class="home-card" onclick="switchPage('stats')">
@@ -485,7 +485,7 @@
 <div class="wrap" style="padding-top:24px;">
   <div class="page-tabs year-tabs">
     <button class="page-tab-btn year-tab-btn active" data-year="2025" onclick="switchYear('2025')">2025 · Отчёт</button>
-    <button class="page-tab-btn year-tab-btn" data-year="2026" onclick="switchYear('2026')">2026 · Бюджет и роадмап</button>
+    <button class="page-tab-btn year-tab-btn" data-year="2026" onclick="switchYear('2026')">2026 · Бюджет и Roadmap</button>
   </div>
 </div>
 
@@ -730,7 +730,7 @@
     <div class="sec-head">
       <div>
         <div class="sec-eyebrow">01 · План действий</div>
-        <div class="sec-title">Роадмап на второе полугодие 2026</div>
+        <div class="sec-title">Roadmap на второе полугодие 2026</div>
       </div>
       <div class="sec-note">Июль – декабрь 2026. Целевой бюджет: 450 000 ₽/мес · 2 700 000 ₽ на полгода — распределите его по статьям ниже.</div>
     </div>
@@ -794,10 +794,11 @@
           <div class="card-desc" style="margin-bottom:0;">Добавьте канал и число заявок за месяц — таблица редактируется прямо в ячейках.</div>
         </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="cc-undo-btn" onclick="toggleLdImport()" title="Вставить данные из Google Таблиц или текстом">📋 Загрузить данные</button>
-          <button class="cc-undo-btn" onclick="ldRestoreMissingDefaults()" title="Вернуть стандартные каналы, если пропали">↺ Вернуть каналы</button>
+          <button class="cc-undo-btn" onclick="document.getElementById('ldFileInput').click()" title="Загрузить файл Excel/CSV — распознается автоматически">📁 Загрузить файл</button>
+          <button class="cc-undo-btn" onclick="toggleLdImport()" title="Вставить данные из Google Таблиц или текстом">📋 Вставить текст</button>
           <button class="cc-undo-btn" id="ldUndoBtn" onclick="ldUndo()" disabled title="Отменить последнее действие">↶ Отменить</button>
         </div>
+        <input type="file" id="ldFileInput" accept=".xlsx,.xls,.csv,.txt,.tsv" style="display:none;" onchange="handleLdFile(event)">
       </div>
 
       <div id="ldImportPanel" style="display:none; margin-top:14px;">
@@ -843,7 +844,7 @@
       </div>
       <div id="ldContent"></div>
       <div id="ldDeletedLog"></div>
-      <div class="cc-note">Заявка добавится в выбранный месяц — остальные месяцы можно дозаполнить прямо в таблице. Данные сохраняются в этом браузере (localStorage).</div>
+      <div class="cc-note">Проще всего — «📁 Загрузить файл» (Excel/CSV) или «📋 Вставить текст», данные распознаются автоматически. Форма ниже — для добавления одной строки вручную. Данные сохраняются в этом браузере (localStorage).</div>
     </div>
 
     <div class="card reveal" style="margin-top:16px;">
@@ -877,6 +878,7 @@
   </div>
 </footer>
 
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <script>
 window.addEventListener('error', function(e){
   try{
@@ -910,7 +912,7 @@ function showStorageWarning(){
   const b = document.createElement('div');
   b.id = 'storage-warning-banner';
   b.style.cssText = 'position:fixed; bottom:16px; left:16px; right:16px; z-index:9998; max-width:640px; margin:0 auto; background:#3a2a14; color:#ffd9a8; font-size:13px; padding:14px 18px; border-radius:12px; border:1px solid #6b4a1e; box-shadow:0 10px 30px rgba(0,0,0,0.4);';
-  b.innerHTML = 'Браузер не сохраняет изменения на этом сайте (localStorage недоступен — возможно, включён приватный режим или запрещено хранение данных сайтов). Всё, что вы добавите или удалите в «Роадмапе» и «Статистике», <b>пропадёт после перезагрузки страницы</b>. Отключите приватный режим или разрешите хранение данных для этого сайта. <span style="cursor:pointer; text-decoration:underline; margin-left:8px;" onclick="this.parentElement.remove()">Скрыть</span>';
+  b.innerHTML = 'Браузер не сохраняет изменения на этом сайте (localStorage недоступен — возможно, включён приватный режим или запрещено хранение данных сайтов). Всё, что вы добавите или удалите в «Roadmap» и «Статистике», <b>пропадёт после перезагрузки страницы</b>. Отключите приватный режим или разрешите хранение данных для этого сайта. <span style="cursor:pointer; text-decoration:underline; margin-left:8px;" onclick="this.parentElement.remove()">Скрыть</span>';
   document.body.appendChild(b);
 }
 
@@ -1420,17 +1422,12 @@ renderCustomCategories();
 
 // ---------- Leads by channel tool ----------
 const LEADS_MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-const LD_STORAGE_KEY = 'ober-leads-by-channel';
+const LD_STORAGE_KEY = 'ober-leads-by-channel-v2';
 const LD_DELETED_KEY = 'ober-leads-deleted-log';
 const LD_PALETTE = ["#F47721","#4DA8FF","#3ECF8E","#9B8CFF","#FFC24D","#FF6B6B","#4DD4D4","#C792EA"];
 
 function ldDefaultSeed(){
-  return [
-    { name:'Instagram', values:Array(12).fill(0) },
-    { name:'Авито', values:Array(12).fill(0) },
-    { name:'2ГИС', values:Array(12).fill(0) },
-    { name:'Яндекс', values:Array(12).fill(0) }
-  ];
+  return [];
 }
 
 function ldLoad(){
@@ -1461,18 +1458,6 @@ window.ldUndo = function(){
   renderLeads();
 };
 
-window.ldRestoreMissingDefaults = function(){
-  const defaults = ldDefaultSeed();
-  const existingNames = new Set(ldList.map(c=>c.name));
-  const missing = defaults.filter(d => !existingNames.has(d.name));
-  if(missing.length === 0){ alert('Все стандартные каналы уже на месте.'); return; }
-  ldPushUndo();
-  ldList = [...ldList, ...missing];
-  ldSave(ldList);
-  renderLeads();
-  alert('Добавлено каналов: ' + missing.length + ' (' + missing.map(m=>m.name).join(', ') + ')');
-};
-
 window.toggleLdImport = function(){
   const panel = document.getElementById('ldImportPanel');
   const show = panel.style.display === 'none';
@@ -1480,28 +1465,33 @@ window.toggleLdImport = function(){
   if(show) document.getElementById('ldImportText').focus();
 };
 
-window.importLdData = function(){
-  const raw = document.getElementById('ldImportText').value;
-  if(!raw.trim()){ return; }
-  const lines = raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
+function rowsFromLines(raw){
+  return raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0)
+    .map(line => line.includes('\t') ? line.split('\t') : line.split(','));
+}
+
+function parseAOAToLeads(aoa){
   const parsedRows = [];
-  lines.forEach(line=>{
-    const cells = (line.includes('\t') ? line.split('\t') : line.split(',')).map(c=>c.trim()).filter((c,i)=> i===0 || c!=='');
+  aoa.forEach(cellsRaw=>{
+    const cells = cellsRaw.map(c => (c===undefined || c===null) ? '' : String(c).trim()).filter((c,i)=> i===0 || c!=='');
     if(cells.length < 1) return;
     const name = cells[0];
     if(!name) return;
     const nums = cells.slice(1).map(v => {
-      const n = parseFloat(v.replace(/\s/g,'').replace(',', '.'));
+      const n = parseFloat(String(v).replace(/\s/g,'').replace(',', '.'));
       return isNaN(n) ? 0 : n;
     });
     // skip an obvious header row (e.g. "Канал, Январь, Февраль…" with no numbers at all)
-    if(cells.length > 1 && nums.every(n=>n===0) && cells.slice(1).some(v=>!/^-?\d/.test(v))) return;
+    if(cells.length > 1 && nums.every(n=>n===0) && cells.slice(1).some(v=>!/^-?\d/.test(String(v)))) return;
     const values = Array(12).fill(0);
     nums.slice(0,12).forEach((n,i)=> values[i]=n);
     parsedRows.push({ name, values });
   });
-  if(parsedRows.length === 0){ alert('Не удалось распознать данные — проверьте формат.'); return; }
+  return parsedRows;
+}
 
+function applyParsedLeadsRows(parsedRows){
+  if(parsedRows.length === 0){ alert('Не удалось распознать данные — проверьте формат файла.'); return; }
   ldPushUndo();
   parsedRows.forEach(row=>{
     const existingIdx = ldList.findIndex(c => c.name.toLowerCase() === row.name.toLowerCase());
@@ -1509,10 +1499,47 @@ window.importLdData = function(){
     else ldList.push(row);
   });
   ldSave(ldList);
-  document.getElementById('ldImportText').value = '';
-  document.getElementById('ldImportPanel').style.display = 'none';
   renderLeads();
   alert('Импортировано строк: ' + parsedRows.length);
+}
+
+window.importLdData = function(){
+  const raw = document.getElementById('ldImportText').value;
+  if(!raw.trim()){ return; }
+  const parsedRows = parseAOAToLeads(rowsFromLines(raw));
+  document.getElementById('ldImportText').value = '';
+  document.getElementById('ldImportPanel').style.display = 'none';
+  applyParsedLeadsRows(parsedRows);
+};
+
+window.handleLdFile = function(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  if(ext === 'csv' || ext === 'txt' || ext === 'tsv'){
+    const reader = new FileReader();
+    reader.onload = e => applyParsedLeadsRows(parseAOAToLeads(rowsFromLines(e.target.result)));
+    reader.readAsText(file, 'UTF-8');
+  } else {
+    if(typeof XLSX === 'undefined'){
+      alert('Не удалось загрузить библиотеку для чтения Excel-файлов — проверьте подключение к интернету и попробуйте снова, либо сохраните файл как .csv.');
+      event.target.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      try{
+        const wb = XLSX.read(e.target.result, { type:'array' });
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const aoa = XLSX.utils.sheet_to_json(sheet, { header:1, raw:false, defval:'' });
+        applyParsedLeadsRows(parseAOAToLeads(aoa));
+      }catch(err){
+        alert('Не удалось прочитать файл: ' + err.message);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+  event.target.value = '';
 };
 
 window.addLead = function(){
