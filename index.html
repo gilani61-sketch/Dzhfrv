@@ -820,6 +820,85 @@
     </div>
   </div>
 </section>
+
+<!-- ================= LEADS BY CHANNEL ================= -->
+<section id="leads-section" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">02 · Заявки</div>
+        <div class="sec-title">Заявки по каналам</div>
+      </div>
+      <div class="sec-note">Количество заявок в директ / сообщения по месяцам — Instagram, Авито, 2ГИС, Яндекс и другие каналы.</div>
+    </div>
+
+    <div class="card reveal">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+        <div>
+          <div class="card-title">Мои каналы заявок</div>
+          <div class="card-desc" style="margin-bottom:0;">Добавьте канал и число заявок за месяц — таблица редактируется прямо в ячейках.</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="cc-undo-btn" onclick="ldRestoreMissingDefaults()" title="Вернуть стандартные каналы, если пропали">↺ Вернуть каналы</button>
+          <button class="cc-undo-btn" id="ldUndoBtn" onclick="ldUndo()" disabled title="Отменить последнее действие">↶ Отменить</button>
+        </div>
+      </div>
+      <div style="height:14px;"></div>
+      <div class="cc-form" style="grid-template-columns:1.4fr 1fr 1fr auto;">
+        <div class="cc-field">
+          <label>Канал</label>
+          <input type="text" id="ldName" placeholder="Например: Telegram">
+        </div>
+        <div class="cc-field">
+          <label>Месяц</label>
+          <select id="ldMonthSelect">
+            <option value="0">Январь</option>
+            <option value="1">Февраль</option>
+            <option value="2">Март</option>
+            <option value="3">Апрель</option>
+            <option value="4">Май</option>
+            <option value="5">Июнь</option>
+            <option value="6">Июль</option>
+            <option value="7">Август</option>
+            <option value="8">Сентябрь</option>
+            <option value="9">Октябрь</option>
+            <option value="10">Ноябрь</option>
+            <option value="11">Декабрь</option>
+          </select>
+        </div>
+        <div class="cc-field">
+          <label>Заявок</label>
+          <input type="number" id="ldAmount" min="0" step="1" placeholder="0">
+        </div>
+        <button class="cc-add-btn" onclick="addLead()">+ Добавить</button>
+      </div>
+      <div id="ldContent"></div>
+      <div id="ldDeletedLog"></div>
+      <div class="cc-note">Заявка добавится в выбранный месяц — остальные месяцы можно дозаполнить прямо в таблице. Данные сохраняются в этом браузере (localStorage).</div>
+    </div>
+
+    <div class="card reveal" style="margin-top:16px;">
+      <div class="card-title">Динамика заявок по месяцам</div>
+      <div class="card-desc">Сумма заявок по всем каналам за каждый месяц.</div>
+      <div class="bars-chart" id="ldBarsChart"></div>
+    </div>
+
+    <div class="card reveal" style="margin-top:16px;">
+      <div class="card-title">Структура заявок по каналам</div>
+      <div class="card-desc">Доля каждого канала в общем количестве заявок.</div>
+      <div class="donut-wrap">
+        <div class="donut-center">
+          <svg viewBox="0 0 100 100" class="donut-svg" id="ldDonutSvg"></svg>
+          <div class="donut-center-label">
+            <div class="n mono" id="ldDonutTotal">0</div>
+            <div class="t">заявок<br>всего</div>
+          </div>
+        </div>
+        <div class="rank-list" id="ldRankList"></div>
+      </div>
+    </div>
+  </div>
+</section>
 </div><!-- /page-stats -->
 
 <footer>
@@ -1500,6 +1579,262 @@ function renderSocial(){
 }
 
 renderSocial();
+
+// ---------- Leads by channel tool ----------
+const LEADS_MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const LD_STORAGE_KEY = 'ober-leads-by-channel';
+const LD_DELETED_KEY = 'ober-leads-deleted-log';
+const LD_PALETTE = ["#F47721","#4DA8FF","#3ECF8E","#9B8CFF","#FFC24D","#FF6B6B","#4DD4D4","#C792EA"];
+
+function ldDefaultSeed(){
+  return [
+    { name:'Instagram', values:Array(12).fill(0) },
+    { name:'Авито', values:Array(12).fill(0) },
+    { name:'2ГИС', values:Array(12).fill(0) },
+    { name:'Яндекс', values:Array(12).fill(0) }
+  ];
+}
+
+function ldLoad(){
+  try{ const raw = localStorage.getItem(LD_STORAGE_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+  return ldDefaultSeed();
+}
+function ldSave(list){ try{ localStorage.setItem(LD_STORAGE_KEY, JSON.stringify(list)); }catch(e){} }
+
+let ldList = ldLoad();
+let ldUndoStack = [];
+let ldDeletedLog = (function(){
+  try{ const raw = localStorage.getItem(LD_DELETED_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+  return [];
+})();
+function ldSaveDeletedLog(){ try{ localStorage.setItem(LD_DELETED_KEY, JSON.stringify(ldDeletedLog)); }catch(e){} }
+
+function ldPushUndo(){
+  ldUndoStack.push(JSON.parse(JSON.stringify(ldList)));
+  if(ldUndoStack.length > 15) ldUndoStack.shift();
+  const btn = document.getElementById('ldUndoBtn');
+  if(btn) btn.disabled = ldUndoStack.length === 0;
+}
+
+window.ldUndo = function(){
+  if(ldUndoStack.length === 0) return;
+  ldList = ldUndoStack.pop();
+  ldSave(ldList);
+  renderLeads();
+};
+
+window.ldRestoreMissingDefaults = function(){
+  const defaults = ldDefaultSeed();
+  const existingNames = new Set(ldList.map(c=>c.name));
+  const missing = defaults.filter(d => !existingNames.has(d.name));
+  if(missing.length === 0){ alert('Все стандартные каналы уже на месте.'); return; }
+  ldPushUndo();
+  ldList = [...ldList, ...missing];
+  ldSave(ldList);
+  renderLeads();
+  alert('Добавлено каналов: ' + missing.length + ' (' + missing.map(m=>m.name).join(', ') + ')');
+};
+
+window.addLead = function(){
+  const nameEl = document.getElementById('ldName');
+  const name = nameEl.value.trim();
+  if(!name){ nameEl.focus(); nameEl.style.borderColor = 'var(--red)'; setTimeout(()=>nameEl.style.borderColor='',900); return; }
+  const monthIdx = parseInt(document.getElementById('ldMonthSelect').value, 10);
+  const amountRaw = parseFloat(document.getElementById('ldAmount').value);
+  const amount = isNaN(amountRaw) ? 0 : amountRaw;
+  const values = Array(12).fill(0);
+  values[monthIdx] = amount;
+  ldPushUndo();
+  ldList.push({ name, values });
+  ldSave(ldList);
+  nameEl.value = '';
+  document.getElementById('ldAmount').value = '';
+  renderLeads();
+  nameEl.focus();
+};
+
+window.removeLead = function(idx){
+  const item = ldList[idx];
+  if(!item) return;
+  if(!confirm(`Удалить канал «${item.name}»?`)) return;
+  ldPushUndo();
+  ldList.splice(idx,1);
+  ldSave(ldList);
+  ldDeletedLog.unshift({ name:item.name, values:item.values, deletedAt:Date.now() });
+  if(ldDeletedLog.length > 15) ldDeletedLog.length = 15;
+  ldSaveDeletedLog();
+  renderLeads();
+};
+
+window.updateLdValue = function(idx, monthIdx, val){
+  ldPushUndo();
+  const v = parseFloat(val);
+  ldList[idx].values[monthIdx] = isNaN(v) ? 0 : v;
+  ldSave(ldList);
+  renderLeads();
+};
+
+window.updateLdName = function(idx, val){
+  ldPushUndo();
+  const name = val.trim();
+  if(name) ldList[idx].name = name;
+  ldSave(ldList);
+  renderLeads();
+};
+
+window.ldRestoreDeleted = function(logIdx){
+  const item = ldDeletedLog[logIdx];
+  if(!item) return;
+  ldPushUndo();
+  ldList.push({ name:item.name, values:item.values });
+  ldSave(ldList);
+  ldDeletedLog.splice(logIdx,1);
+  ldSaveDeletedLog();
+  renderLeads();
+};
+
+function renderLdDeletedLog(){
+  const el = document.getElementById('ldDeletedLog');
+  if(!el) return;
+  if(ldDeletedLog.length === 0){ el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <div class="cc-deleted-title">Недавно удалённые каналы</div>
+    <div class="cc-deleted-list">
+      ${ldDeletedLog.map((item,i)=>`
+        <div class="cc-deleted-item">
+          <span>${escapeHtml(item.name)}</span>
+          <button class="cc-restore-btn" onclick="ldRestoreDeleted(${i})">↺ Восстановить</button>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderLeads(){
+  const btn = document.getElementById('ldUndoBtn');
+  if(btn) btn.disabled = ldUndoStack.length === 0;
+  renderLdDeletedLog();
+
+  const monthTotals = Array(12).fill(0);
+  ldList.forEach(c => c.values.forEach((v,i)=> monthTotals[i]+=v));
+  const grandTotal = monthTotals.reduce((s,v)=>s+v,0);
+
+  const el = document.getElementById('ldContent');
+  if(ldList.length === 0){
+    el.innerHTML = '<div class="cc-empty">Пока нет добавленных каналов. Заполните форму выше.</div>';
+  } else {
+    const rows = ldList.map((c,idx)=>{
+      const rowTotal = c.values.reduce((s,v)=>s+v,0);
+      const cells = c.values.map((v,mi) => `<td class="num"><input type="number" class="cc-cell-input" value="${v || ''}" min="0" step="1" placeholder="0" onchange="updateLdValue(${idx},${mi},this.value)"></td>`).join('');
+      return `<tr>
+        <td class="cc-name-cell"><input type="text" class="cc-cell-input cc-cell-name" value="${escapeHtml(c.name)}" onchange="updateLdName(${idx},this.value)"><button class="cc-del" onclick="removeLead(${idx})" title="Удалить">✕</button></td>
+        ${cells}
+        <td class="num col-total" style="color:var(--ink);font-weight:600;">${fmt(rowTotal)}</td>
+      </tr>`;
+    }).join('');
+    const footCells = monthTotals.map(v => `<td class="num">${fmt(v)}</td>`).join('');
+    el.innerHTML = `
+      <div class="cc-table-wrap">
+        <table class="cc-table roadmap-table">
+          <thead>
+            <tr>
+              <th>Канал</th>
+              ${LEADS_MONTHS.map(m=>`<th class="col-month">${m}</th>`).join('')}
+              <th class="col-total">Итого</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+          <tfoot>
+            <tr><td>Итого по месяцам</td>${footCells}<td class="num col-total">${fmt(grandTotal)}</td></tr>
+          </tfoot>
+        </table>
+      </div>`;
+  }
+
+  renderLeadsBarChart(monthTotals);
+  renderLeadsDonut(grandTotal);
+}
+
+function renderLeadsBarChart(monthTotals){
+  const el = document.getElementById('ldBarsChart');
+  if(!el) return;
+  el.innerHTML = '';
+  const max = Math.max(...monthTotals, 1);
+  monthTotals.forEach((val,i)=>{
+    const isMax = val === max && val > 0;
+    const col = document.createElement('div');
+    col.className = 'bar-col' + (isMax ? ' is-max' : '');
+    const heightPct = Math.max((val/max*100), val>0 ? 2 : 0).toFixed(2);
+    col.title = LEADS_MONTHS[i] + ': ' + fmt(val);
+    col.innerHTML = `
+      <span class="bar-value">${fmt(val)}</span>
+      <div class="bar-fill" style="height:${heightPct}%; background:${isMax ? 'var(--amber)' : 'rgba(77,168,255,0.55)'};"></div>`;
+    el.appendChild(col);
+  });
+  const existingLabels = el.parentElement.querySelector('.bar-labels');
+  if(existingLabels) existingLabels.remove();
+  const labels = document.createElement('div');
+  labels.className = 'bar-labels';
+  labels.innerHTML = LEADS_MONTHS.map(m=>`<span>${m.slice(0,3)}</span>`).join('');
+  el.parentElement.insertBefore(labels, el.nextSibling);
+}
+
+function renderLeadsDonut(grandTotal){
+  const svg = document.getElementById('ldDonutSvg');
+  const totalLabel = document.getElementById('ldDonutTotal');
+  const rankEl = document.getElementById('ldRankList');
+  if(!svg) return;
+  svg.innerHTML = '';
+  if(totalLabel) totalLabel.textContent = fmt(grandTotal);
+
+  const bg = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  bg.setAttribute('cx',50); bg.setAttribute('cy',50); bg.setAttribute('r',40);
+  bg.setAttribute('fill','none'); bg.setAttribute('stroke','#1E2733'); bg.setAttribute('stroke-width',14);
+  svg.appendChild(bg);
+
+  if(grandTotal <= 0){
+    if(rankEl) rankEl.innerHTML = '<div class="cc-empty">Пока нет данных для разбивки.</div>';
+    return;
+  }
+
+  const sortedLeads = ldList.map(c=>({ name:c.name, total:c.values.reduce((s,v)=>s+v,0) }))
+    .filter(c=>c.total > 0)
+    .sort((a,b)=>b.total-a.total);
+
+  const r=40, cx=50, cy=50;
+  const circumference = 2*Math.PI*r;
+  let offsetAcc = 0;
+  sortedLeads.forEach((c,i)=>{
+    const frac = c.total / grandTotal;
+    const dash = frac*circumference;
+    const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circle.setAttribute('cx',cx); circle.setAttribute('cy',cy); circle.setAttribute('r',r);
+    circle.setAttribute('fill','none');
+    circle.setAttribute('stroke', LD_PALETTE[i % LD_PALETTE.length]);
+    circle.setAttribute('stroke-width',14);
+    circle.setAttribute('stroke-dasharray', `${dash} ${circumference-dash}`);
+    circle.setAttribute('stroke-dashoffset', -offsetAcc);
+    const title = document.createElementNS('http://www.w3.org/2000/svg','title');
+    title.textContent = `${c.name}: ${fmt(c.total)} (${(frac*100).toFixed(1)}%)`;
+    circle.appendChild(title);
+    svg.appendChild(circle);
+    offsetAcc += dash;
+  });
+
+  if(rankEl){
+    rankEl.innerHTML = sortedLeads.map((c,i)=>{
+      const pct = (c.total/grandTotal*100).toFixed(1);
+      const color = LD_PALETTE[i % LD_PALETTE.length];
+      return `
+        <div class="rank-row" style="cursor:default;">
+          <span class="idx">${String(i+1).padStart(2,'0')}</span>
+          <span class="name"><span class="swatch" style="background:${color}"></span>${escapeHtml(c.name)}</span>
+          <span class="pct">${pct}%</span>
+          <span class="amt">${fmt(c.total)}</span>
+        </div>`;
+    }).join('');
+  }
+}
+
+renderLeads();
 
 // ---------- Animation engine: counters + scroll reveal + chart grow-in ----------
 function animateCounter(el){
