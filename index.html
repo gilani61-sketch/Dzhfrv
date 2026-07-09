@@ -768,6 +768,12 @@
     <div id="ccContent"></div>
     <div id="ccDeletedLog"></div>
     <div class="cc-note">Каждая ячейка редактируется прямо в таблице — кликните и вводите число. Строки ниже — стартовые (продолжение статей из 2025 года плюс новые на 2026-й), меняйте, удаляйте или добавляйте свои. Всё сохраняется прямо в браузере на этом устройстве (localStorage) — при открытии файла позже данные останутся на месте. Если откроете с другого устройства, список нужно будет ввести заново.</div>
+
+    <div class="card reveal" style="margin-top:16px;">
+      <div class="card-title">Динамика планового бюджета по месяцам</div>
+      <div class="card-desc">Пунктир — целевой бюджет 450 000 ₽/мес. Красный столбец — месяц, где план его превышает.</div>
+      <div class="bars-chart" id="rmBarsChart"></div>
+    </div>
   </div>
 </section>
 
@@ -1243,10 +1249,22 @@ window.ccRestoreMissingDefaults = function(){
 let ccList = ccLoad();
 let ccUndoStack = [];
 const CC_DELETED_KEY = 'ober-roadmap-deleted-log';
-let ccDeletedLog = (function(){
+
+function dedupeByName(list){
+  const seen = new Set();
+  return list.filter(item=>{
+    const key = item.name.toLowerCase();
+    if(seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+let ccDeletedLog = dedupeByName((function(){
   try{ const raw = localStorage.getItem(CC_DELETED_KEY); if(raw) return JSON.parse(raw); }catch(e){}
   return [];
-})();
+})());
+ccSaveDeletedLog();
 
 function ccSaveDeletedLog(){
   try{ localStorage.setItem(CC_DELETED_KEY, JSON.stringify(ccDeletedLog)); }catch(e){}
@@ -1322,6 +1340,7 @@ window.removeCustomCategory = function(idx){
   ccPushUndo();
   ccList.splice(idx,1);
   ccSave(ccList);
+  ccDeletedLog = ccDeletedLog.filter(d => d.name.toLowerCase() !== item.name.toLowerCase());
   ccDeletedLog.unshift({ name:item.name, values:item.values, deletedAt:Date.now() });
   if(ccDeletedLog.length > 15) ccDeletedLog.length = 15;
   ccSaveDeletedLog();
@@ -1373,6 +1392,45 @@ function renderBudgetCard(monthTotals, grandTotal){
   `;
 }
 
+function renderRoadmapChart(monthTotals){
+  const el = document.getElementById('rmBarsChart');
+  if(!el) return;
+  el.innerHTML = '';
+  const existingLabels = el.parentElement.querySelector('.bar-labels');
+  if(existingLabels) existingLabels.remove();
+
+  const max = Math.max(...monthTotals, CC_BUDGET_MONTHLY, 1);
+  const targetPct = (CC_BUDGET_MONTHLY/max*100).toFixed(2);
+
+  const avgLine = document.createElement('div');
+  avgLine.className = 'avg-line';
+  avgLine.style.bottom = targetPct + '%';
+  el.appendChild(avgLine);
+
+  const avgTag = document.createElement('div');
+  avgTag.className = 'avg-tag';
+  avgTag.style.bottom = targetPct + '%';
+  avgTag.textContent = 'цель ' + (CC_BUDGET_MONTHLY/1000).toFixed(0) + 'k';
+  el.appendChild(avgTag);
+
+  monthTotals.forEach((val,i)=>{
+    const over = val > CC_BUDGET_MONTHLY;
+    const col = document.createElement('div');
+    col.className = 'bar-col' + (over ? ' is-max' : '');
+    const heightPct = Math.max((val/max*100), val>0 ? 2 : 0).toFixed(2);
+    col.title = CC_MONTHS[i] + ': ' + fmt(val) + ' ₽';
+    col.innerHTML = `
+      <span class="bar-value" style="${over ? 'color:var(--red);font-weight:600;' : ''}">${(val/1000).toFixed(0)}k</span>
+      <div class="bar-fill" style="height:${heightPct}%; background:${over ? 'var(--red)' : 'rgba(77,168,255,0.55)'};"></div>`;
+    el.appendChild(col);
+  });
+
+  const labels = document.createElement('div');
+  labels.className = 'bar-labels';
+  labels.innerHTML = CC_MONTHS.map(m=>`<span>${m.slice(0,3)}</span>`).join('');
+  el.parentElement.insertBefore(labels, el.nextSibling);
+}
+
 function renderCustomCategories(){
   updateCcUndoBtn();
   renderCcDeletedLog();
@@ -1380,6 +1438,7 @@ function renderCustomCategories(){
   ccList.forEach(c => c.values.forEach((v,i)=> monthTotals[i]+=v));
   const grandTotal = monthTotals.reduce((s,v)=>s+v,0);
   renderBudgetCard(monthTotals, grandTotal);
+  renderRoadmapChart(monthTotals);
 
   const el = document.getElementById('ccContent');
   if(ccList.length === 0){
@@ -1438,10 +1497,11 @@ function ldSave(list){ try{ localStorage.setItem(LD_STORAGE_KEY, JSON.stringify(
 
 let ldList = ldLoad();
 let ldUndoStack = [];
-let ldDeletedLog = (function(){
+let ldDeletedLog = dedupeByName((function(){
   try{ const raw = localStorage.getItem(LD_DELETED_KEY); if(raw) return JSON.parse(raw); }catch(e){}
   return [];
-})();
+})());
+ldSaveDeletedLog();
 function ldSaveDeletedLog(){ try{ localStorage.setItem(LD_DELETED_KEY, JSON.stringify(ldDeletedLog)); }catch(e){} }
 
 function ldPushUndo(){
@@ -1567,6 +1627,7 @@ window.removeLead = function(idx){
   ldPushUndo();
   ldList.splice(idx,1);
   ldSave(ldList);
+  ldDeletedLog = ldDeletedLog.filter(d => d.name.toLowerCase() !== item.name.toLowerCase());
   ldDeletedLog.unshift({ name:item.name, values:item.values, deletedAt:Date.now() });
   if(ldDeletedLog.length > 15) ldDeletedLog.length = 15;
   ldSaveDeletedLog();
