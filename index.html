@@ -1307,11 +1307,16 @@ function renderCcDeletedLog(){
   el.innerHTML = `
     <div class="cc-deleted-title">Недавно удалённые статьи</div>
     <div class="cc-deleted-list">
-      ${ccDeletedLog.map((item,i)=>`
+      ${ccDeletedLog.map((item,i)=>{
+        const total = item.values.reduce((s,v)=>s+v,0);
+        const activeMonths = item.values.filter(v=>v>0).length || 1;
+        const avg = total/activeMonths;
+        return `
         <div class="cc-deleted-item">
-          <span>${escapeHtml(item.name)}</span>
+          <span>${escapeHtml(item.name)} <span class="mono" style="color:var(--ink-mute); font-size:12px;">— ${fmt(avg)} ₽/мес</span></span>
           <button class="cc-restore-btn" onclick="ccRestoreDeleted(${i})">↺ Восстановить</button>
-        </div>`).join('')}
+        </div>`;
+      }).join('')}
     </div>`;
 }
 
@@ -1668,11 +1673,16 @@ function renderLdDeletedLog(){
   el.innerHTML = `
     <div class="cc-deleted-title">Недавно удалённые каналы</div>
     <div class="cc-deleted-list">
-      ${ldDeletedLog.map((item,i)=>`
+      ${ldDeletedLog.map((item,i)=>{
+        const total = item.values.reduce((s,v)=>s+v,0);
+        const activeMonths = item.values.filter(v=>v>0).length || 1;
+        const avg = total/activeMonths;
+        return `
         <div class="cc-deleted-item">
-          <span>${escapeHtml(item.name)}</span>
+          <span>${escapeHtml(item.name)} <span class="mono" style="color:var(--ink-mute); font-size:12px;">— ${fmt(avg)} заявок/мес</span></span>
           <button class="cc-restore-btn" onclick="ldRestoreDeleted(${i})">↺ Восстановить</button>
-        </div>`).join('')}
+        </div>`;
+      }).join('')}
     </div>`;
 }
 
