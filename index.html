@@ -177,6 +177,9 @@
   /* ===== KPI GRID ===== */
   .kpi-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
   @media (max-width:900px){ .kpi-grid{ grid-template-columns:repeat(2,1fr);} }
+  .kpi-grid.cols-5{ grid-template-columns:repeat(5,1fr); }
+  @media (max-width:1100px){ .kpi-grid.cols-5{ grid-template-columns:repeat(3,1fr); } }
+  @media (max-width:640px){ .kpi-grid.cols-5{ grid-template-columns:repeat(2,1fr); } }
   .kpi{
     background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px 20px;
     position:relative; overflow:hidden;
@@ -639,6 +642,141 @@
   @media (max-width:600px){
     .proposal-card{ padding:16px 18px; gap:12px; }
     .proposal-icon{ width:38px; height:38px; font-size:17px; }
+  }
+
+  /* ===== STATISTICS HUB ===== */
+  .stat-layout{ display:flex; align-items:flex-start; gap:22px; }
+  .stat-sidebar{
+    width:270px; flex-shrink:0; position:sticky; top:88px;
+    background:rgba(18,18,18,0.55); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px;
+    max-height:calc(100vh - 120px); overflow-y:auto;
+  }
+  .stat-search{ margin-bottom:10px; }
+  .stat-search input{
+    width:100%; background:var(--bg-alt); border:1px solid var(--line); border-radius:9px;
+    padding:9px 12px; color:var(--ink); font-family:'Inter'; font-size:13px;
+  }
+  .stat-search input:focus{ outline:none; border-color:var(--amber); }
+  .stat-channel-list{ display:flex; flex-direction:column; gap:3px; }
+  .stat-channel-item{
+    display:flex; align-items:center; gap:10px; padding:10px 11px; border-radius:10px;
+    cursor:pointer; border:1px solid transparent; transition:background .15s ease, border-color .15s ease;
+  }
+  .stat-channel-item:hover{ background:rgba(255,255,255,0.04); }
+  .stat-channel-item.active{ background:rgba(244,119,33,0.1); border-color:rgba(244,119,33,0.3); }
+  .stat-channel-icon{ flex-shrink:0; font-size:17px; width:26px; text-align:center; }
+  .stat-channel-name{ flex:1; min-width:0; font-size:13.5px; color:var(--ink-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .stat-channel-item.active .stat-channel-name{ color:var(--ink); font-weight:600; }
+  .stat-channel-badge{ flex-shrink:0; font-size:10.5px; color:var(--ink-mute); font-family:'JetBrains Mono'; white-space:nowrap; }
+  .stat-channel-empty{ color:var(--ink-mute); font-size:12.5px; text-align:center; padding:16px 8px; }
+
+  .stat-detail{ flex:1; min-width:0; display:flex; flex-direction:column; gap:16px; }
+  .stat-detail-head{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+  .stat-detail-title{ display:flex; align-items:center; gap:12px; }
+  .stat-detail-icon{
+    width:44px; height:44px; border-radius:12px; font-size:21px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(244,119,33,0.1); border:1px solid rgba(244,119,33,0.25);
+  }
+  .stat-detail-name{ font-family:'Rubik'; font-weight:700; font-size:19px; color:var(--ink); }
+  .stat-detail-sub{ font-size:12px; color:var(--ink-mute); margin-top:2px; }
+  .stat-toolbar{ display:flex; gap:8px; flex-wrap:wrap; }
+
+  .stat-insight-row{ display:flex; gap:12px; flex-wrap:wrap; }
+  .stat-insight-chip{
+    display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-dim);
+    background:rgba(255,255,255,0.03); border:1px solid var(--line); border-radius:100px; padding:7px 14px;
+  }
+  .stat-insight-chip b{ color:var(--ink); font-family:'JetBrains Mono'; }
+
+  .stat-section{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;
+  }
+  .stat-section > summary{
+    list-style:none; cursor:pointer; padding:18px 24px; display:flex; align-items:center; justify-content:space-between;
+    font-family:'Rubik'; font-weight:600; font-size:14.5px; color:var(--ink); user-select:none;
+  }
+  .stat-section > summary::-webkit-details-marker{ display:none; }
+  .stat-section > summary::after{
+    content:"⌄"; color:var(--ink-mute); font-size:16px; transition:transform .25s ease; margin-left:12px;
+  }
+  .stat-section[open] > summary::after{ transform:rotate(180deg); }
+  .stat-section > summary:hover{ color:var(--amber); }
+  .stat-section-body{ padding:0 24px 24px; }
+
+  .stat-metric-tabs{ display:flex; gap:6px; margin-bottom:14px; }
+
+  .stat-cat-toolbar{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; align-items:center; }
+  .stat-cat-toolbar input[type="text"]{
+    background:var(--bg-alt); border:1px solid var(--line); border-radius:9px; padding:8px 12px;
+    color:var(--ink); font-size:12.5px; font-family:'Inter'; min-width:160px;
+  }
+  .stat-cat-toolbar select{
+    background:var(--bg-alt); border:1px solid var(--line); border-radius:9px; padding:8px 12px;
+    color:var(--ink-dim); font-size:12.5px; font-family:'Inter'; cursor:pointer;
+  }
+  .stat-row-actions{ position:relative; display:inline-flex; align-items:center; gap:2px; }
+  .stat-menu-btn{
+    background:none; border:none; color:var(--ink-mute); cursor:pointer; font-size:16px; line-height:1;
+    padding:3px 7px; border-radius:6px;
+  }
+  .stat-menu-btn:hover{ color:var(--ink); background:rgba(255,255,255,0.06); }
+  .stat-menu{
+    position:fixed; z-index:9980; min-width:190px;
+    background:var(--card-2); border:1px solid var(--line); border-radius:10px; padding:5px;
+    box-shadow:0 16px 32px -12px rgba(0,0,0,0.6); display:none;
+  }
+  .stat-menu.open{ display:block; }
+  .stat-menu button{
+    display:flex; width:100%; text-align:left; background:none; border:none; color:var(--ink-dim);
+    font-size:12.5px; padding:8px 10px; border-radius:6px; cursor:pointer; font-family:'Inter';
+  }
+  .stat-menu button:hover{ background:rgba(255,255,255,0.06); color:var(--ink); }
+  .stat-menu button.danger:hover{ color:var(--red); }
+
+  .stat-textarea{
+    width:100%; background:var(--bg-alt); border:1px solid var(--line); border-radius:10px;
+    padding:12px 14px; color:var(--ink); font-family:'Inter'; font-size:13px; resize:vertical; line-height:1.5;
+  }
+  .stat-textarea:focus{ outline:none; border-color:var(--amber); }
+
+  .stat-comment-list{ display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+  .stat-comment-item{
+    background:var(--card-2); border:1px solid var(--line); border-radius:10px; padding:10px 14px;
+  }
+  .stat-comment-text{ font-size:13px; color:var(--ink-dim); line-height:1.5; }
+  .stat-comment-meta{ display:flex; align-items:center; justify-content:space-between; margin-top:6px; gap:8px; }
+  .stat-comment-date{ font-size:11px; color:var(--ink-mute); font-family:'JetBrains Mono'; }
+  .stat-comment-del{ background:none; border:none; color:var(--ink-mute); cursor:pointer; font-size:12px; }
+  .stat-comment-del:hover{ color:var(--red); }
+
+  .stat-import-methods{ display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; }
+  .stat-import-pane{ display:none; }
+  .stat-import-pane.active{ display:block; }
+  .stat-drop{
+    border:1.5px dashed var(--line); border-radius:12px; padding:26px 18px; text-align:center;
+    color:var(--ink-mute); font-size:13px; cursor:pointer; transition:border-color .15s ease, color .15s ease;
+  }
+  .stat-drop:hover{ border-color:var(--amber); color:var(--ink-dim); }
+
+  .stat-modal-backdrop{
+    position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index:9990;
+    display:none; align-items:flex-start; justify-content:center; padding:6vh 20px; overflow-y:auto;
+  }
+  .stat-modal-backdrop.open{ display:flex; }
+  .stat-modal{
+    width:100%; max-width:560px; background:var(--card); border:1px solid var(--line); border-radius:18px;
+    padding:26px; box-shadow:0 30px 70px -20px rgba(0,0,0,0.7);
+  }
+  .stat-modal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .stat-modal-head h3{ font-family:'Rubik'; font-size:17px; font-weight:700; color:var(--ink); margin:0; }
+  .stat-modal-close{ background:none; border:none; color:var(--ink-mute); font-size:20px; cursor:pointer; line-height:1; }
+  .stat-modal-close:hover{ color:var(--ink); }
+
+  @media (max-width:960px){
+    .stat-layout{ flex-direction:column; }
+    .stat-sidebar{ width:100%; position:static; max-height:none; }
   }
 
   /* ===== FOOTER ===== */
@@ -1488,101 +1626,73 @@
 
 </div><!-- /page-finance -->
 
-<!-- ================= STATS PAGE (accounts & social) ================= -->
+<!-- ================= STATS PAGE (marketing analytics hub) ================= -->
 <div class="page-pane" id="page-stats">
-<section id="social-section" style="border-bottom:none;">
+<section id="stats-hub" style="border-bottom:none;">
   <div class="wrap">
     <div class="sec-head">
       <div>
         <div class="sec-eyebrow">01 · Статистика</div>
-        <div class="sec-title">Мои социальные сети</div>
+        <div class="sec-title">Центр аналитики маркетинга</div>
       </div>
-      <div class="sec-note">Заявки в директ / сообщения по месяцам — Instagram, Авито, 2ГИС, Яндекс и другие каналы. Не связано с финансовым отчётом.</div>
+      <div class="sec-note">Каналы трафика, категории внутри каждого канала, расходы, заявки и конверсия — выберите источник слева.</div>
     </div>
 
-    <div class="card reveal">
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
-        <div>
-          <div class="card-title">Мои социальные сети</div>
-          <div class="card-desc" style="margin-bottom:0;">Добавьте канал и число заявок за месяц — таблица редактируется прямо в ячейках.</div>
-        </div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="cc-undo-btn" onclick="document.getElementById('ldFileInput').click()" title="Загрузить файл Excel/CSV — распознается автоматически">📁 Загрузить файл</button>
-          <button class="cc-undo-btn" onclick="toggleLdImport()" title="Вставить данные из Google Таблиц или текстом">📋 Вставить текст</button>
-          <button class="cc-undo-btn" id="ldUndoBtn" onclick="ldUndo()" disabled title="Отменить последнее действие">↶ Отменить</button>
-        </div>
-        <input type="file" id="ldFileInput" accept=".xlsx,.xls,.csv,.txt,.tsv" style="display:none;" onchange="handleLdFile(event)">
-      </div>
-
-      <div id="ldImportPanel" style="display:none; margin-top:14px;">
-        <label style="font-size:10.5px; color:var(--ink-mute); text-transform:uppercase; letter-spacing:0.04em; display:block; margin-bottom:6px;">
-          Вставьте данные из Google Таблиц (скопируйте ячейки — Ctrl/Cmd+C — и вставьте сюда) или текстом
-        </label>
-        <textarea id="ldImportText" rows="5" placeholder="Instagram	12	18	9	0	0	0&#10;Авито	5	7	4	0	0	0" style="width:100%; background:var(--bg-alt); border:1px solid var(--line); border-radius:8px; padding:10px; color:var(--ink); font-family:'JetBrains Mono'; font-size:12.5px; resize:vertical;"></textarea>
-        <div class="cc-note" style="margin-top:6px;">Формат: строка на канал. Первая ячейка — название канала, дальше — числа по месяцам подряд, начиная с января (через табуляцию или запятую). Существующий канал с таким же названием обновится, новый — добавится.</div>
-        <div style="display:flex; gap:8px; margin-top:10px;">
-          <button class="cc-add-btn" onclick="importLdData()">Импортировать</button>
-          <button class="cc-undo-btn" onclick="toggleLdImport()">Отмена</button>
-        </div>
-      </div>
-
-      <div style="height:14px;"></div>
-      <div class="cc-form" style="grid-template-columns:1.4fr 1fr 1fr auto;">
-        <div class="cc-field">
-          <label>Канал</label>
-          <input type="text" id="ldName" placeholder="Например: Telegram">
-        </div>
-        <div class="cc-field">
-          <label>Месяц</label>
-          <select id="ldMonthSelect">
-            <option value="0">Январь</option>
-            <option value="1">Февраль</option>
-            <option value="2">Март</option>
-            <option value="3">Апрель</option>
-            <option value="4">Май</option>
-            <option value="5">Июнь</option>
-            <option value="6">Июль</option>
-            <option value="7">Август</option>
-            <option value="8">Сентябрь</option>
-            <option value="9">Октябрь</option>
-            <option value="10">Ноябрь</option>
-            <option value="11">Декабрь</option>
-          </select>
-        </div>
-        <div class="cc-field">
-          <label>Заявок</label>
-          <input type="number" id="ldAmount" min="0" step="1" placeholder="0">
-        </div>
-        <button class="cc-add-btn" onclick="addLead()">+ Добавить</button>
-      </div>
-      <div id="ldContent"></div>
-      <div id="ldDeletedLog"></div>
-      <div class="cc-note">Проще всего — «📁 Загрузить файл» (Excel/CSV) или «📋 Вставить текст», данные распознаются автоматически. Форма ниже — для добавления одной строки вручную. Данные сохраняются в этом браузере (localStorage).</div>
-    </div>
-
-    <div class="card reveal" style="margin-top:16px;">
-      <div class="card-title">Динамика заявок по месяцам</div>
-      <div class="card-desc">Сумма заявок по всем каналам за каждый месяц.</div>
-      <div class="bars-chart" id="ldBarsChart"></div>
-    </div>
-
-    <div class="card reveal" style="margin-top:16px;">
-      <div class="card-title">Структура заявок по каналам</div>
-      <div class="card-desc">Доля каждого канала в общем количестве заявок.</div>
-      <div class="donut-wrap">
-        <div class="donut-center">
-          <svg viewBox="0 0 100 100" class="donut-svg" id="ldDonutSvg"></svg>
-          <div class="donut-center-label">
-            <div class="n mono" id="ldDonutTotal">0</div>
-            <div class="t">заявок<br>всего</div>
-          </div>
-        </div>
-        <div class="rank-list" id="ldRankList"></div>
-      </div>
+    <div class="stat-layout reveal">
+      <aside class="stat-sidebar">
+        <div class="stat-search"><input type="text" id="statSearchInput" placeholder="Поиск канала…" oninput="renderStatSidebar(this.value)"></div>
+        <div class="stat-channel-list" id="statChannelList"></div>
+      </aside>
+      <div class="stat-detail" id="statDetail"></div>
     </div>
   </div>
 </section>
 </div><!-- /page-stats -->
+
+<!-- ================= STATS: import modal ================= -->
+<div class="stat-modal-backdrop" id="statImportBackdrop" onclick="if(event.target===this) closeStatImport()">
+  <div class="stat-modal">
+    <div class="stat-modal-head">
+      <h3 id="statImportTitle">Загрузить данные</h3>
+      <button class="stat-modal-close" onclick="closeStatImport()">✕</button>
+    </div>
+
+    <div class="cc-field" style="margin-bottom:16px;">
+      <label>Что импортируем</label>
+      <select id="statImportMetric">
+        <option value="spend">Расходы, ₽</option>
+        <option value="contacts">Обращения</option>
+        <option value="leads">Заявки</option>
+      </select>
+    </div>
+
+    <div class="stat-import-methods">
+      <button class="page-tab-btn active" data-import-method="text" onclick="statSetImportMethod('text')">📋 Текст</button>
+      <button class="page-tab-btn" data-import-method="file" onclick="statSetImportMethod('file')">📁 Excel / CSV</button>
+      <button class="page-tab-btn" data-import-method="pdf" onclick="statSetImportMethod('pdf')">📄 PDF</button>
+    </div>
+
+    <div class="stat-import-pane active" id="statImportPaneText">
+      <textarea id="statImportText" rows="5" class="stat-textarea mono" placeholder="Reels	12	18	9	0	0	0&#10;Stories	5	7	4	0	0	0"></textarea>
+      <div class="cc-note" style="margin-top:6px;">Строка на категорию: название, затем числа по месяцам подряд с января (через таб или запятую). Существующая категория обновится, новая — добавится.</div>
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <button class="cc-add-btn" onclick="statImportFromText()">Импортировать</button>
+        <button class="cc-undo-btn" onclick="closeStatImport()">Отмена</button>
+      </div>
+    </div>
+
+    <div class="stat-import-pane" id="statImportPaneFile">
+      <div class="stat-drop" onclick="document.getElementById('statFileInput').click()">📁 Нажмите, чтобы выбрать файл .xlsx / .csv</div>
+      <input type="file" id="statFileInput" accept=".xlsx,.xls,.csv,.txt,.tsv" style="display:none;" onchange="statHandleFile(event)">
+    </div>
+
+    <div class="stat-import-pane" id="statImportPanePdf">
+      <div class="stat-drop" onclick="document.getElementById('statPdfInput').click()">📄 Нажмите, чтобы выбрать PDF-отчёт</div>
+      <input type="file" id="statPdfInput" accept=".pdf" style="display:none;" onchange="statHandlePdf(event)">
+      <div class="cc-note" style="margin-top:8px;">Качество распознавания зависит от структуры PDF — лучше всего работает для простых табличных отчётов. Если результат некорректный, используйте вставку текста или Excel/CSV.</div>
+    </div>
+  </div>
+</div>
 
 <footer>
   <div class="wrap">
@@ -1594,6 +1704,7 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
 window.addEventListener('error', function(e){
   try{
@@ -2555,52 +2666,7 @@ function renderCustomCategories(){
 renderCustomCategories();
 
 
-// ---------- Leads by channel tool ----------
-const LEADS_MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-const LD_STORAGE_KEY = 'ober-leads-by-channel-v2';
-const LD_DELETED_KEY = 'ober-leads-deleted-log';
-const LD_PALETTE = ["#F47721","#4DA8FF","#3ECF8E","#9B8CFF","#FFC24D","#FF6B6B","#4DD4D4","#C792EA"];
-
-function ldDefaultSeed(){
-  return [];
-}
-
-function ldLoad(){
-  try{ const raw = localStorage.getItem(LD_STORAGE_KEY); if(raw) return JSON.parse(raw); }catch(e){}
-  return ldDefaultSeed();
-}
-function ldSave(list){ try{ localStorage.setItem(LD_STORAGE_KEY, JSON.stringify(list)); }catch(e){} }
-
-let ldList = ldLoad();
-let ldUndoStack = [];
-let ldDeletedLog = dedupeByName((function(){
-  try{ const raw = localStorage.getItem(LD_DELETED_KEY); if(raw) return JSON.parse(raw); }catch(e){}
-  return [];
-})());
-ldSaveDeletedLog();
-function ldSaveDeletedLog(){ try{ localStorage.setItem(LD_DELETED_KEY, JSON.stringify(ldDeletedLog)); }catch(e){} }
-
-function ldPushUndo(){
-  ldUndoStack.push(JSON.parse(JSON.stringify(ldList)));
-  if(ldUndoStack.length > 15) ldUndoStack.shift();
-  const btn = document.getElementById('ldUndoBtn');
-  if(btn) btn.disabled = ldUndoStack.length === 0;
-}
-
-window.ldUndo = function(){
-  if(ldUndoStack.length === 0) return;
-  ldList = ldUndoStack.pop();
-  ldSave(ldList);
-  renderLeads();
-};
-
-window.toggleLdImport = function(){
-  const panel = document.getElementById('ldImportPanel');
-  const show = panel.style.display === 'none';
-  panel.style.display = show ? 'block' : 'none';
-  if(show) document.getElementById('ldImportText').focus();
-};
-
+// ---------- Shared text/table parsing (used by every import pipeline: paste, Excel/CSV, PDF) ----------
 function rowsFromLines(raw){
   return raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0)
     .map(line => line.includes('\t') ? line.split('\t') : line.split(','));
@@ -2626,39 +2692,561 @@ function parseAOAToLeads(aoa){
   return parsedRows;
 }
 
-function applyParsedLeadsRows(parsedRows){
-  if(parsedRows.length === 0){ alert('Не удалось распознать данные — проверьте формат файла.'); return; }
-  ldPushUndo();
-  parsedRows.forEach(row=>{
-    const existingIdx = ldList.findIndex(c => c.name.toLowerCase() === row.name.toLowerCase());
-    if(existingIdx >= 0) ldList[existingIdx].values = row.values;
-    else ldList.push(row);
-  });
-  ldSave(ldList);
-  renderLeads();
-  alert('Импортировано строк: ' + parsedRows.length);
-}
-
-window.importLdData = function(){
-  const raw = document.getElementById('ldImportText').value;
-  if(!raw.trim()){ return; }
-  const parsedRows = parseAOAToLeads(rowsFromLines(raw));
-  document.getElementById('ldImportText').value = '';
-  document.getElementById('ldImportPanel').style.display = 'none';
-  applyParsedLeadsRows(parsedRows);
+// ---------- Statistics: marketing analytics hub ----------
+// Single source of truth for the whole module: statData (keyed by channel id), persisted to localStorage.
+// Every UI surface (sidebar badges, KPI tiles, charts, category table) is derived from it on each render,
+// so there is never a second copy of the same number to fall out of sync.
+const STAT_MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const STAT_STORAGE_KEY = 'ober-stats-channels-v1';
+const STAT_CHANNELS_META = [
+  {id:'instagram', name:'Instagram', icon:'📷'},
+  {id:'telegram', name:'Telegram', icon:'📱'},
+  {id:'avito', name:'Авито', icon:'📌'},
+  {id:'yandex-maps', name:'Яндекс Карты', icon:'🗺️'},
+  {id:'2gis', name:'2ГИС', icon:'📍'},
+  {id:'google-maps', name:'Google Maps', icon:'🌍'},
+  {id:'site', name:'Сайт', icon:'💻'},
+  {id:'whatsapp', name:'WhatsApp', icon:'💬'},
+  {id:'tv', name:'Телевидение', icon:'📺'},
+  {id:'outdoor', name:'Наружная реклама', icon:'🪧'},
+  {id:'bloggers', name:'Блогеры', icon:'🎤'},
+  {id:'other', name:'Другое', icon:'✨'}
+];
+const STAT_DEFAULT_CATEGORIES = {
+  'instagram': ['Reels','Stories','Посты','Таргет','Блогеры','Конкурсы'],
+  'avito': ['Тариф','Продвижение','Реклама','Дополнительные услуги'],
+  'yandex-maps': ['Приоритетное размещение','Отзывы','Карточка организации']
 };
 
-window.handleLdFile = function(event){
+function statEmptyMonthly(){ return Array.from({length:12}, () => ({spend:0, contacts:0, leads:0})); }
+function statUid(){ return 's' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function statDefaultChannel(channelId){
+  const seedNames = STAT_DEFAULT_CATEGORIES[channelId] || [];
+  return {
+    categories: seedNames.map(name => ({ id: statUid(), name, monthly: statEmptyMonthly() })),
+    notes: '',
+    comments: []
+  };
+}
+
+function statLoad(){
+  try{ const raw = localStorage.getItem(STAT_STORAGE_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+  return {};
+}
+function statSave(){ try{ localStorage.setItem(STAT_STORAGE_KEY, JSON.stringify(statData)); }catch(e){} }
+
+let statData = statLoad();
+let statUndoStack = [];
+let statActiveChannelId = null;
+let statActiveMetric = 'spend';
+let statCatSearch = '';
+let statCatSort = 'name-asc';
+let statImportMethod = 'text';
+let statImportChannelId = null;
+
+function statEnsureChannel(channelId){
+  if(!statData[channelId]) statData[channelId] = statDefaultChannel(channelId);
+  return statData[channelId];
+}
+
+// One-time migration from the old single-metric "Мои социальные сети" tracker, if the new
+// hub hasn't been used yet — preserves any leads figures already entered by fuzzy-matching
+// channel names, instead of silently discarding them.
+(function statMigrateOldLeads(){
+  try{
+    if(localStorage.getItem(STAT_STORAGE_KEY)) return;
+    const raw = localStorage.getItem('ober-leads-by-channel-v2');
+    if(!raw) return;
+    const oldList = JSON.parse(raw);
+    if(!Array.isArray(oldList) || oldList.length === 0) return;
+    const nameToChannel = {
+      'instagram':'instagram', 'telegram':'telegram', 'авито':'avito',
+      'яндекс':'yandex-maps', '2гис':'2gis', 'google':'google-maps',
+      'сайт':'site', 'whatsapp':'whatsapp', 'ватсап':'whatsapp',
+      'телевидение':'tv', ' тв':'tv', 'наружн':'outdoor', 'блогер':'bloggers'
+    };
+    oldList.forEach(item=>{
+      const lower = item.name.toLowerCase();
+      let matched = null;
+      for(const key in nameToChannel){ if(lower.includes(key)){ matched = nameToChannel[key]; break; } }
+      const channelId = matched || 'other';
+      const channel = statEnsureChannel(channelId);
+      const catName = matched ? 'Импорт (прошлые данные)' : item.name;
+      let cat = channel.categories.find(c=>c.name.toLowerCase()===catName.toLowerCase());
+      if(!cat){ cat = { id:statUid(), name:catName, monthly: statEmptyMonthly() }; channel.categories.push(cat); }
+      (item.values||[]).forEach((v,i)=>{ if(i<12) cat.monthly[i].leads = v||0; });
+    });
+    statSave();
+  }catch(e){}
+})();
+
+function statPushUndo(){
+  statUndoStack.push(JSON.parse(JSON.stringify(statData)));
+  if(statUndoStack.length > 15) statUndoStack.shift();
+}
+window.statUndo = function(){
+  if(statUndoStack.length === 0) return;
+  statData = statUndoStack.pop();
+  statSave();
+  renderStatSidebar();
+  renderStatDetail();
+};
+
+// ---------- Category CRUD ----------
+window.statAddCategory = function(channelId){
+  const input = document.getElementById('statNewCatInput');
+  const name = input ? input.value.trim() : '';
+  if(!name){ if(input){ input.focus(); input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',900); } return; }
+  const channel = statEnsureChannel(channelId);
+  statPushUndo();
+  channel.categories.push({ id: statUid(), name, monthly: statEmptyMonthly() });
+  statSave();
+  renderStatSidebar();
+  renderStatDetail();
+};
+
+window.statRenameCategory = function(channelId, catId, newName){
+  const name = newName.trim();
+  if(!name) return;
+  const channel = statEnsureChannel(channelId);
+  const cat = channel.categories.find(c=>c.id===catId);
+  if(!cat) return;
+  statPushUndo();
+  cat.name = name;
+  statSave();
+  renderStatSidebar();
+  renderStatDetail();
+};
+
+window.statDeleteCategory = function(channelId, catId){
+  const channel = statEnsureChannel(channelId);
+  const cat = channel.categories.find(c=>c.id===catId);
+  if(!cat) return;
+  if(!confirm(`Удалить категорию «${cat.name}»?`)) return;
+  statPushUndo();
+  channel.categories = channel.categories.filter(c=>c.id!==catId);
+  statSave();
+  renderStatSidebar();
+  renderStatDetail();
+};
+
+window.statMergeCategories = function(channelId, sourceCatId, targetCatId){
+  if(!targetCatId || sourceCatId === targetCatId) return;
+  const channel = statEnsureChannel(channelId);
+  const source = channel.categories.find(c=>c.id===sourceCatId);
+  const target = channel.categories.find(c=>c.id===targetCatId);
+  if(!source || !target) return;
+  if(!confirm(`Объединить «${source.name}» с «${target.name}»? Значения сложатся, «${source.name}» будет удалена.`)) return;
+  statPushUndo();
+  target.monthly.forEach((m,i)=>{
+    m.spend += source.monthly[i].spend||0;
+    m.contacts += source.monthly[i].contacts||0;
+    m.leads += source.monthly[i].leads||0;
+  });
+  channel.categories = channel.categories.filter(c=>c.id!==sourceCatId);
+  statSave();
+  renderStatSidebar();
+  renderStatDetail();
+};
+
+window.statUpdateMetricValue = function(channelId, catId, monthIdx, metric, val){
+  const channel = statEnsureChannel(channelId);
+  const cat = channel.categories.find(c=>c.id===catId);
+  if(!cat) return;
+  statPushUndo();
+  const v = parseFloat(val);
+  cat.monthly[monthIdx][metric] = isNaN(v) ? 0 : v;
+  statSave();
+  renderStatSidebar();
+  renderStatDetail();
+};
+
+window.statSetNotes = function(channelId, value){
+  statEnsureChannel(channelId).notes = value;
+  statSave();
+};
+
+window.statAddComment = function(channelId){
+  const input = document.getElementById('statCommentInput');
+  const text = input ? input.value.trim() : '';
+  if(!text) return;
+  statEnsureChannel(channelId).comments.unshift({ id: statUid(), text, ts: Date.now() });
+  statSave();
+  renderStatDetail();
+};
+
+window.statDeleteComment = function(channelId, commentId){
+  const channel = statEnsureChannel(channelId);
+  channel.comments = channel.comments.filter(c=>c.id!==commentId);
+  statSave();
+  renderStatDetail();
+};
+
+window.statToggleMenu = function(catId, evt){
+  if(evt) evt.stopPropagation();
+  const menu = document.getElementById('statMenu-'+catId);
+  if(!menu) return;
+  const wasOpen = menu.classList.contains('open');
+  document.querySelectorAll('.stat-menu.open').forEach(m=>m.classList.remove('open'));
+  if(!wasOpen && evt && evt.currentTarget){
+    const r = evt.currentTarget.getBoundingClientRect();
+    const menuWidth = 190;
+    const left = Math.min(r.right - menuWidth, window.innerWidth - menuWidth - 8);
+    menu.style.top = (r.bottom + 4) + 'px';
+    menu.style.left = Math.max(8, left) + 'px';
+    menu.classList.add('open');
+  }
+};
+document.addEventListener('click', ()=>{ document.querySelectorAll('.stat-menu.open').forEach(m=>m.classList.remove('open')); });
+
+window.statSetCatSearch = function(v){ statCatSearch = v.toLowerCase(); renderStatCategoryTable(); };
+window.statSetCatSort = function(v){ statCatSort = v; renderStatCategoryTable(); };
+window.statSetMetric = function(metric){ statActiveMetric = metric; renderStatDetail(); };
+
+window.statSelectChannel = function(channelId){
+  statActiveChannelId = channelId;
+  statActiveMetric = 'spend';
+  statCatSearch = '';
+  statCatSort = 'name-asc';
+  renderStatSidebar();
+  renderStatDetail();
+};
+
+// ---------- Analytics (computed live from statData — never stored/duplicated) ----------
+function statChannelStats(channel){
+  const spendByMonth = Array(12).fill(0), contactsByMonth = Array(12).fill(0), leadsByMonth = Array(12).fill(0);
+  let spend=0, contacts=0, leads=0;
+  const categoryTotals = channel.categories.map(cat=>{
+    let cSpend=0, cContacts=0, cLeads=0;
+    cat.monthly.forEach((m,i)=>{
+      cSpend += m.spend||0; cContacts += m.contacts||0; cLeads += m.leads||0;
+      spendByMonth[i] += m.spend||0; contactsByMonth[i] += m.contacts||0; leadsByMonth[i] += m.leads||0;
+    });
+    spend += cSpend; contacts += cContacts; leads += cLeads;
+    return { id:cat.id, name:cat.name, spend:cSpend, contacts:cContacts, leads:cLeads };
+  });
+  const cpl = (spend>0 && leads>0) ? spend/leads : null;
+  const cpc = (spend>0 && contacts>0) ? spend/contacts : null;
+  const conv = (contacts>0 && leads>0) ? (leads/contacts*100) : null;
+  let bestMonth = null, bestCPL = Infinity;
+  for(let i=0;i<12;i++){
+    if(spendByMonth[i]>0 && leadsByMonth[i]>0){
+      const c = spendByMonth[i]/leadsByMonth[i];
+      if(c < bestCPL){ bestCPL = c; bestMonth = i; }
+    }
+  }
+  const topCostCategory = [...categoryTotals].filter(c=>c.spend>0).sort((a,b)=>b.spend-a.spend)[0] || null;
+  return { spend, contacts, leads, cpl, cpc, conv, spendByMonth, contactsByMonth, leadsByMonth, categoryTotals, bestMonth, bestCPL: bestMonth!==null?bestCPL:null, topCostCategory };
+}
+
+function statMetricLabel(metric){ return metric==='spend' ? 'расходы' : (metric==='contacts' ? 'обращения' : 'заявки'); }
+
+// ---------- Sidebar ----------
+function renderStatSidebar(filterText){
+  const el = document.getElementById('statChannelList');
+  if(!el) return;
+  const q = (filterText !== undefined ? filterText : (document.getElementById('statSearchInput')?.value || '')).trim().toLowerCase();
+  const items = STAT_CHANNELS_META.filter(m => !q || m.name.toLowerCase().includes(q));
+  if(items.length === 0){ el.innerHTML = '<div class="stat-channel-empty">Ничего не найдено</div>'; return; }
+  if(!statActiveChannelId) statActiveChannelId = STAT_CHANNELS_META[0].id;
+  el.innerHTML = items.map(m=>{
+    const channel = statData[m.id];
+    const stats = channel ? statChannelStats(channel) : null;
+    const badge = stats && stats.spend>0 ? fmt(stats.spend)+' ₽' : (stats && stats.leads>0 ? fmt(stats.leads)+' зая.' : '—');
+    const active = m.id === statActiveChannelId ? ' active' : '';
+    return `<div class="stat-channel-item${active}" onclick="statSelectChannel('${m.id}')">
+      <span class="stat-channel-icon">${m.icon}</span>
+      <span class="stat-channel-name">${escapeHtml(m.name)}</span>
+      <span class="stat-channel-badge">${badge}</span>
+    </div>`;
+  }).join('');
+}
+
+// ---------- Category table (isolated re-render so the search box never loses focus) ----------
+function statBuildCategoryTableHtml(meta, channel, stats){
+  let cats = channel.categories.filter(c => !statCatSearch || c.name.toLowerCase().includes(statCatSearch));
+  const catStatsMap = {}; stats.categoryTotals.forEach(c=> catStatsMap[c.id]=c);
+  cats = cats.map(c=> ({ ref:c, total: (catStatsMap[c.id]||{spend:0,contacts:0,leads:0})[statActiveMetric] || 0 }));
+  if(statCatSort==='name-asc') cats.sort((a,b)=>a.ref.name.localeCompare(b.ref.name,'ru'));
+  else if(statCatSort==='name-desc') cats.sort((a,b)=>b.ref.name.localeCompare(a.ref.name,'ru'));
+  else if(statCatSort==='total-desc') cats.sort((a,b)=>b.total-a.total);
+  else if(statCatSort==='total-asc') cats.sort((a,b)=>a.total-b.total);
+
+  if(channel.categories.length === 0) return '<div class="cc-empty">Пока нет категорий. Добавьте первую выше или импортируйте данные.</div>';
+  if(cats.length === 0) return '<div class="cc-empty">Ничего не найдено по запросу.</div>';
+
+  const rows = cats.map(({ref:cat})=>{
+    const cells = cat.monthly.map((m,mi)=>`<td class="num"><input type="number" class="cc-cell-input" value="${m[statActiveMetric] || ''}" min="0" step="${statActiveMetric==='spend'?1000:1}" placeholder="0" onchange="statUpdateMetricValue('${meta.id}','${cat.id}',${mi},'${statActiveMetric}',this.value)"></td>`).join('');
+    const rowTotal = cat.monthly.reduce((s,m)=>s+(m[statActiveMetric]||0),0);
+    const otherCats = channel.categories.filter(c=>c.id!==cat.id);
+    const mergeBlock = otherCats.length ? `
+      <div style="padding:6px 10px;">
+        <label style="font-size:10.5px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:5px;">Объединить с</label>
+        <select id="statMergeSelect-${cat.id}" style="width:100%;background:var(--bg-alt);border:1px solid var(--line);border-radius:6px;padding:5px 7px;color:var(--ink-dim);font-size:12px;">
+          ${otherCats.map(o=>`<option value="${o.id}">${escapeHtml(o.name)}</option>`).join('')}
+        </select>
+        <button class="cc-add-btn" style="width:100%;margin-top:6px;padding:6px;font-size:12px;" onclick="statMergeCategories('${meta.id}','${cat.id}', document.getElementById('statMergeSelect-${cat.id}').value)">🔀 Слить</button>
+      </div>` : '<div style="padding:10px 12px; font-size:12px; color:var(--ink-mute);">Нет других категорий</div>';
+    return `<tr>
+      <td class="cc-name-cell">
+        <input type="text" class="cc-cell-input cc-cell-name" value="${escapeHtml(cat.name)}" onchange="statRenameCategory('${meta.id}','${cat.id}',this.value)">
+        <div class="stat-row-actions" onclick="event.stopPropagation()">
+          <button class="stat-menu-btn" onclick="statToggleMenu('${cat.id}', event)" title="Ещё">⋯</button>
+          <div class="stat-menu" id="statMenu-${cat.id}">
+            ${mergeBlock}
+            <button class="danger" onclick="statDeleteCategory('${meta.id}','${cat.id}')">🗑 Удалить категорию</button>
+          </div>
+        </div>
+      </td>
+      ${cells}
+      <td class="num col-total" style="color:var(--ink);font-weight:600;">${fmt(rowTotal)}${statActiveMetric==='spend'?' ₽':''}</td>
+    </tr>`;
+  }).join('');
+
+  return `<div class="cc-table-wrap"><table class="cc-table roadmap-table"><thead><tr><th>Категория</th>${STAT_MONTHS.map(m=>`<th class="col-month">${m.slice(0,3)}</th>`).join('')}<th class="col-total">Итого</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function renderStatCategoryTable(){
+  const wrap = document.getElementById('statCatTableWrap');
+  if(!wrap || !statActiveChannelId) return;
+  const meta = STAT_CHANNELS_META.find(m=>m.id===statActiveChannelId);
+  if(!meta) return;
+  const channel = statEnsureChannel(meta.id);
+  const stats = statChannelStats(channel);
+  wrap.innerHTML = statBuildCategoryTableHtml(meta, channel, stats);
+}
+
+// ---------- Detail panel (KPIs, charts, category manager, notes, comments) ----------
+function renderStatDetail(){
+  const el = document.getElementById('statDetail');
+  if(!el) return;
+  if(!statActiveChannelId) statActiveChannelId = STAT_CHANNELS_META[0].id;
+  const meta = STAT_CHANNELS_META.find(m=>m.id===statActiveChannelId) || STAT_CHANNELS_META[0];
+  const channel = statEnsureChannel(meta.id);
+  const stats = statChannelStats(channel);
+
+  const kpiHtml = `
+    <div class="kpi-grid cols-5">
+      <div class="kpi" style="--kpi-accent:var(--amber)">
+        <div class="kpi-label">Общий расход</div>
+        <div class="kpi-value mono" data-count="${Math.round(stats.spend)}" data-suffix=" ₽">0 ₽</div>
+        <div class="kpi-sub">${stats.spend>0 ? 'за весь период' : 'нет данных'}</div>
+      </div>
+      <div class="kpi" style="--kpi-accent:var(--blue)">
+        <div class="kpi-label">Заявок</div>
+        <div class="kpi-value mono" data-count="${Math.round(stats.leads)}">0</div>
+        <div class="kpi-sub">${stats.contacts>0 ? `из ${fmt(stats.contacts)} обращений` : (stats.leads>0 ? 'обращения не указаны' : 'нет данных')}</div>
+      </div>
+      <div class="kpi" style="--kpi-accent:var(--green)">
+        <div class="kpi-label">Стоимость заявки</div>
+        <div class="kpi-value mono">${stats.cpl!==null ? fmt(stats.cpl)+' ₽' : '—'}</div>
+        <div class="kpi-sub">${stats.cpl!==null ? 'расход / заявки' : 'нужны расходы и заявки'}</div>
+      </div>
+      <div class="kpi" style="--kpi-accent:var(--violet)">
+        <div class="kpi-label">Стоимость обращения</div>
+        <div class="kpi-value mono">${stats.cpc!==null ? fmt(stats.cpc)+' ₽' : '—'}</div>
+        <div class="kpi-sub">${stats.cpc!==null ? 'расход / обращения' : 'нужны расходы и обращения'}</div>
+      </div>
+      <div class="kpi" style="--kpi-accent:var(--red)">
+        <div class="kpi-label">Конверсия</div>
+        <div class="kpi-value mono">${stats.conv!==null ? stats.conv.toFixed(1).replace('.', ',')+'%' : '—'}</div>
+        <div class="kpi-sub">${stats.conv!==null ? 'заявки / обращения' : 'нужны обращения и заявки'}</div>
+      </div>
+    </div>`;
+
+  const insightHtml = (stats.bestMonth!==null || stats.topCostCategory) ? `
+    <div class="stat-insight-row">
+      ${stats.bestMonth!==null ? `<div class="stat-insight-chip">🏆 Лучший период по цене заявки: <b>${STAT_MONTHS[stats.bestMonth]}</b> — ${fmt(stats.bestCPL)} ₽/заявка</div>` : ''}
+      ${stats.topCostCategory ? `<div class="stat-insight-chip">💸 Самая затратная категория: <b>${escapeHtml(stats.topCostCategory.name)}</b> — ${fmt(stats.topCostCategory.spend)} ₽</div>` : ''}
+    </div>` : '';
+
+  const byMonth = statActiveMetric==='spend' ? stats.spendByMonth : (statActiveMetric==='contacts' ? stats.contactsByMonth : stats.leadsByMonth);
+  const metricGrand = byMonth.reduce((s,v)=>s+v,0);
+
+  const tableHtml = statBuildCategoryTableHtml(meta, channel, stats);
+
+  el.innerHTML = `
+    <div class="stat-detail-head">
+      <div class="stat-detail-title">
+        <div class="stat-detail-icon">${meta.icon}</div>
+        <div>
+          <div class="stat-detail-name">${escapeHtml(meta.name)}</div>
+          <div class="stat-detail-sub">${channel.categories.length} ${rmWordForm(channel.categories.length,'категория','категории','категорий')}</div>
+        </div>
+      </div>
+      <div class="stat-toolbar">
+        <button class="cc-undo-btn" onclick="openStatImport('${meta.id}')">📥 Загрузить данные</button>
+        <button class="cc-undo-btn" onclick="statUndo()">↶ Отменить</button>
+      </div>
+    </div>
+
+    ${kpiHtml}
+    ${insightHtml}
+
+    <details class="stat-section reveal" open>
+      <summary>Динамика и распределение</summary>
+      <div class="stat-section-body">
+        <div class="stat-metric-tabs">
+          <button class="page-tab-btn${statActiveMetric==='spend'?' active':''}" onclick="statSetMetric('spend')">Расходы</button>
+          <button class="page-tab-btn${statActiveMetric==='contacts'?' active':''}" onclick="statSetMetric('contacts')">Обращения</button>
+          <button class="page-tab-btn${statActiveMetric==='leads'?' active':''}" onclick="statSetMetric('leads')">Заявки</button>
+        </div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">Динамика по месяцам — ${statMetricLabel(statActiveMetric)}</div>
+          <div class="bars-chart" id="statBarsChart"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Распределение по категориям</div>
+          <div class="donut-wrap">
+            <div class="donut-center">
+              <svg viewBox="0 0 100 100" class="donut-svg" id="statDonutSvg"></svg>
+              <div class="donut-center-label">
+                <div class="n mono" id="statDonutTotal">0</div>
+                <div class="t">всего</div>
+              </div>
+            </div>
+            <div class="rank-list" id="statRankList"></div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="stat-section reveal" open>
+      <summary>Категории (${channel.categories.length})</summary>
+      <div class="stat-section-body">
+        <div class="stat-cat-toolbar">
+          <input type="text" id="statCatSearchInput" placeholder="Поиск категории…" value="${escapeHtml(statCatSearch)}" oninput="statSetCatSearch(this.value)">
+          <select onchange="statSetCatSort(this.value)">
+            <option value="name-asc"${statCatSort==='name-asc'?' selected':''}>Имя А→Я</option>
+            <option value="name-desc"${statCatSort==='name-desc'?' selected':''}>Имя Я→А</option>
+            <option value="total-desc"${statCatSort==='total-desc'?' selected':''}>Сумма ↓</option>
+            <option value="total-asc"${statCatSort==='total-asc'?' selected':''}>Сумма ↑</option>
+          </select>
+          <div style="flex:1"></div>
+          <input type="text" id="statNewCatInput" placeholder="Новая категория…" style="max-width:200px;">
+          <button class="cc-add-btn" onclick="statAddCategory('${meta.id}')">+ Добавить</button>
+        </div>
+        <div id="statCatTableWrap">${tableHtml}</div>
+      </div>
+    </details>
+
+    <details class="stat-section reveal">
+      <summary>Заметки</summary>
+      <div class="stat-section-body">
+        <textarea class="stat-textarea" rows="3" placeholder="Заметки по каналу…" onchange="statSetNotes('${meta.id}', this.value)">${escapeHtml(channel.notes||'')}</textarea>
+      </div>
+    </details>
+
+    <details class="stat-section reveal">
+      <summary>Комментарии (${channel.comments.length})</summary>
+      <div class="stat-section-body">
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="statCommentInput" placeholder="Добавить комментарий…" style="flex:1; background:var(--bg-alt); border:1px solid var(--line); border-radius:9px; padding:9px 12px; color:var(--ink); font-size:13px;" onkeydown="if(event.key==='Enter'){statAddComment('${meta.id}');}">
+          <button class="cc-add-btn" onclick="statAddComment('${meta.id}')">Добавить</button>
+        </div>
+        <div class="stat-comment-list">
+          ${channel.comments.length ? channel.comments.map(cm=>`
+            <div class="stat-comment-item">
+              <div class="stat-comment-text">${escapeHtml(cm.text)}</div>
+              <div class="stat-comment-meta">
+                <span class="stat-comment-date">${new Date(cm.ts).toLocaleDateString('ru-RU')}</span>
+                <button class="stat-comment-del" onclick="statDeleteComment('${meta.id}','${cm.id}')">Удалить</button>
+              </div>
+            </div>`).join('') : '<div class="cc-empty" style="padding:16px;">Пока нет комментариев.</div>'}
+        </div>
+      </div>
+    </details>
+  `;
+
+  renderBarsChart('statBarsChart', STAT_MONTHS, STAT_MONTHS.map(m=>m.slice(0,3)), byMonth, metricGrand, ()=>{});
+
+  const distList = stats.categoryTotals
+    .map(c=>({ name:c.name, total: statActiveMetric==='spend'?c.spend : (statActiveMetric==='contacts'?c.contacts:c.leads) }))
+    .filter(c=>c.total>0)
+    .sort((a,b)=>b.total-a.total);
+  const distGrand = distList.reduce((s,c)=>s+c.total,0);
+  const donutTotalEl = document.getElementById('statDonutTotal');
+  if(donutTotalEl) donutTotalEl.textContent = fmt(distGrand) + (statActiveMetric==='spend'?' ₽':'');
+  if(distGrand > 0){
+    const distColors = distList.map((_,i)=> PALETTE[i % PALETTE.length]);
+    renderDonut('statDonutSvg', distList.map(c=>c.name), distList.map(c=>c.total), distColors, distGrand, [], ()=>{});
+    renderRankList('statRankList', distList, distGrand, distList.length, distColors, ()=>{});
+  } else {
+    const rankEl = document.getElementById('statRankList');
+    if(rankEl) rankEl.innerHTML = '<div class="cc-empty">Пока нет данных для разбивки.</div>';
+  }
+
+  requestAnimationFrame(()=> requestAnimationFrame(()=>{
+    if(typeof growBars === 'function') growBars();
+    if(typeof growDonut === 'function') growDonut();
+  }));
+  document.querySelectorAll('#statDetail [data-count]').forEach(c => typeof animateCounter==='function' && animateCounter(c));
+}
+
+// ---------- Import: paste text / Excel / CSV / PDF — all funnel into statImportRows() ----------
+// A future API integration only needs to produce the same {name, values[12]} row shape and
+// call statImportRows(channelId, metric, rows) — no other part of the pipeline would change.
+window.openStatImport = function(channelId){
+  statImportChannelId = channelId;
+  const meta = STAT_CHANNELS_META.find(m=>m.id===channelId);
+  const titleEl = document.getElementById('statImportTitle');
+  if(titleEl) titleEl.textContent = 'Загрузить данные — ' + (meta ? meta.name : '');
+  document.getElementById('statImportBackdrop').classList.add('open');
+  window.statSetImportMethod('text');
+};
+window.closeStatImport = function(){
+  document.getElementById('statImportBackdrop').classList.remove('open');
+  const t = document.getElementById('statImportText'); if(t) t.value = '';
+  const f = document.getElementById('statFileInput'); if(f) f.value = '';
+  const p = document.getElementById('statPdfInput'); if(p) p.value = '';
+};
+window.statSetImportMethod = function(method){
+  statImportMethod = method;
+  document.querySelectorAll('[data-import-method]').forEach(b=> b.classList.toggle('active', b.dataset.importMethod===method));
+  document.getElementById('statImportPaneText').classList.toggle('active', method==='text');
+  document.getElementById('statImportPaneFile').classList.toggle('active', method==='file');
+  document.getElementById('statImportPanePdf').classList.toggle('active', method==='pdf');
+};
+
+function statImportRows(channelId, metric, parsedRows){
+  if(!channelId || parsedRows.length === 0){ alert('Не удалось распознать данные — проверьте формат.'); return; }
+  const channel = statEnsureChannel(channelId);
+  statPushUndo();
+  parsedRows.forEach(row=>{
+    let cat = channel.categories.find(c=>c.name.toLowerCase()===row.name.toLowerCase());
+    if(!cat){ cat = { id: statUid(), name: row.name, monthly: statEmptyMonthly() }; channel.categories.push(cat); }
+    row.values.slice(0,12).forEach((v,i)=>{ cat.monthly[i][metric] = v; });
+  });
+  statSave();
+  renderStatSidebar();
+  renderStatDetail();
+  alert('Импортировано категорий: ' + parsedRows.length);
+}
+
+window.statImportFromText = function(){
+  const raw = document.getElementById('statImportText').value;
+  if(!raw.trim()) return;
+  const metric = document.getElementById('statImportMetric').value;
+  const rows = parseAOAToLeads(rowsFromLines(raw));
+  const channelId = statImportChannelId;
+  closeStatImport();
+  statImportRows(channelId, metric, rows);
+};
+
+window.statHandleFile = function(event){
   const file = event.target.files[0];
   if(!file) return;
+  const metric = document.getElementById('statImportMetric').value;
+  const channelId = statImportChannelId;
   const ext = file.name.split('.').pop().toLowerCase();
   if(ext === 'csv' || ext === 'txt' || ext === 'tsv'){
     const reader = new FileReader();
-    reader.onload = e => applyParsedLeadsRows(parseAOAToLeads(rowsFromLines(e.target.result)));
+    reader.onload = e => { const rows = parseAOAToLeads(rowsFromLines(e.target.result)); closeStatImport(); statImportRows(channelId, metric, rows); };
     reader.readAsText(file, 'UTF-8');
   } else {
     if(typeof XLSX === 'undefined'){
-      alert('Не удалось загрузить библиотеку для чтения Excel-файлов — проверьте подключение к интернету и попробуйте снова, либо сохраните файл как .csv.');
+      alert('Не удалось загрузить библиотеку для чтения Excel-файлов — проверьте подключение к интернету, либо сохраните файл как .csv.');
       event.target.value = '';
       return;
     }
@@ -2668,7 +3256,9 @@ window.handleLdFile = function(event){
         const wb = XLSX.read(e.target.result, { type:'array' });
         const sheet = wb.Sheets[wb.SheetNames[0]];
         const aoa = XLSX.utils.sheet_to_json(sheet, { header:1, raw:false, defval:'' });
-        applyParsedLeadsRows(parseAOAToLeads(aoa));
+        const rows = parseAOAToLeads(aoa);
+        closeStatImport();
+        statImportRows(channelId, metric, rows);
       }catch(err){
         alert('Не удалось прочитать файл: ' + err.message);
       }
@@ -2678,212 +3268,52 @@ window.handleLdFile = function(event){
   event.target.value = '';
 };
 
-window.addLead = function(){
-  const nameEl = document.getElementById('ldName');
-  const name = nameEl.value.trim();
-  if(!name){ nameEl.focus(); nameEl.style.borderColor = 'var(--red)'; setTimeout(()=>nameEl.style.borderColor='',900); return; }
-  const monthIdx = parseInt(document.getElementById('ldMonthSelect').value, 10);
-  const amountRaw = parseFloat(document.getElementById('ldAmount').value);
-  const amount = isNaN(amountRaw) ? 0 : amountRaw;
-  const values = Array(12).fill(0);
-  values[monthIdx] = amount;
-  ldPushUndo();
-  ldList.push({ name, values });
-  ldSave(ldList);
-  nameEl.value = '';
-  document.getElementById('ldAmount').value = '';
-  renderLeads();
-  nameEl.focus();
-};
-
-window.removeLead = function(idx){
-  const item = ldList[idx];
-  if(!item) return;
-  if(!confirm(`Удалить канал «${item.name}»?`)) return;
-  ldPushUndo();
-  ldList.splice(idx,1);
-  ldSave(ldList);
-  ldDeletedLog = ldDeletedLog.filter(d => d.name.toLowerCase() !== item.name.toLowerCase());
-  ldDeletedLog.unshift({ name:item.name, values:item.values, deletedAt:Date.now() });
-  if(ldDeletedLog.length > 15) ldDeletedLog.length = 15;
-  ldSaveDeletedLog();
-  renderLeads();
-};
-
-window.updateLdValue = function(idx, monthIdx, val){
-  ldPushUndo();
-  const v = parseFloat(val);
-  ldList[idx].values[monthIdx] = isNaN(v) ? 0 : v;
-  ldSave(ldList);
-  renderLeads();
-};
-
-window.updateLdName = function(idx, val){
-  ldPushUndo();
-  const name = val.trim();
-  if(name) ldList[idx].name = name;
-  ldSave(ldList);
-  renderLeads();
-};
-
-window.ldRestoreDeleted = function(logIdx){
-  const item = ldDeletedLog[logIdx];
-  if(!item) return;
-  ldPushUndo();
-  ldList.push({ name:item.name, values:item.values });
-  ldSave(ldList);
-  ldDeletedLog.splice(logIdx,1);
-  ldSaveDeletedLog();
-  renderLeads();
-};
-
-function renderLdDeletedLog(){
-  const el = document.getElementById('ldDeletedLog');
-  if(!el) return;
-  if(ldDeletedLog.length === 0){ el.innerHTML = ''; return; }
-  el.innerHTML = `
-    <div class="cc-deleted-title">Недавно удалённые каналы</div>
-    <div class="cc-deleted-list">
-      ${ldDeletedLog.map((item,i)=>{
-        const total = item.values.reduce((s,v)=>s+v,0);
-        const activeMonths = item.values.filter(v=>v>0).length || 1;
-        const avg = total/activeMonths;
-        return `
-        <div class="cc-deleted-item">
-          <span>${escapeHtml(item.name)} <span class="mono" style="color:var(--ink-mute); font-size:12px;">— ${fmt(avg)} заявок/мес</span></span>
-          <button class="cc-restore-btn" onclick="ldRestoreDeleted(${i})">↺ Восстановить</button>
-        </div>`;
-      }).join('')}
-    </div>`;
-}
-
-function renderLeads(){
-  const btn = document.getElementById('ldUndoBtn');
-  if(btn) btn.disabled = ldUndoStack.length === 0;
-  renderLdDeletedLog();
-
-  const monthTotals = Array(12).fill(0);
-  ldList.forEach(c => c.values.forEach((v,i)=> monthTotals[i]+=v));
-  const grandTotal = monthTotals.reduce((s,v)=>s+v,0);
-
-  const el = document.getElementById('ldContent');
-  if(ldList.length === 0){
-    el.innerHTML = '<div class="cc-empty">Пока нет добавленных каналов. Заполните форму выше.</div>';
-  } else {
-    const rows = ldList.map((c,idx)=>{
-      const rowTotal = c.values.reduce((s,v)=>s+v,0);
-      const cells = c.values.map((v,mi) => `<td class="num"><input type="number" class="cc-cell-input" value="${v || ''}" min="0" step="1" placeholder="0" onchange="updateLdValue(${idx},${mi},this.value)"></td>`).join('');
-      return `<tr>
-        <td class="cc-name-cell"><input type="text" class="cc-cell-input cc-cell-name" value="${escapeHtml(c.name)}" onchange="updateLdName(${idx},this.value)"><button class="cc-del" onclick="removeLead(${idx})" title="Удалить">✕</button></td>
-        ${cells}
-        <td class="num col-total" style="color:var(--ink);font-weight:600;">${fmt(rowTotal)}</td>
-      </tr>`;
-    }).join('');
-    const footCells = monthTotals.map(v => `<td class="num">${fmt(v)}</td>`).join('');
-    el.innerHTML = `
-      <div class="cc-table-wrap">
-        <table class="cc-table roadmap-table">
-          <thead>
-            <tr>
-              <th>Канал</th>
-              ${LEADS_MONTHS.map(m=>`<th class="col-month">${m}</th>`).join('')}
-              <th class="col-total">Итого</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-          <tfoot>
-            <tr><td>Итого по месяцам</td>${footCells}<td class="num col-total">${fmt(grandTotal)}</td></tr>
-          </tfoot>
-        </table>
-      </div>`;
+async function statExtractPdfText(arrayBuffer){
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const lines = [];
+  for(let p=1; p<=pdf.numPages; p++){
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
+    const rowsMap = new Map();
+    content.items.forEach(it=>{
+      const y = Math.round(it.transform[5]);
+      if(!rowsMap.has(y)) rowsMap.set(y, []);
+      rowsMap.get(y).push({ x: it.transform[4], str: it.str });
+    });
+    const ys = [...rowsMap.keys()].sort((a,b)=> b-a);
+    ys.forEach(y=>{
+      const items = rowsMap.get(y).sort((a,b)=> a.x-b.x);
+      lines.push(items.map(i=>i.str).join('\t'));
+    });
   }
-
-  renderLeadsBarChart(monthTotals);
-  renderLeadsDonut(grandTotal);
+  return lines.join('\n');
 }
 
-function renderLeadsBarChart(monthTotals){
-  const el = document.getElementById('ldBarsChart');
-  if(!el) return;
-  el.innerHTML = '';
-  const max = Math.max(...monthTotals, 1);
-  monthTotals.forEach((val,i)=>{
-    const isMax = val === max && val > 0;
-    const col = document.createElement('div');
-    col.className = 'bar-col' + (isMax ? ' is-max' : '');
-    const heightPct = Math.max((val/max*100), val>0 ? 2 : 0).toFixed(2);
-    col.title = LEADS_MONTHS[i] + ': ' + fmt(val);
-    col.innerHTML = `
-      <span class="bar-value">${fmt(val)}</span>
-      <div class="bar-fill" style="height:${heightPct}%; background:${isMax ? 'var(--amber)' : 'rgba(77,168,255,0.55)'};"></div>`;
-    el.appendChild(col);
-  });
-  const existingLabels = el.parentElement.querySelector('.bar-labels');
-  if(existingLabels) existingLabels.remove();
-  const labels = document.createElement('div');
-  labels.className = 'bar-labels';
-  labels.innerHTML = LEADS_MONTHS.map(m=>`<span>${m.slice(0,3)}</span>`).join('');
-  el.parentElement.insertBefore(labels, el.nextSibling);
-}
-
-function renderLeadsDonut(grandTotal){
-  const svg = document.getElementById('ldDonutSvg');
-  const totalLabel = document.getElementById('ldDonutTotal');
-  const rankEl = document.getElementById('ldRankList');
-  if(!svg) return;
-  svg.innerHTML = '';
-  if(totalLabel) totalLabel.textContent = fmt(grandTotal);
-
-  const bg = document.createElementNS('http://www.w3.org/2000/svg','circle');
-  bg.setAttribute('cx',50); bg.setAttribute('cy',50); bg.setAttribute('r',40);
-  bg.setAttribute('fill','none'); bg.setAttribute('stroke','#1E2733'); bg.setAttribute('stroke-width',14);
-  svg.appendChild(bg);
-
-  if(grandTotal <= 0){
-    if(rankEl) rankEl.innerHTML = '<div class="cc-empty">Пока нет данных для разбивки.</div>';
+window.statHandlePdf = async function(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const metric = document.getElementById('statImportMetric').value;
+  const channelId = statImportChannelId;
+  if(typeof pdfjsLib === 'undefined'){
+    alert('Не удалось загрузить библиотеку для чтения PDF — проверьте подключение к интернету, либо вставьте текст или загрузите Excel/CSV.');
+    event.target.value = '';
     return;
   }
-
-  const sortedLeads = ldList.map(c=>({ name:c.name, total:c.values.reduce((s,v)=>s+v,0) }))
-    .filter(c=>c.total > 0)
-    .sort((a,b)=>b.total-a.total);
-
-  const r=40, cx=50, cy=50;
-  const circumference = 2*Math.PI*r;
-  let offsetAcc = 0;
-  sortedLeads.forEach((c,i)=>{
-    const frac = c.total / grandTotal;
-    const dash = frac*circumference;
-    const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
-    circle.setAttribute('cx',cx); circle.setAttribute('cy',cy); circle.setAttribute('r',r);
-    circle.setAttribute('fill','none');
-    circle.setAttribute('stroke', LD_PALETTE[i % LD_PALETTE.length]);
-    circle.setAttribute('stroke-width',14);
-    circle.setAttribute('stroke-dasharray', `${dash} ${circumference-dash}`);
-    circle.setAttribute('stroke-dashoffset', -offsetAcc);
-    const title = document.createElementNS('http://www.w3.org/2000/svg','title');
-    title.textContent = `${c.name}: ${fmt(c.total)} (${(frac*100).toFixed(1)}%)`;
-    circle.appendChild(title);
-    svg.appendChild(circle);
-    offsetAcc += dash;
-  });
-
-  if(rankEl){
-    rankEl.innerHTML = sortedLeads.map((c,i)=>{
-      const pct = (c.total/grandTotal*100).toFixed(1);
-      const color = LD_PALETTE[i % LD_PALETTE.length];
-      return `
-        <div class="rank-row" style="cursor:default;">
-          <span class="idx">${String(i+1).padStart(2,'0')}</span>
-          <span class="name"><span class="swatch" style="background:${color}"></span>${escapeHtml(c.name)}</span>
-          <span class="pct">${pct}%</span>
-          <span class="amt">${fmt(c.total)}</span>
-        </div>`;
-    }).join('');
+  try{
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const buf = await file.arrayBuffer();
+    const text = await statExtractPdfText(buf);
+    const rows = parseAOAToLeads(rowsFromLines(text));
+    closeStatImport();
+    statImportRows(channelId, metric, rows);
+  }catch(err){
+    alert('Не удалось прочитать PDF: ' + err.message + '. Попробуйте вставить текст или загрузить Excel/CSV.');
   }
-}
+  event.target.value = '';
+};
 
-renderLeads();
+renderStatSidebar();
+renderStatDetail();
 
 // ---------- Animation engine: counters + scroll reveal + chart grow-in ----------
 function animateCounter(el){
