@@ -364,12 +364,17 @@
     font-size:13px; color:var(--ink-dim);
   }
   .cc-deleted-item span{ flex:1; min-width:0; overflow-wrap:break-word; }
-  .cc-deleted-item .cc-restore-btn{ flex-shrink:0; }
+  .cc-deleted-item .cc-deleted-actions{ flex-shrink:0; display:flex; gap:6px; }
   .cc-restore-btn{
     background:none; border:1px solid var(--line); color:var(--ink-dim); border-radius:6px;
     padding:4px 10px; font-size:12px; cursor:pointer; white-space:nowrap; transition:.15s;
   }
   .cc-restore-btn:hover{ color:var(--green); border-color:var(--green); }
+  .cc-forget-btn{
+    background:none; border:1px solid var(--line); color:var(--ink-mute); border-radius:6px;
+    padding:4px 10px; font-size:12px; cursor:pointer; white-space:nowrap; transition:.15s;
+  }
+  .cc-forget-btn:hover{ color:var(--red); border-color:var(--red); }
   .cc-cell-input{
     width:100%; background:transparent; border:1px solid transparent; border-radius:6px;
     padding:4px 6px; font-family:'JetBrains Mono'; font-size:13px; color:var(--ink); text-align:right;
@@ -562,6 +567,62 @@
     .rm-fx-blob, .rm-phase-icon{ animation:none !important; }
     .rm-phase-card{ transition:opacity .3s ease !important; transform:none !important; filter:none !important; }
   }
+
+  /* ===== KEY BUDGET CHANGES ===== */
+  .changes-timeline{ position:relative; display:flex; flex-direction:column; gap:0; padding:8px 0; }
+  .changes-line{
+    position:absolute; left:19px; top:6px; bottom:6px; width:2px;
+    background:linear-gradient(to bottom, rgba(244,119,33,0.5), rgba(244,119,33,0.05));
+    border-radius:2px;
+  }
+  .change-item{ position:relative; display:flex; gap:18px; padding:11px 0; }
+  .change-marker{
+    flex-shrink:0; width:38px; height:38px; border-radius:50%; z-index:1;
+    display:flex; align-items:center; justify-content:center; font-size:16px;
+    background:var(--card); border:1.5px solid var(--line);
+  }
+  .change-card{
+    flex:1; min-width:0; background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:14px 18px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    transition:border-color .2s ease, transform .2s ease;
+  }
+  .change-card:hover{ border-color:rgba(244,119,33,0.35); transform:translateX(3px); }
+  .change-card p{ margin:0; font-size:13.5px; color:var(--ink-dim); line-height:1.5; }
+  .change-tag{
+    flex-shrink:0; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;
+    padding:4px 10px; border-radius:100px; white-space:nowrap;
+  }
+  .change-tag.tag-added{ color:var(--green); background:rgba(62,207,142,0.12); border:1px solid rgba(62,207,142,0.3); }
+  .change-marker.tag-added{ color:var(--green); border-color:rgba(62,207,142,0.4); }
+  .change-tag.tag-reduced{ color:var(--red); background:rgba(255,107,107,0.1); border:1px solid rgba(255,107,107,0.3); }
+  .change-marker.tag-reduced{ border-color:rgba(255,107,107,0.4); }
+  .change-tag.tag-increased{ color:var(--amber); background:rgba(244,119,33,0.12); border:1px solid rgba(244,119,33,0.3); }
+  .change-marker.tag-increased{ border-color:rgba(244,119,33,0.4); }
+  .change-tag.tag-removed{ color:var(--ink-mute); background:rgba(255,255,255,0.05); border:1px solid var(--line); }
+  .change-tag.tag-consider{ color:var(--blue); background:rgba(77,168,255,0.1); border:1px solid rgba(77,168,255,0.3); }
+  .change-marker.tag-consider{ border-color:rgba(77,168,255,0.4); }
+
+  @media (max-width:600px){
+    .change-marker{ width:32px; height:32px; font-size:14px; }
+    .changes-line{ left:16px; }
+    .change-item{ gap:13px; }
+    .change-card{ padding:12px 14px; }
+  }
+
+  /* ===== PROPOSALS ===== */
+  .proposal-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .proposal-card{
+    background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px;
+    display:flex; align-items:flex-start; gap:14px;
+    transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+  .proposal-card:hover{ transform:translateY(-3px); border-color:rgba(244,119,33,0.35); box-shadow:0 10px 24px -12px rgba(0,0,0,0.5); }
+  .proposal-icon{
+    flex-shrink:0; width:40px; height:40px; border-radius:10px; background:rgba(244,119,33,0.1);
+    border:1px solid rgba(244,119,33,0.25); display:flex; align-items:center; justify-content:center; font-size:19px;
+  }
+  .proposal-card p{ margin:0; font-size:13.5px; color:var(--ink-dim); line-height:1.55; }
+  @media (max-width:640px){ .proposal-grid{ grid-template-columns:1fr; } }
 
   /* ===== FOOTER ===== */
   footer{ padding:36px 0 60px; }
@@ -1122,12 +1183,149 @@
   </div>
 </section>
 
+<!-- ================= KEY BUDGET CHANGES ================= -->
+<section id="changes2026">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">07 · Ключевые изменения</div>
+        <div class="sec-title">Ключевые изменения бюджета</div>
+      </div>
+      <div class="sec-note">Что уже поменялось в подходе к маркетинговому бюджету и что рассматривается на второе полугодие 2026.</div>
+    </div>
+
+    <div class="changes-timeline">
+      <div class="changes-line" aria-hidden="true"></div>
+
+      <div class="change-item reveal">
+        <div class="change-marker tag-added">📺</div>
+        <div class="change-card">
+          <span class="change-tag tag-added">Добавлено</span>
+          <p>Добавлена реклама на телевидении.</p>
+        </div>
+      </div>
+
+      <div class="change-item reveal">
+        <div class="change-marker tag-reduced">🤝</div>
+        <div class="change-card">
+          <span class="change-tag tag-reduced">Изменено</span>
+          <p>Сокращён бюджет совместной рекламы, так как теперь учитывается возмещение 50% расходов поставщиком.</p>
+        </div>
+      </div>
+
+      <div class="change-item reveal">
+        <div class="change-marker tag-added">📣</div>
+        <div class="change-card">
+          <span class="change-tag tag-added">Добавлено</span>
+          <p>Добавлены расходы на рекламу у блогеров.</p>
+        </div>
+      </div>
+
+      <div class="change-item reveal">
+        <div class="change-marker tag-added">🎬</div>
+        <div class="change-card">
+          <span class="change-tag tag-added">Добавлено</span>
+          <p>Добавлены расходы на производство видеороликов.</p>
+        </div>
+      </div>
+
+      <div class="change-item reveal">
+        <div class="change-marker tag-removed">✕</div>
+        <div class="change-card">
+          <span class="change-tag tag-removed">Удалено</span>
+          <p>Удалены статьи расходов, не относящиеся к маркетингу.</p>
+        </div>
+      </div>
+
+      <div class="change-item reveal">
+        <div class="change-marker tag-reduced">🎯</div>
+        <div class="change-card">
+          <span class="change-tag tag-reduced">Сокращено</span>
+          <p>Бюджет на розыгрыши сокращён до 5 000 ₽ до конца года в связи с низкой эффективностью.</p>
+        </div>
+      </div>
+
+      <div class="change-item reveal">
+        <div class="change-marker tag-increased">📌</div>
+        <div class="change-card">
+          <span class="change-tag tag-increased">Увеличено</span>
+          <p>Увеличен бюджет на Авито за счёт подключения максимального тарифа.</p>
+        </div>
+      </div>
+
+      <div class="change-item reveal">
+        <div class="change-marker tag-consider">🔍</div>
+        <div class="change-card">
+          <span class="change-tag tag-consider">На рассмотрении</span>
+          <p>Предусмотрена возможность дальнейшего увеличения рекламного бюджета Авито.</p>
+        </div>
+      </div>
+
+      <div class="change-item reveal">
+        <div class="change-marker tag-increased">📹</div>
+        <div class="change-card">
+          <span class="change-tag tag-increased">Увеличено</span>
+          <p>Увеличен бюджет на производство видеоконтента.</p>
+        </div>
+      </div>
+
+      <div class="change-item reveal">
+        <div class="change-marker tag-consider">🪧</div>
+        <div class="change-card">
+          <span class="change-tag tag-consider">На рассмотрении</span>
+          <p>Предлагается увеличить бюджет на наружные рекламные носители (баннеры и другие виды наружной рекламы).</p>
+        </div>
+      </div>
+
+      <div class="change-item reveal">
+        <div class="change-marker tag-consider">📱</div>
+        <div class="change-card">
+          <span class="change-tag tag-consider">На рассмотрении</span>
+          <p>Рассматривается запуск Telegram как дополнительного источника трафика.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROPOSALS ================= -->
+<section id="proposals2026">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">08 · Предложения</div>
+        <div class="sec-title">Предложения</div>
+      </div>
+      <div class="sec-note">Направления, которые предлагается рассмотреть дополнительно.</div>
+    </div>
+
+    <div class="proposal-grid">
+      <div class="proposal-card reveal">
+        <div class="proposal-icon">🎬</div>
+        <p>Рассмотреть дальнейшее увеличение бюджета на видеоконтент.</p>
+      </div>
+      <div class="proposal-card reveal">
+        <div class="proposal-icon">📌</div>
+        <p>При необходимости увеличить рекламный бюджет Авито.</p>
+      </div>
+      <div class="proposal-card reveal">
+        <div class="proposal-icon">🪧</div>
+        <p>Увеличить бюджет на наружную рекламу (баннеры и другие рекламные носители).</p>
+      </div>
+      <div class="proposal-card reveal">
+        <div class="proposal-icon">📱</div>
+        <p>Запустить Telegram как дополнительный источник привлечения аудитории.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ================= ROADMAP ================= -->
 <section id="roadmap" style="border-bottom:none;">
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="sec-eyebrow">07 · План действий</div>
+        <div class="sec-eyebrow">09 · План действий</div>
         <div class="sec-title">Roadmap на второе полугодие 2026</div>
       </div>
       <div class="sec-note">Июль – декабрь 2026. Целевой бюджет: 450 000 ₽/мес · 2 700 000 ₽ на полгода — распределите его по статьям ниже.</div>
@@ -1806,6 +2004,15 @@ window.ccRestoreDeleted = function(logIdx){
   renderCustomCategories();
 };
 
+window.ccDeleteForever = function(logIdx){
+  const item = ccDeletedLog[logIdx];
+  if(!item) return;
+  if(!confirm(`Удалить статью «${item.name}» навсегда? Это действие нельзя отменить.`)) return;
+  ccDeletedLog.splice(logIdx,1);
+  ccSaveDeletedLog();
+  renderCcDeletedLog();
+};
+
 function renderCcDeletedLog(){
   const el = document.getElementById('ccDeletedLog');
   if(!el) return;
@@ -1820,7 +2027,10 @@ function renderCcDeletedLog(){
         return `
         <div class="cc-deleted-item">
           <span>${escapeHtml(item.name)} <span class="mono" style="color:var(--ink-mute); font-size:12px;">— ${fmt(avg)} ₽/мес</span></span>
-          <button class="cc-restore-btn" onclick="ccRestoreDeleted(${i})">↺ Восстановить</button>
+          <div class="cc-deleted-actions">
+            <button class="cc-restore-btn" onclick="ccRestoreDeleted(${i})">↺ Восстановить</button>
+            <button class="cc-forget-btn" onclick="ccDeleteForever(${i})">✕ Удалить навсегда</button>
+          </div>
         </div>`;
       }).join('')}
     </div>`;
