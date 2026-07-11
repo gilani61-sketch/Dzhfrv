@@ -572,33 +572,23 @@
   }
 
   /* ===== KEY BUDGET CHANGES ===== */
-  .changes-timeline{ position:relative; display:flex; flex-direction:column; gap:14px; padding:6px 0 6px 24px; }
-  .changes-line{
-    position:absolute; left:8px; top:8px; bottom:8px; width:2px;
-    background:linear-gradient(to bottom, rgba(244,119,33,0.45), rgba(244,119,33,0.04));
-    border-radius:2px;
-  }
-  .change-item{ position:relative; }
-  .change-item::before{
-    content:""; position:absolute; left:-20px; top:25px; width:9px; height:9px; border-radius:50%;
-    background:var(--bg); border:2px solid var(--amber); z-index:1;
-  }
+  .changes-timeline{ display:flex; flex-direction:column; gap:14px; }
   .change-card{
     display:flex; align-items:flex-start; gap:16px;
     background:rgba(18,18,18,0.55); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
     border:1px solid rgba(255,255,255,0.08); border-left:3px solid var(--line); border-radius:16px;
-    padding:18px 22px; transition:transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s ease, box-shadow .3s ease;
+    padding:20px 24px; transition:transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s ease, box-shadow .3s ease;
   }
   .change-card:hover{ transform:translateY(-3px); border-color:rgba(255,255,255,0.16); box-shadow:0 16px 32px -18px rgba(0,0,0,0.6); }
   .change-icon{
-    flex-shrink:0; width:40px; height:40px; border-radius:11px; font-size:18px;
+    flex-shrink:0; width:44px; height:44px; border-radius:12px; font-size:19px;
     display:flex; align-items:center; justify-content:center;
     background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);
   }
   .change-body{ flex:1; min-width:0; }
   .change-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:5px; flex-wrap:wrap; }
-  .change-title{ font-family:'Rubik'; font-weight:600; font-size:14.5px; color:var(--ink); }
-  .change-card p{ margin:0; font-size:13px; color:var(--ink-dim); line-height:1.5; }
+  .change-title{ font-family:'Rubik'; font-weight:700; font-size:15px; color:var(--ink); }
+  .change-card p{ margin:0; font-size:13px; color:var(--ink-dim); line-height:1.55; }
   .change-tag{
     flex-shrink:0; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;
     padding:3px 9px; border-radius:100px; white-space:nowrap;
@@ -615,14 +605,11 @@
   .change-card.tag-consider .change-tag{ color:var(--blue); background:rgba(77,168,255,0.1); border:1px solid rgba(77,168,255,0.3); }
 
   @media (max-width:600px){
-    .changes-timeline{ padding-left:18px; gap:12px; }
-    .changes-line{ left:5px; }
-    .change-item::before{ left:-14px; top:20px; width:7px; height:7px; }
-    .change-card{ padding:14px 16px; gap:12px; }
-    .change-icon{ width:34px; height:34px; font-size:15px; }
+    .change-card{ padding:16px 18px; gap:12px; }
+    .change-icon{ width:36px; height:36px; font-size:16px; }
   }
 
-  /* ===== PROPOSALS ===== */
+  /* ===== PROPOSALS / GOALS (shared vertical card stack) ===== */
   .proposal-grid{ display:flex; flex-direction:column; gap:14px; }
   .proposal-card{
     display:flex; align-items:flex-start; gap:16px;
@@ -631,6 +618,9 @@
     padding:20px 24px; transition:transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s ease, border-color .3s ease;
   }
   .proposal-card:hover{ transform:translateY(-3px); border-color:rgba(244,119,33,0.4); box-shadow:0 18px 36px -18px rgba(0,0,0,0.6), 0 0 26px -12px rgba(244,119,33,0.3); }
+  .proposal-card.accent-blue{ border-left-color:var(--blue); }
+  .proposal-card.accent-blue:hover{ border-color:rgba(77,168,255,0.4); box-shadow:0 18px 36px -18px rgba(0,0,0,0.6), 0 0 26px -12px rgba(77,168,255,0.3); }
+  .proposal-card.accent-blue .proposal-icon{ background:rgba(77,168,255,0.1); border-color:rgba(77,168,255,0.25); }
   .proposal-icon{
     flex-shrink:0; width:44px; height:44px; border-radius:12px; font-size:20px;
     display:flex; align-items:center; justify-content:center;
@@ -1350,8 +1340,6 @@
     </div>
 
     <div class="changes-timeline">
-      <div class="changes-line" aria-hidden="true"></div>
-
       <div class="change-item reveal" style="transition-delay:0.00s">
         <div class="change-card tag-added">
           <div class="change-icon">📺</div>
@@ -1542,12 +1530,63 @@
   </div>
 </section>
 
+<!-- ================= GOALS ================= -->
+<section id="goals2026">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">09 · Цели</div>
+        <div class="sec-title">Цели</div>
+      </div>
+      <div class="sec-note">Ориентиры на второе полугодие 2026, к которым ведёт план ниже.</div>
+    </div>
+
+    <div class="proposal-grid">
+      <div class="proposal-card accent-blue reveal" style="transition-delay:0.00s">
+        <div class="proposal-icon">👥</div>
+        <div class="proposal-body">
+          <div class="proposal-title">Instagram: 50 000 подписчиков</div>
+          <p>50 000 подписчиков в Instagram.</p>
+        </div>
+      </div>
+      <div class="proposal-card accent-blue reveal" style="transition-delay:0.08s">
+        <div class="proposal-icon">📊</div>
+        <div class="proposal-body">
+          <div class="proposal-title">Охват Instagram</div>
+          <p>Достичь ежемесячного охвата Instagram 2–3 млн пользователей.</p>
+        </div>
+      </div>
+      <div class="proposal-card accent-blue reveal" style="transition-delay:0.16s">
+        <div class="proposal-icon">🏆</div>
+        <div class="proposal-body">
+          <div class="proposal-title">Узнаваемость бренда</div>
+          <p>Повысить узнаваемость бренда на региональном уровне.</p>
+        </div>
+      </div>
+      <div class="proposal-card accent-blue reveal" style="transition-delay:0.24s">
+        <div class="proposal-icon">⭐</div>
+        <div class="proposal-body">
+          <div class="proposal-title">Рейтинг в навигаторах</div>
+          <p>Поддерживать рейтинг компании в навигаторах не ниже 4.9.</p>
+        </div>
+      </div>
+      <div class="proposal-card accent-blue reveal" style="transition-delay:0.32s">
+        <div class="proposal-icon">🎯</div>
+        <div class="proposal-body">
+          <div class="proposal-title">План по заявкам</div>
+          <p>Установить и выполнять план по количеству заявок из социальных сетей.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ================= ROADMAP ================= -->
 <section id="roadmap" style="border-bottom:none;">
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="sec-eyebrow">09 · План действий</div>
+        <div class="sec-eyebrow">10 · План действий</div>
         <div class="sec-title">Roadmap на второе полугодие 2026</div>
       </div>
       <div class="sec-note">Июль – декабрь 2026. Целевой бюджет: 450 000 ₽/мес · 2 700 000 ₽ на полгода — распределите его по статьям ниже.</div>
