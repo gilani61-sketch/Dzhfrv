@@ -571,92 +571,35 @@
     .rm-phase-card{ transition:opacity .3s ease !important; transform:none !important; filter:none !important; }
   }
 
-  /* ===== Shared premium report-card reveal (used by changes / proposals / goals) ===== */
-  /* Extra class beyond .reveal so specificity (0,2,0 / 0,3,0) reliably wins over the plain
-     .reveal fade regardless of stylesheet order — same trigger (IntersectionObserver → .revealed),
-     richer effect: fade + rise + slight blur + scale, matching the Roadmap's premium cards. */
-  .report-card.reveal{
-    opacity:0; transform:translateY(22px) scale(0.97); filter:blur(3px);
-    transition:opacity .5s ease, transform .5s cubic-bezier(.2,.8,.2,1), filter .5s ease, border-color .3s ease, box-shadow .3s ease;
-    will-change:transform, opacity, filter;
-  }
-  .report-card.reveal.revealed{ opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
-
-  .sec-divider{
-    height:1px; margin:22px 0; transform-origin:left; background:linear-gradient(90deg, rgba(244,119,33,0.5), rgba(255,255,255,0.04));
-  }
-  .sec-divider.reveal{ opacity:0; transform:scaleX(0.4); transition:opacity .5s ease, transform .5s cubic-bezier(.2,.8,.2,1); }
-  .sec-divider.reveal.revealed{ opacity:1; transform:scaleX(1); }
-
-  @media (prefers-reduced-motion: reduce){
-    .report-card.reveal, .sec-divider.reveal{ transition:opacity .25s ease !important; transform:none !important; filter:none !important; }
-  }
-
-  /* ===== KEY BUDGET CHANGES ===== */
-  .changes-timeline{ display:flex; flex-direction:column; gap:14px; }
-  .change-card{
-    display:flex; align-items:flex-start; gap:16px;
-    background:rgba(18,18,18,0.55); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-    border:1px solid rgba(255,255,255,0.08); border-left:3px solid var(--line); border-radius:16px;
-    padding:20px 24px; transition:transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s ease, box-shadow .3s ease;
-  }
-  .change-card:hover{ transform:translateY(-4px); border-color:rgba(255,255,255,0.18); box-shadow:0 18px 36px -18px rgba(0,0,0,0.6), 0 0 22px -10px rgba(255,255,255,0.12); }
-  .change-icon{
+  /* ===== KEY BUDGET CHANGES / PROPOSALS / GOALS ==================================
+     These three sections reuse the exact Roadmap timeline component (.rm-premium /
+     .rm-timeline / .rm-phases / .rm-phase / .rm-phase-marker / .rm-phase-card) defined
+     above — same glass card, same central line that draws on scroll, same alternating
+     left/right layout, same active-phase spotlight. Only the content inside each
+     .rm-phase-card differs, via the light classes below (icon + title/tag + text). */
+  .change-row{ display:flex; align-items:flex-start; gap:14px; }
+  .change-icon, .proposal-icon{
     flex-shrink:0; width:44px; height:44px; border-radius:12px; font-size:19px;
     display:flex; align-items:center; justify-content:center;
     background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);
   }
-  .change-body{ flex:1; min-width:0; }
+  .change-body, .proposal-body{ flex:1; min-width:0; }
   .change-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:5px; flex-wrap:wrap; }
-  .change-title{ font-family:'Rubik'; font-weight:700; font-size:15px; color:var(--ink); }
-  .change-card p{ margin:0; font-size:13px; color:var(--ink-dim); line-height:1.55; }
+  .change-title, .proposal-title{ font-family:'Rubik'; font-weight:700; font-size:15px; color:var(--ink); }
+  .proposal-title{ margin-bottom:4px; }
+  .change-body p, .proposal-body p{ margin:0; font-size:13px; color:var(--ink-dim); line-height:1.55; }
   .change-tag{
     flex-shrink:0; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;
     padding:3px 9px; border-radius:100px; white-space:nowrap;
   }
-  .change-card.tag-added{ border-left-color:var(--green); }
-  .change-card.tag-added .change-tag{ color:var(--green); background:rgba(62,207,142,0.12); border:1px solid rgba(62,207,142,0.3); }
-  .change-card.tag-added:hover{ border-color:rgba(62,207,142,0.4); box-shadow:0 18px 36px -18px rgba(0,0,0,0.6), 0 0 24px -10px rgba(62,207,142,0.3); }
-  .change-card.tag-reduced{ border-left-color:var(--red); }
-  .change-card.tag-reduced .change-tag{ color:var(--red); background:rgba(255,107,107,0.1); border:1px solid rgba(255,107,107,0.3); }
-  .change-card.tag-reduced:hover{ border-color:rgba(255,107,107,0.4); box-shadow:0 18px 36px -18px rgba(0,0,0,0.6), 0 0 24px -10px rgba(255,107,107,0.3); }
-  .change-card.tag-increased{ border-left-color:var(--amber); }
-  .change-card.tag-increased .change-tag{ color:var(--amber); background:rgba(244,119,33,0.12); border:1px solid rgba(244,119,33,0.3); }
-  .change-card.tag-increased:hover{ border-color:rgba(244,119,33,0.4); box-shadow:0 18px 36px -18px rgba(0,0,0,0.6), 0 0 24px -10px rgba(244,119,33,0.3); }
-  .change-card.tag-removed{ border-left-color:var(--ink-mute); }
-  .change-card.tag-removed .change-tag{ color:var(--ink-mute); background:rgba(255,255,255,0.05); border:1px solid var(--line); }
-  .change-card.tag-consider{ border-left-color:var(--blue); }
-  .change-card.tag-consider .change-tag{ color:var(--blue); background:rgba(77,168,255,0.1); border:1px solid rgba(77,168,255,0.3); }
-  .change-card.tag-consider:hover{ border-color:rgba(77,168,255,0.4); box-shadow:0 18px 36px -18px rgba(0,0,0,0.6), 0 0 24px -10px rgba(77,168,255,0.3); }
+  .change-tag.tag-added{ color:var(--green); background:rgba(62,207,142,0.12); border:1px solid rgba(62,207,142,0.3); }
+  .change-tag.tag-reduced{ color:var(--red); background:rgba(255,107,107,0.1); border:1px solid rgba(255,107,107,0.3); }
+  .change-tag.tag-increased{ color:var(--amber); background:rgba(244,119,33,0.12); border:1px solid rgba(244,119,33,0.3); }
+  .change-tag.tag-removed{ color:var(--ink-mute); background:rgba(255,255,255,0.05); border:1px solid var(--line); }
+  .change-tag.tag-consider{ color:var(--blue); background:rgba(77,168,255,0.1); border:1px solid rgba(77,168,255,0.3); }
 
   @media (max-width:600px){
-    .change-card{ padding:16px 18px; gap:12px; }
-    .change-icon{ width:36px; height:36px; font-size:16px; }
-  }
-
-  /* ===== PROPOSALS / GOALS (shared vertical card stack) ===== */
-  .proposal-grid{ display:flex; flex-direction:column; gap:14px; }
-  .proposal-card{
-    display:flex; align-items:flex-start; gap:16px;
-    background:rgba(18,18,18,0.55); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-    border:1px solid rgba(255,255,255,0.08); border-left:3px solid var(--amber); border-radius:16px;
-    padding:20px 24px; transition:transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s ease, border-color .3s ease;
-  }
-  .proposal-card:hover{ transform:translateY(-4px); border-color:rgba(244,119,33,0.4); box-shadow:0 18px 36px -18px rgba(0,0,0,0.6), 0 0 26px -12px rgba(244,119,33,0.3); }
-  .proposal-card.accent-blue{ border-left-color:var(--blue); }
-  .proposal-card.accent-blue:hover{ border-color:rgba(77,168,255,0.4); box-shadow:0 18px 36px -18px rgba(0,0,0,0.6), 0 0 26px -12px rgba(77,168,255,0.3); }
-  .proposal-card.accent-blue .proposal-icon{ background:rgba(77,168,255,0.1); border-color:rgba(77,168,255,0.25); }
-  .proposal-icon{
-    flex-shrink:0; width:44px; height:44px; border-radius:12px; font-size:20px;
-    display:flex; align-items:center; justify-content:center;
-    background:rgba(244,119,33,0.1); border:1px solid rgba(244,119,33,0.25);
-  }
-  .proposal-body{ flex:1; min-width:0; }
-  .proposal-title{ font-family:'Rubik'; font-weight:700; font-size:15px; color:var(--ink); margin-bottom:4px; }
-  .proposal-card p{ margin:0; font-size:13px; color:var(--ink-dim); line-height:1.55; }
-  @media (max-width:600px){
-    .proposal-card{ padding:16px 18px; gap:12px; }
-    .proposal-icon{ width:38px; height:38px; font-size:17px; }
+    .change-icon, .proposal-icon{ width:36px; height:36px; font-size:16px; }
   }
 
   /* ===== STATISTICS HUB ===== */
@@ -1363,127 +1306,195 @@
       </div>
       <div class="sec-note reveal" style="transition-delay:0.12s">Что уже поменялось в подходе к маркетинговому бюджету и что рассматривается на второе полугодие 2026.</div>
     </div>
-    <div class="sec-divider reveal" style="transition-delay:0.18s"></div>
 
-    <div class="changes-timeline">
-      <div class="change-card report-card reveal tag-added" style="transition-delay:0.26s">
-        <div class="change-icon">📺</div>
-        <div class="change-body">
-          <div class="change-head">
-            <span class="change-title">Реклама на телевидении</span>
-            <span class="change-tag">Добавлено</span>
-          </div>
-          <p>Добавлена реклама на телевидении.</p>
-        </div>
+    <div class="rm-premium" id="changesPremium">
+      <div class="rm-bg-fx" aria-hidden="true">
+        <div class="rm-fx-blob rm-fx-1"></div>
+        <div class="rm-fx-blob rm-fx-2"></div>
+        <div class="rm-fx-blob rm-fx-3"></div>
       </div>
-
-      <div class="change-card report-card reveal tag-reduced" style="transition-delay:0.31s">
-        <div class="change-icon">🤝</div>
-        <div class="change-body">
-          <div class="change-head">
-            <span class="change-title">Совместная реклама с поставщиками</span>
-            <span class="change-tag">Изменено</span>
-          </div>
-          <p>Сокращён бюджет совместной рекламы, так как теперь учитывается возмещение 50% расходов поставщиком.</p>
+      <div class="rm-timeline">
+        <div class="rm-timeline-track">
+          <div class="rm-timeline-fill" id="changesTimelineFill"></div>
         </div>
-      </div>
+        <div class="rm-phases" id="changesPhases">
 
-      <div class="change-card report-card reveal tag-added" style="transition-delay:0.36s">
-        <div class="change-icon">📣</div>
-        <div class="change-body">
-          <div class="change-head">
-            <span class="change-title">Реклама у блогеров</span>
-            <span class="change-tag">Добавлено</span>
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="change-icon">📺</div>
+                <div class="change-body">
+                  <div class="change-head">
+                    <span class="change-title">Реклама на телевидении</span>
+                    <span class="change-tag tag-added">Добавлено</span>
+                  </div>
+                  <p>Добавлена реклама на телевидении.</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <p>Добавлены расходы на рекламу у блогеров.</p>
-        </div>
-      </div>
 
-      <div class="change-card report-card reveal tag-added" style="transition-delay:0.41s">
-        <div class="change-icon">🎬</div>
-        <div class="change-body">
-          <div class="change-head">
-            <span class="change-title">Производство видеороликов</span>
-            <span class="change-tag">Добавлено</span>
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="change-icon">🤝</div>
+                <div class="change-body">
+                  <div class="change-head">
+                    <span class="change-title">Совместная реклама с поставщиками</span>
+                    <span class="change-tag tag-reduced">Изменено</span>
+                  </div>
+                  <p>Сокращён бюджет совместной рекламы, так как теперь учитывается возмещение 50% расходов поставщиком.</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <p>Добавлены расходы на производство видеороликов.</p>
-        </div>
-      </div>
 
-      <div class="change-card report-card reveal tag-removed" style="transition-delay:0.46s">
-        <div class="change-icon">✕</div>
-        <div class="change-body">
-          <div class="change-head">
-            <span class="change-title">Немаркетинговые статьи</span>
-            <span class="change-tag">Удалено</span>
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="change-icon">📣</div>
+                <div class="change-body">
+                  <div class="change-head">
+                    <span class="change-title">Реклама у блогеров</span>
+                    <span class="change-tag tag-added">Добавлено</span>
+                  </div>
+                  <p>Добавлены расходы на рекламу у блогеров.</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <p>Удалены статьи расходов, не относящиеся к маркетингу.</p>
-        </div>
-      </div>
 
-      <div class="change-card report-card reveal tag-reduced" style="transition-delay:0.51s">
-        <div class="change-icon">🎯</div>
-        <div class="change-body">
-          <div class="change-head">
-            <span class="change-title">Бюджет на розыгрыши</span>
-            <span class="change-tag">Сокращено</span>
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="change-icon">🎬</div>
+                <div class="change-body">
+                  <div class="change-head">
+                    <span class="change-title">Производство видеороликов</span>
+                    <span class="change-tag tag-added">Добавлено</span>
+                  </div>
+                  <p>Добавлены расходы на производство видеороликов.</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <p>Бюджет на розыгрыши сокращён до 5 000 ₽ до конца года в связи с низкой эффективностью.</p>
-        </div>
-      </div>
 
-      <div class="change-card report-card reveal tag-increased" style="transition-delay:0.56s">
-        <div class="change-icon">📌</div>
-        <div class="change-body">
-          <div class="change-head">
-            <span class="change-title">Тариф на Авито</span>
-            <span class="change-tag">Увеличено</span>
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="change-icon">✕</div>
+                <div class="change-body">
+                  <div class="change-head">
+                    <span class="change-title">Немаркетинговые статьи</span>
+                    <span class="change-tag tag-removed">Удалено</span>
+                  </div>
+                  <p>Удалены статьи расходов, не относящиеся к маркетингу.</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <p>Увеличен бюджет на Авито за счёт подключения максимального тарифа.</p>
-        </div>
-      </div>
 
-      <div class="change-card report-card reveal tag-consider" style="transition-delay:0.61s">
-        <div class="change-icon">🔍</div>
-        <div class="change-body">
-          <div class="change-head">
-            <span class="change-title">Рекламный бюджет Авито</span>
-            <span class="change-tag">На рассмотрении</span>
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="change-icon">🎯</div>
+                <div class="change-body">
+                  <div class="change-head">
+                    <span class="change-title">Бюджет на розыгрыши</span>
+                    <span class="change-tag tag-reduced">Сокращено</span>
+                  </div>
+                  <p>Бюджет на розыгрыши сокращён до 5 000 ₽ до конца года в связи с низкой эффективностью.</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <p>Предусмотрена возможность дальнейшего увеличения рекламного бюджета Авито.</p>
-        </div>
-      </div>
 
-      <div class="change-card report-card reveal tag-increased" style="transition-delay:0.66s">
-        <div class="change-icon">📹</div>
-        <div class="change-body">
-          <div class="change-head">
-            <span class="change-title">Видеоконтент</span>
-            <span class="change-tag">Увеличено</span>
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="change-icon">📌</div>
+                <div class="change-body">
+                  <div class="change-head">
+                    <span class="change-title">Тариф на Авито</span>
+                    <span class="change-tag tag-increased">Увеличено</span>
+                  </div>
+                  <p>Увеличен бюджет на Авито за счёт подключения максимального тарифа.</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <p>Увеличен бюджет на производство видеоконтента.</p>
-        </div>
-      </div>
 
-      <div class="change-card report-card reveal tag-consider" style="transition-delay:0.71s">
-        <div class="change-icon">🪧</div>
-        <div class="change-body">
-          <div class="change-head">
-            <span class="change-title">Наружная реклама</span>
-            <span class="change-tag">На рассмотрении</span>
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="change-icon">🔍</div>
+                <div class="change-body">
+                  <div class="change-head">
+                    <span class="change-title">Рекламный бюджет Авито</span>
+                    <span class="change-tag tag-consider">На рассмотрении</span>
+                  </div>
+                  <p>Предусмотрена возможность дальнейшего увеличения рекламного бюджета Авито.</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <p>Предлагается увеличить бюджет на наружные рекламные носители (баннеры и другие виды наружной рекламы).</p>
-        </div>
-      </div>
 
-      <div class="change-card report-card reveal tag-consider" style="transition-delay:0.76s">
-        <div class="change-icon">📱</div>
-        <div class="change-body">
-          <div class="change-head">
-            <span class="change-title">Telegram</span>
-            <span class="change-tag">На рассмотрении</span>
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="change-icon">📹</div>
+                <div class="change-body">
+                  <div class="change-head">
+                    <span class="change-title">Видеоконтент</span>
+                    <span class="change-tag tag-increased">Увеличено</span>
+                  </div>
+                  <p>Увеличен бюджет на производство видеоконтента.</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <p>Рассматривается запуск Telegram как дополнительного источника трафика.</p>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="change-icon">🪧</div>
+                <div class="change-body">
+                  <div class="change-head">
+                    <span class="change-title">Наружная реклама</span>
+                    <span class="change-tag tag-consider">На рассмотрении</span>
+                  </div>
+                  <p>Предлагается увеличить бюджет на наружные рекламные носители (баннеры и другие виды наружной рекламы).</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="change-icon">📱</div>
+                <div class="change-body">
+                  <div class="change-head">
+                    <span class="change-title">Telegram</span>
+                    <span class="change-tag tag-consider">На рассмотрении</span>
+                  </div>
+                  <p>Рассматривается запуск Telegram как дополнительного источника трафика.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -1500,35 +1511,71 @@
       </div>
       <div class="sec-note reveal" style="transition-delay:0.12s">Направления, которые предлагается рассмотреть дополнительно.</div>
     </div>
-    <div class="sec-divider reveal" style="transition-delay:0.18s"></div>
 
-    <div class="proposal-grid">
-      <div class="proposal-card report-card reveal" style="transition-delay:0.26s">
-        <div class="proposal-icon">🎬</div>
-        <div class="proposal-body">
-          <div class="proposal-title">Видеоконтент</div>
-          <p>Рассмотреть дальнейшее увеличение бюджета на видеоконтент.</p>
-        </div>
+    <div class="rm-premium" id="proposalsPremium">
+      <div class="rm-bg-fx" aria-hidden="true">
+        <div class="rm-fx-blob rm-fx-1"></div>
+        <div class="rm-fx-blob rm-fx-2"></div>
+        <div class="rm-fx-blob rm-fx-3"></div>
       </div>
-      <div class="proposal-card report-card reveal" style="transition-delay:0.31s">
-        <div class="proposal-icon">📌</div>
-        <div class="proposal-body">
-          <div class="proposal-title">Рекламный бюджет Авито</div>
-          <p>При необходимости увеличить рекламный бюджет Авито.</p>
+      <div class="rm-timeline">
+        <div class="rm-timeline-track">
+          <div class="rm-timeline-fill" id="proposalsTimelineFill"></div>
         </div>
-      </div>
-      <div class="proposal-card report-card reveal" style="transition-delay:0.36s">
-        <div class="proposal-icon">🪧</div>
-        <div class="proposal-body">
-          <div class="proposal-title">Наружная реклама</div>
-          <p>Увеличить бюджет на наружную рекламу (баннеры и другие рекламные носители).</p>
-        </div>
-      </div>
-      <div class="proposal-card report-card reveal" style="transition-delay:0.41s">
-        <div class="proposal-icon">📱</div>
-        <div class="proposal-body">
-          <div class="proposal-title">Telegram</div>
-          <p>Запустить Telegram как дополнительный источник привлечения аудитории.</p>
+        <div class="rm-phases" id="proposalsPhases">
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">🎬</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Видеоконтент</div>
+                  <p>Рассмотреть дальнейшее увеличение бюджета на видеоконтент.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">📌</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Рекламный бюджет Авито</div>
+                  <p>При необходимости увеличить рекламный бюджет Авито.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">🪧</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Наружная реклама</div>
+                  <p>Увеличить бюджет на наружную рекламу (баннеры и другие рекламные носители).</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">📱</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Telegram</div>
+                  <p>Запустить Telegram как дополнительный источник привлечения аудитории.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -1545,42 +1592,84 @@
       </div>
       <div class="sec-note reveal" style="transition-delay:0.12s">Ориентиры на второе полугодие 2026, к которым ведёт план ниже.</div>
     </div>
-    <div class="sec-divider reveal" style="transition-delay:0.18s"></div>
 
-    <div class="proposal-grid">
-      <div class="proposal-card accent-blue report-card reveal" style="transition-delay:0.26s">
-        <div class="proposal-icon">👥</div>
-        <div class="proposal-body">
-          <div class="proposal-title">Instagram: 50 000 подписчиков</div>
-          <p>50 000 подписчиков в Instagram.</p>
-        </div>
+    <div class="rm-premium" id="goalsPremium">
+      <div class="rm-bg-fx" aria-hidden="true">
+        <div class="rm-fx-blob rm-fx-1"></div>
+        <div class="rm-fx-blob rm-fx-2"></div>
+        <div class="rm-fx-blob rm-fx-3"></div>
       </div>
-      <div class="proposal-card accent-blue report-card reveal" style="transition-delay:0.31s">
-        <div class="proposal-icon">📊</div>
-        <div class="proposal-body">
-          <div class="proposal-title">Охват Instagram</div>
-          <p>Достичь ежемесячного охвата Instagram 2–3 млн пользователей.</p>
+      <div class="rm-timeline">
+        <div class="rm-timeline-track">
+          <div class="rm-timeline-fill" id="goalsTimelineFill"></div>
         </div>
-      </div>
-      <div class="proposal-card accent-blue report-card reveal" style="transition-delay:0.36s">
-        <div class="proposal-icon">🏆</div>
-        <div class="proposal-body">
-          <div class="proposal-title">Узнаваемость бренда</div>
-          <p>Повысить узнаваемость бренда на региональном уровне.</p>
-        </div>
-      </div>
-      <div class="proposal-card accent-blue report-card reveal" style="transition-delay:0.41s">
-        <div class="proposal-icon">⭐</div>
-        <div class="proposal-body">
-          <div class="proposal-title">Рейтинг в навигаторах</div>
-          <p>Поддерживать рейтинг компании в навигаторах не ниже 4.9.</p>
-        </div>
-      </div>
-      <div class="proposal-card accent-blue report-card reveal" style="transition-delay:0.46s">
-        <div class="proposal-icon">🎯</div>
-        <div class="proposal-body">
-          <div class="proposal-title">План по заявкам</div>
-          <p>Установить и выполнять план по количеству заявок из социальных сетей.</p>
+        <div class="rm-phases" id="goalsPhases">
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">👥</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Instagram: 50 000 подписчиков</div>
+                  <p>50 000 подписчиков в Instagram.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">📊</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Охват Instagram</div>
+                  <p>Достичь ежемесячного охвата Instagram 2–3 млн пользователей.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">🏆</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Узнаваемость бренда</div>
+                  <p>Повысить узнаваемость бренда на региональном уровне.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">⭐</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Рейтинг в навигаторах</div>
+                  <p>Поддерживать рейтинг компании в навигаторах не ниже 4.9.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">🎯</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">План по заявкам</div>
+                  <p>Установить и выполнять план по количеству заявок из социальных сетей.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -2535,8 +2624,13 @@ function renderPremiumRoadmap(){
   initPremiumRoadmap();
 }
 
-function initPremiumRoadmap(){
-  const phases = document.querySelectorAll('#rmPhases .rm-phase');
+// Generic setup for one Roadmap-style timeline instance: reveal-on-scroll for its phase
+// cards + a GSAP-scrubbed line draw for its fill bar. Re-usable by any section that reuses
+// the .rm-premium/.rm-timeline/.rm-phases/.rm-phase markup (Roadmap itself, plus the
+// changes/proposals/goals sections below), each with its own container/fill/trigger id so
+// they don't interfere with one another.
+function initTimelineSection(phasesId, fillId, triggerId){
+  const phases = document.querySelectorAll('#'+phasesId+' .rm-phase');
   if(phases.length === 0) return;
   const hasGsap = typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined';
 
@@ -2551,21 +2645,24 @@ function initPremiumRoadmap(){
     phases.forEach(revealRmPhase);
   }
 
-  const fill = document.getElementById('rmTimelineFill');
+  const fill = document.getElementById(fillId);
   if(fill){
     if(hasGsap){
       gsap.registerPlugin(ScrollTrigger);
-      ScrollTrigger.getAll().forEach(st=>{ if(st.vars.id === 'rmFillTrigger') st.kill(); });
+      ScrollTrigger.getAll().forEach(st=>{ if(st.vars.id === triggerId) st.kill(); });
       gsap.set(fill, { scaleY:0, transformOrigin:'top' });
       gsap.to(fill, {
         scaleY:1, ease:'none',
-        scrollTrigger:{ id:'rmFillTrigger', trigger:'#rmPhases', start:'top 75%', end:'bottom 70%', scrub:0.6 }
+        scrollTrigger:{ id:triggerId, trigger:'#'+phasesId, start:'top 75%', end:'bottom 70%', scrub:0.6 }
       });
     } else {
       fill.style.transform = 'scaleY(1)';
     }
   }
+}
 
+function initPremiumRoadmap(){
+  initTimelineSection('rmPhases', 'rmTimelineFill', 'rmFillTrigger');
   updateActiveRmPhase();
 }
 
@@ -2620,28 +2717,34 @@ function updateRmInsight(mi){
 
 let rmActiveTicking = false;
 let rmLastActiveIdx = -1;
+// Every .rm-phases container on the page (Roadmap + changes/proposals/goals) gets its own
+// independent "closest to viewport center" computation and active/has-active toggling, so
+// the four timelines never compete with or dim one another.
 function updateActiveRmPhase(){
   rmActiveTicking = false;
-  const phases = document.querySelectorAll('#rmPhases .rm-phase');
-  const wrap = document.getElementById('rmPhases');
-  if(!phases.length || !wrap) return;
   const centerY = window.innerHeight / 2;
-  let closest = null, closestDist = Infinity;
-  phases.forEach(p=>{
-    const r = p.getBoundingClientRect();
-    if(r.height === 0) return;
-    const dist = Math.abs((r.top + r.height/2) - centerY);
-    if(dist < closestDist){ closestDist = dist; closest = p; }
-  });
-  phases.forEach(p=> p.classList.toggle('active', p===closest));
-  if(closest){
-    wrap.classList.add('has-active');
-    const idx = parseInt(closest.dataset.monthIndex, 10);
-    if(!isNaN(idx) && idx !== rmLastActiveIdx){
-      rmLastActiveIdx = idx;
-      updateRmInsight(idx);
+  document.querySelectorAll('.rm-phases').forEach(wrap=>{
+    const phases = wrap.querySelectorAll('.rm-phase');
+    if(!phases.length) return;
+    let closest = null, closestDist = Infinity;
+    phases.forEach(p=>{
+      const r = p.getBoundingClientRect();
+      if(r.height === 0) return;
+      const dist = Math.abs((r.top + r.height/2) - centerY);
+      if(dist < closestDist){ closestDist = dist; closest = p; }
+    });
+    phases.forEach(p=> p.classList.toggle('active', p===closest));
+    if(closest){
+      wrap.classList.add('has-active');
+      if(wrap.id === 'rmPhases'){
+        const idx = parseInt(closest.dataset.monthIndex, 10);
+        if(!isNaN(idx) && idx !== rmLastActiveIdx){
+          rmLastActiveIdx = idx;
+          updateRmInsight(idx);
+        }
+      }
     }
-  }
+  });
 }
 window.addEventListener('scroll', ()=>{
   if(!rmActiveTicking){ rmActiveTicking = true; requestAnimationFrame(updateActiveRmPhase); }
@@ -2651,7 +2754,7 @@ window.addEventListener('resize', ()=>{
 });
 
 function refreshRmVisibility(){
-  document.querySelectorAll('#rmPhases .rm-phase-card:not(.rm-in)').forEach(card=>{
+  document.querySelectorAll('.rm-phase-card:not(.rm-in)').forEach(card=>{
     const r = card.getBoundingClientRect();
     if(r.top < window.innerHeight && r.bottom > 0){
       const phase = card.closest('.rm-phase');
@@ -2709,6 +2812,14 @@ function renderCustomCategories(){
 }
 
 renderCustomCategories();
+
+// The changes/proposals/goals sections are static HTML reusing the Roadmap's timeline
+// markup directly, so they just need the same scroll-driven init Roadmap gets — no
+// separate render step, their content never changes.
+initTimelineSection('changesPhases', 'changesTimelineFill', 'changesFillTrigger');
+initTimelineSection('proposalsPhases', 'proposalsTimelineFill', 'proposalsFillTrigger');
+initTimelineSection('goalsPhases', 'goalsTimelineFill', 'goalsFillTrigger');
+updateActiveRmPhase();
 
 
 // ---------- Shared text/table parsing (used by every import pipeline: paste, Excel/CSV, PDF) ----------
