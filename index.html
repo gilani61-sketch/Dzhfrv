@@ -569,60 +569,77 @@
   }
 
   /* ===== KEY BUDGET CHANGES ===== */
-  .changes-timeline{ position:relative; display:flex; flex-direction:column; gap:0; padding:8px 0; }
+  .changes-timeline{ position:relative; display:flex; flex-direction:column; gap:14px; padding:6px 0 6px 24px; }
   .changes-line{
-    position:absolute; left:19px; top:6px; bottom:6px; width:2px;
-    background:linear-gradient(to bottom, rgba(244,119,33,0.5), rgba(244,119,33,0.05));
+    position:absolute; left:8px; top:8px; bottom:8px; width:2px;
+    background:linear-gradient(to bottom, rgba(244,119,33,0.45), rgba(244,119,33,0.04));
     border-radius:2px;
   }
-  .change-item{ position:relative; display:flex; gap:18px; padding:11px 0; }
-  .change-marker{
-    flex-shrink:0; width:38px; height:38px; border-radius:50%; z-index:1;
-    display:flex; align-items:center; justify-content:center; font-size:16px;
-    background:var(--card); border:1.5px solid var(--line);
+  .change-item{ position:relative; }
+  .change-item::before{
+    content:""; position:absolute; left:-20px; top:25px; width:9px; height:9px; border-radius:50%;
+    background:var(--bg); border:2px solid var(--amber); z-index:1;
   }
   .change-card{
-    flex:1; min-width:0; background:var(--card); border:1px solid var(--line); border-radius:12px;
-    padding:14px 18px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
-    transition:border-color .2s ease, transform .2s ease;
+    display:flex; align-items:flex-start; gap:16px;
+    background:rgba(18,18,18,0.55); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,0.08); border-left:3px solid var(--line); border-radius:16px;
+    padding:18px 22px; transition:transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s ease, box-shadow .3s ease;
   }
-  .change-card:hover{ border-color:rgba(244,119,33,0.35); transform:translateX(3px); }
-  .change-card p{ margin:0; font-size:13.5px; color:var(--ink-dim); line-height:1.5; }
+  .change-card:hover{ transform:translateY(-3px); border-color:rgba(255,255,255,0.16); box-shadow:0 16px 32px -18px rgba(0,0,0,0.6); }
+  .change-icon{
+    flex-shrink:0; width:40px; height:40px; border-radius:11px; font-size:18px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);
+  }
+  .change-body{ flex:1; min-width:0; }
+  .change-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:5px; flex-wrap:wrap; }
+  .change-title{ font-family:'Rubik'; font-weight:600; font-size:14.5px; color:var(--ink); }
+  .change-card p{ margin:0; font-size:13px; color:var(--ink-dim); line-height:1.5; }
   .change-tag{
-    flex-shrink:0; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;
-    padding:4px 10px; border-radius:100px; white-space:nowrap;
+    flex-shrink:0; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;
+    padding:3px 9px; border-radius:100px; white-space:nowrap;
   }
-  .change-tag.tag-added{ color:var(--green); background:rgba(62,207,142,0.12); border:1px solid rgba(62,207,142,0.3); }
-  .change-marker.tag-added{ color:var(--green); border-color:rgba(62,207,142,0.4); }
-  .change-tag.tag-reduced{ color:var(--red); background:rgba(255,107,107,0.1); border:1px solid rgba(255,107,107,0.3); }
-  .change-marker.tag-reduced{ border-color:rgba(255,107,107,0.4); }
-  .change-tag.tag-increased{ color:var(--amber); background:rgba(244,119,33,0.12); border:1px solid rgba(244,119,33,0.3); }
-  .change-marker.tag-increased{ border-color:rgba(244,119,33,0.4); }
-  .change-tag.tag-removed{ color:var(--ink-mute); background:rgba(255,255,255,0.05); border:1px solid var(--line); }
-  .change-tag.tag-consider{ color:var(--blue); background:rgba(77,168,255,0.1); border:1px solid rgba(77,168,255,0.3); }
-  .change-marker.tag-consider{ border-color:rgba(77,168,255,0.4); }
+  .change-card.tag-added{ border-left-color:var(--green); }
+  .change-card.tag-added .change-tag{ color:var(--green); background:rgba(62,207,142,0.12); border:1px solid rgba(62,207,142,0.3); }
+  .change-card.tag-reduced{ border-left-color:var(--red); }
+  .change-card.tag-reduced .change-tag{ color:var(--red); background:rgba(255,107,107,0.1); border:1px solid rgba(255,107,107,0.3); }
+  .change-card.tag-increased{ border-left-color:var(--amber); }
+  .change-card.tag-increased .change-tag{ color:var(--amber); background:rgba(244,119,33,0.12); border:1px solid rgba(244,119,33,0.3); }
+  .change-card.tag-removed{ border-left-color:var(--ink-mute); }
+  .change-card.tag-removed .change-tag{ color:var(--ink-mute); background:rgba(255,255,255,0.05); border:1px solid var(--line); }
+  .change-card.tag-consider{ border-left-color:var(--blue); }
+  .change-card.tag-consider .change-tag{ color:var(--blue); background:rgba(77,168,255,0.1); border:1px solid rgba(77,168,255,0.3); }
 
   @media (max-width:600px){
-    .change-marker{ width:32px; height:32px; font-size:14px; }
-    .changes-line{ left:16px; }
-    .change-item{ gap:13px; }
-    .change-card{ padding:12px 14px; }
+    .changes-timeline{ padding-left:18px; gap:12px; }
+    .changes-line{ left:5px; }
+    .change-item::before{ left:-14px; top:20px; width:7px; height:7px; }
+    .change-card{ padding:14px 16px; gap:12px; }
+    .change-icon{ width:34px; height:34px; font-size:15px; }
   }
 
   /* ===== PROPOSALS ===== */
-  .proposal-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .proposal-grid{ display:flex; flex-direction:column; gap:14px; }
   .proposal-card{
-    background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px;
-    display:flex; align-items:flex-start; gap:14px;
-    transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    display:flex; align-items:flex-start; gap:16px;
+    background:rgba(18,18,18,0.55); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,0.08); border-left:3px solid var(--amber); border-radius:16px;
+    padding:20px 24px; transition:transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s ease, border-color .3s ease;
   }
-  .proposal-card:hover{ transform:translateY(-3px); border-color:rgba(244,119,33,0.35); box-shadow:0 10px 24px -12px rgba(0,0,0,0.5); }
+  .proposal-card:hover{ transform:translateY(-3px); border-color:rgba(244,119,33,0.4); box-shadow:0 18px 36px -18px rgba(0,0,0,0.6), 0 0 26px -12px rgba(244,119,33,0.3); }
   .proposal-icon{
-    flex-shrink:0; width:40px; height:40px; border-radius:10px; background:rgba(244,119,33,0.1);
-    border:1px solid rgba(244,119,33,0.25); display:flex; align-items:center; justify-content:center; font-size:19px;
+    flex-shrink:0; width:44px; height:44px; border-radius:12px; font-size:20px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(244,119,33,0.1); border:1px solid rgba(244,119,33,0.25);
   }
-  .proposal-card p{ margin:0; font-size:13.5px; color:var(--ink-dim); line-height:1.55; }
-  @media (max-width:640px){ .proposal-grid{ grid-template-columns:1fr; } }
+  .proposal-body{ flex:1; min-width:0; }
+  .proposal-title{ font-family:'Rubik'; font-weight:700; font-size:15px; color:var(--ink); margin-bottom:4px; }
+  .proposal-card p{ margin:0; font-size:13px; color:var(--ink-dim); line-height:1.55; }
+  @media (max-width:600px){
+    .proposal-card{ padding:16px 18px; gap:12px; }
+    .proposal-icon{ width:38px; height:38px; font-size:17px; }
+  }
 
   /* ===== FOOTER ===== */
   footer{ padding:36px 0 60px; }
@@ -1197,91 +1214,146 @@
     <div class="changes-timeline">
       <div class="changes-line" aria-hidden="true"></div>
 
-      <div class="change-item reveal">
-        <div class="change-marker tag-added">📺</div>
-        <div class="change-card">
-          <span class="change-tag tag-added">Добавлено</span>
-          <p>Добавлена реклама на телевидении.</p>
+      <div class="change-item reveal" style="transition-delay:0.00s">
+        <div class="change-card tag-added">
+          <div class="change-icon">📺</div>
+          <div class="change-body">
+            <div class="change-head">
+              <span class="change-title">Реклама на телевидении</span>
+              <span class="change-tag">Добавлено</span>
+            </div>
+            <p>Добавлена реклама на телевидении.</p>
+          </div>
         </div>
       </div>
 
-      <div class="change-item reveal">
-        <div class="change-marker tag-reduced">🤝</div>
-        <div class="change-card">
-          <span class="change-tag tag-reduced">Изменено</span>
-          <p>Сокращён бюджет совместной рекламы, так как теперь учитывается возмещение 50% расходов поставщиком.</p>
+      <div class="change-item reveal" style="transition-delay:0.06s">
+        <div class="change-card tag-reduced">
+          <div class="change-icon">🤝</div>
+          <div class="change-body">
+            <div class="change-head">
+              <span class="change-title">Совместная реклама с поставщиками</span>
+              <span class="change-tag">Изменено</span>
+            </div>
+            <p>Сокращён бюджет совместной рекламы, так как теперь учитывается возмещение 50% расходов поставщиком.</p>
+          </div>
         </div>
       </div>
 
-      <div class="change-item reveal">
-        <div class="change-marker tag-added">📣</div>
-        <div class="change-card">
-          <span class="change-tag tag-added">Добавлено</span>
-          <p>Добавлены расходы на рекламу у блогеров.</p>
+      <div class="change-item reveal" style="transition-delay:0.12s">
+        <div class="change-card tag-added">
+          <div class="change-icon">📣</div>
+          <div class="change-body">
+            <div class="change-head">
+              <span class="change-title">Реклама у блогеров</span>
+              <span class="change-tag">Добавлено</span>
+            </div>
+            <p>Добавлены расходы на рекламу у блогеров.</p>
+          </div>
         </div>
       </div>
 
-      <div class="change-item reveal">
-        <div class="change-marker tag-added">🎬</div>
-        <div class="change-card">
-          <span class="change-tag tag-added">Добавлено</span>
-          <p>Добавлены расходы на производство видеороликов.</p>
+      <div class="change-item reveal" style="transition-delay:0.18s">
+        <div class="change-card tag-added">
+          <div class="change-icon">🎬</div>
+          <div class="change-body">
+            <div class="change-head">
+              <span class="change-title">Производство видеороликов</span>
+              <span class="change-tag">Добавлено</span>
+            </div>
+            <p>Добавлены расходы на производство видеороликов.</p>
+          </div>
         </div>
       </div>
 
-      <div class="change-item reveal">
-        <div class="change-marker tag-removed">✕</div>
-        <div class="change-card">
-          <span class="change-tag tag-removed">Удалено</span>
-          <p>Удалены статьи расходов, не относящиеся к маркетингу.</p>
+      <div class="change-item reveal" style="transition-delay:0.24s">
+        <div class="change-card tag-removed">
+          <div class="change-icon">✕</div>
+          <div class="change-body">
+            <div class="change-head">
+              <span class="change-title">Немаркетинговые статьи</span>
+              <span class="change-tag">Удалено</span>
+            </div>
+            <p>Удалены статьи расходов, не относящиеся к маркетингу.</p>
+          </div>
         </div>
       </div>
 
-      <div class="change-item reveal">
-        <div class="change-marker tag-reduced">🎯</div>
-        <div class="change-card">
-          <span class="change-tag tag-reduced">Сокращено</span>
-          <p>Бюджет на розыгрыши сокращён до 5 000 ₽ до конца года в связи с низкой эффективностью.</p>
+      <div class="change-item reveal" style="transition-delay:0.30s">
+        <div class="change-card tag-reduced">
+          <div class="change-icon">🎯</div>
+          <div class="change-body">
+            <div class="change-head">
+              <span class="change-title">Бюджет на розыгрыши</span>
+              <span class="change-tag">Сокращено</span>
+            </div>
+            <p>Бюджет на розыгрыши сокращён до 5 000 ₽ до конца года в связи с низкой эффективностью.</p>
+          </div>
         </div>
       </div>
 
-      <div class="change-item reveal">
-        <div class="change-marker tag-increased">📌</div>
-        <div class="change-card">
-          <span class="change-tag tag-increased">Увеличено</span>
-          <p>Увеличен бюджет на Авито за счёт подключения максимального тарифа.</p>
+      <div class="change-item reveal" style="transition-delay:0.36s">
+        <div class="change-card tag-increased">
+          <div class="change-icon">📌</div>
+          <div class="change-body">
+            <div class="change-head">
+              <span class="change-title">Тариф на Авито</span>
+              <span class="change-tag">Увеличено</span>
+            </div>
+            <p>Увеличен бюджет на Авито за счёт подключения максимального тарифа.</p>
+          </div>
         </div>
       </div>
 
-      <div class="change-item reveal">
-        <div class="change-marker tag-consider">🔍</div>
-        <div class="change-card">
-          <span class="change-tag tag-consider">На рассмотрении</span>
-          <p>Предусмотрена возможность дальнейшего увеличения рекламного бюджета Авито.</p>
+      <div class="change-item reveal" style="transition-delay:0.42s">
+        <div class="change-card tag-consider">
+          <div class="change-icon">🔍</div>
+          <div class="change-body">
+            <div class="change-head">
+              <span class="change-title">Рекламный бюджет Авито</span>
+              <span class="change-tag">На рассмотрении</span>
+            </div>
+            <p>Предусмотрена возможность дальнейшего увеличения рекламного бюджета Авито.</p>
+          </div>
         </div>
       </div>
 
-      <div class="change-item reveal">
-        <div class="change-marker tag-increased">📹</div>
-        <div class="change-card">
-          <span class="change-tag tag-increased">Увеличено</span>
-          <p>Увеличен бюджет на производство видеоконтента.</p>
+      <div class="change-item reveal" style="transition-delay:0.48s">
+        <div class="change-card tag-increased">
+          <div class="change-icon">📹</div>
+          <div class="change-body">
+            <div class="change-head">
+              <span class="change-title">Видеоконтент</span>
+              <span class="change-tag">Увеличено</span>
+            </div>
+            <p>Увеличен бюджет на производство видеоконтента.</p>
+          </div>
         </div>
       </div>
 
-      <div class="change-item reveal">
-        <div class="change-marker tag-consider">🪧</div>
-        <div class="change-card">
-          <span class="change-tag tag-consider">На рассмотрении</span>
-          <p>Предлагается увеличить бюджет на наружные рекламные носители (баннеры и другие виды наружной рекламы).</p>
+      <div class="change-item reveal" style="transition-delay:0.54s">
+        <div class="change-card tag-consider">
+          <div class="change-icon">🪧</div>
+          <div class="change-body">
+            <div class="change-head">
+              <span class="change-title">Наружная реклама</span>
+              <span class="change-tag">На рассмотрении</span>
+            </div>
+            <p>Предлагается увеличить бюджет на наружные рекламные носители (баннеры и другие виды наружной рекламы).</p>
+          </div>
         </div>
       </div>
 
-      <div class="change-item reveal">
-        <div class="change-marker tag-consider">📱</div>
-        <div class="change-card">
-          <span class="change-tag tag-consider">На рассмотрении</span>
-          <p>Рассматривается запуск Telegram как дополнительного источника трафика.</p>
+      <div class="change-item reveal" style="transition-delay:0.60s">
+        <div class="change-card tag-consider">
+          <div class="change-icon">📱</div>
+          <div class="change-body">
+            <div class="change-head">
+              <span class="change-title">Telegram</span>
+              <span class="change-tag">На рассмотрении</span>
+            </div>
+            <p>Рассматривается запуск Telegram как дополнительного источника трафика.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -1300,21 +1372,33 @@
     </div>
 
     <div class="proposal-grid">
-      <div class="proposal-card reveal">
+      <div class="proposal-card reveal" style="transition-delay:0.00s">
         <div class="proposal-icon">🎬</div>
-        <p>Рассмотреть дальнейшее увеличение бюджета на видеоконтент.</p>
+        <div class="proposal-body">
+          <div class="proposal-title">Видеоконтент</div>
+          <p>Рассмотреть дальнейшее увеличение бюджета на видеоконтент.</p>
+        </div>
       </div>
-      <div class="proposal-card reveal">
+      <div class="proposal-card reveal" style="transition-delay:0.08s">
         <div class="proposal-icon">📌</div>
-        <p>При необходимости увеличить рекламный бюджет Авито.</p>
+        <div class="proposal-body">
+          <div class="proposal-title">Рекламный бюджет Авито</div>
+          <p>При необходимости увеличить рекламный бюджет Авито.</p>
+        </div>
       </div>
-      <div class="proposal-card reveal">
+      <div class="proposal-card reveal" style="transition-delay:0.16s">
         <div class="proposal-icon">🪧</div>
-        <p>Увеличить бюджет на наружную рекламу (баннеры и другие рекламные носители).</p>
+        <div class="proposal-body">
+          <div class="proposal-title">Наружная реклама</div>
+          <p>Увеличить бюджет на наружную рекламу (баннеры и другие рекламные носители).</p>
+        </div>
       </div>
-      <div class="proposal-card reveal">
+      <div class="proposal-card reveal" style="transition-delay:0.24s">
         <div class="proposal-icon">📱</div>
-        <p>Запустить Telegram как дополнительный источник привлечения аудитории.</p>
+        <div class="proposal-body">
+          <div class="proposal-title">Telegram</div>
+          <p>Запустить Telegram как дополнительный источник привлечения аудитории.</p>
+        </div>
       </div>
     </div>
   </div>
