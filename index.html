@@ -478,12 +478,11 @@
   .rm-sum-label{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-mute); margin-bottom:5px; }
   .rm-sum-val{ font-size:12.5px; color:var(--ink-dim); line-height:1.45; overflow-wrap:anywhere; }
   .rm-sum-val b{ color:var(--ink); font-weight:700; font-size:15px; }
-  .rm-sum-top3{ list-style:none; display:flex; flex-direction:column; gap:3px; }
-  .rm-sum-top3 li{
-    display:flex; align-items:baseline; justify-content:space-between; gap:8px;
-    font-family:'JetBrains Mono'; font-size:11px; color:var(--ink-dim);
-  }
-  .rm-sum-top3 li span:first-child{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .rm-sum-top3{ list-style:none; display:grid; grid-template-columns:1fr auto; gap:4px 10px; }
+  .rm-sum-top3 li{ display:contents; }
+  .rm-sum-top3 li span{ font-family:'JetBrains Mono'; font-size:11px; color:var(--ink-dim); white-space:nowrap; }
+  .rm-sum-top3 li span:first-child{ grid-column:1; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+  .rm-sum-top3 li span:last-child{ grid-column:2; text-align:right; font-variant-numeric:tabular-nums; }
   .rm-sum-empty{ color:var(--ink-mute); }
   @media (max-width:480px){ .rm-phase-summary{ grid-template-columns:1fr; } }
 
@@ -894,12 +893,241 @@
 
 <div class="year-pane" id="year-2026">
 
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow"><span class="dot"></span>Отчётный период: 01.01.2026 – 31.07.2026 (факт)</div>
+    <h1 class="hero-title">Бюджет маркетинга <span>«Обер»</span> за первое полугодие 2026: факт и план</h1>
+    <p class="hero-desc">15 статей расходов, 7 месяцев факта — из той же бухгалтерской выгрузки, что и отчёт 2025 года. Ниже — куда фактически ушли деньги с января по июль, а сразу за этим — Roadmap с планом на оставшиеся месяцы 2026-го.</p>
+
+    <div class="hero-figure reveal">
+      <div class="hero-total">
+        <div class="label">Итого потрачено за 7 месяцев</div>
+        <div class="value" id="heroTotal2026" data-count="2821414" data-suffix=" ₽">0 ₽</div>
+        <div class="foot">
+          <span>Среднемесячно: <b class="mono" style="color:var(--ink)">403 059 ₽</b></span>
+          <span>Категорий: <b class="mono" style="color:var(--ink)">15</b></span>
+        </div>
+      </div>
+      <div class="hero-side">
+        <div class="row"><span class="k">Пиковый месяц</span><span class="v up">Июнь · 1 077 988 ₽</span></div>
+        <div class="row"><span class="k">Минимальный месяц</span><span class="v down">Май · 143 985 ₽</span></div>
+        <div class="row"><span class="k">Топ-статья</span><span class="v">Совместная реклама · 46,8%</span></div>
+        <div class="row"><span class="k">Топ-3 статьи</span><span class="v">75,2% бюджета</span></div>
+        <div class="row"><span class="k">Vs Янв–Июль 2025</span><span class="v down">−3,9% (2 936 362 → 2 821 414 ₽)</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 2026 KPI / INFOGRAPHIC ================= -->
+<section id="pulse2026">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">01 · Пульс бюджета</div>
+        <div class="sec-title">Ключевые цифры за январь–июль 2026</div>
+      </div>
+      <div class="sec-note">Снимок факта за первые 7 месяцев года — точка входа перед деталями и планом на второе полугодие.</div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi reveal" style="--kpi-accent:var(--amber)">
+        <div class="kpi-label">Потрачено за 7 мес.</div>
+        <div class="kpi-value mono" data-count="2821414" data-suffix=" ₽">0 ₽</div>
+        <div class="kpi-sub">факт на 31.07.2026</div>
+      </div>
+      <div class="kpi reveal" style="--kpi-accent:var(--blue)">
+        <div class="kpi-label">Средний расход / мес.</div>
+        <div class="kpi-value mono" data-count="403059" data-suffix=" ₽">0 ₽</div>
+        <div class="kpi-sub">медиана: <b class="mono" style="color:var(--blue)">314 550 ₽</b></div>
+      </div>
+      <div class="kpi reveal" style="--kpi-accent:var(--green)">
+        <div class="kpi-label">Разброс мин–макс</div>
+        <div class="kpi-value mono" data-count="7.5" data-decimals="1" data-suffix="×">0×</div>
+        <div class="kpi-sub">143 985 → 1 077 988 ₽</div>
+      </div>
+      <div class="kpi reveal" style="--kpi-accent:var(--violet)">
+        <div class="kpi-label">Активных статей</div>
+        <div class="kpi-value mono" data-count="15">0</div>
+        <div class="kpi-sub">макс. присутствие: «Реклама» — 6 из 7 мес.</div>
+      </div>
+    </div>
+
+    <div class="card reveal" style="margin-top:14px;">
+      <div class="card-title">Тепловая карта расходов по месяцам</div>
+      <div class="card-desc">Интенсивность цвета = доля месяца в бюджете первого полугодия. Нажмите на месяц, чтобы увидеть его на графике ниже.</div>
+      <div class="heatstrip" id="heatstrip2026"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2026 DYNAMICS ================= -->
+<section id="dynamics2026">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">02 · Динамика</div>
+        <div class="sec-title">Расходы по месяцам</div>
+      </div>
+      <div class="sec-note">Резкий пик в июне почти целиком обеспечен одной партнёрской сделкой — подробнее в разделе «Аналитика».</div>
+    </div>
+    <div class="card reveal">
+      <div class="card-title">Помесячная динамика бюджета, ₽</div>
+      <div class="card-desc">Пунктир — среднемесячный уровень (403 059 ₽). Оранжевый столбец — пиковый месяц.</div>
+      <div class="bars-chart" id="barsChart2026"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2026 STRUCTURE (rings) ================= -->
+<section id="structure2026">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">03 · Структура</div>
+        <div class="sec-title">Куда ушёл бюджет: разбивка по статьям</div>
+      </div>
+      <div class="sec-note">Три статьи — совместная реклама, брендирование и розыгрыш — формируют 75,2% всех трат за 7 месяцев.</div>
+    </div>
+
+    <div class="card reveal">
+      <div class="donut-wrap">
+        <div class="donut-center">
+          <svg viewBox="0 0 100 100" class="donut-svg" id="donutSvg2026"></svg>
+          <div class="donut-center-label">
+            <div class="n mono">15</div>
+            <div class="t">статей<br>расходов</div>
+          </div>
+        </div>
+        <div class="rank-list" id="rankList2026"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2026 AVERAGE PER CATEGORY ================= -->
+<section id="average2026">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">04 · Средние значения</div>
+        <div class="sec-title">Средний расход по каждой категории</div>
+      </div>
+      <div class="sec-note">В среднем за месяц (÷7, весь период факта) и в среднем за активный месяц — когда по статье реально были траты.</div>
+    </div>
+    <div class="card reveal">
+      <table class="avg-table">
+        <thead>
+          <tr>
+            <th>Статья расходов</th>
+            <th class="num col-total">Итого за 7 мес.</th>
+            <th class="num">Доля</th>
+            <th class="num">Средн. / мес (÷7)</th>
+            <th class="num">Средн. / актив. мес.</th>
+            <th class="num">Активных мес.</th>
+          </tr>
+        </thead>
+        <tbody id="avgTableBody2026"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2026 DETAILED REPORT ================= -->
+<section id="report2026">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">05 · Аналитика</div>
+        <div class="sec-title">Подробный отчёт</div>
+      </div>
+    </div>
+
+    <div class="report-grid reveal">
+      <div class="report-toc">
+        <a href="#r1-2026">Общая картина</a>
+        <a href="#r2-2026">Сезонность и пики</a>
+        <a href="#r3-2026">Структура расходов</a>
+        <a href="#r4-2026">Риски и наблюдения</a>
+        <a href="#r5-2026">Рекомендации</a>
+      </div>
+      <div class="report-body">
+
+        <h3 id="r1-2026"><span class="n">01</span> Общая картина</h3>
+        <p>С 1 января по 31 июля 2026 года на маркетинг «Обер» потрачено <b>2 821 414 ₽</b> — в среднем <b>403 059 ₽</b> в месяц. Это на <b>3,9% меньше</b>, чем за тот же период 2025 года (2 936 362 ₽), несмотря на один очень крупный разовый платёж в июне. Разброс между самым дорогим месяцем (июнь, 1 077 988 ₽) и самым дешёвым (май, 143 985 ₽) — почти <b>7,5 раза</b>, что говорит о концентрации трат вокруг отдельных сделок, а не о равномерном распределении бюджета.</p>
+
+        <h3 id="r2-2026"><span class="n">02</span> Сезонность и пики</h3>
+        <p>Первое полугодие 2026 пока формирует два резко выраженных всплеска — по разным причинам:</p>
+        <ul>
+          <li><b>Июнь (1 078 тыс. ₽)</b> — самый дорогой месяц: 94,8% суммы (1 022 100 ₽) — одна статья «Совместная реклама с поставщиками», результат одной крупной партнёрской сделки. Это крупнейший единичный месячный расход за всю историю наблюдений (2025–2026).</li>
+          <li><b>Январь (394 тыс. ₽)</b> — второй по величине месяц, но по другой причине: 93,5% суммы (368 701 ₽) — «Брендирование», разовые расходы на старте года.</li>
+        </ul>
+        <p>Апрель–июнь — единственный отрезок, где активны почти все статьи одновременно (6–7 из 7); январь и февраль — самые «узкие» месяцы (2–3 активные статьи). Провал в мае (143 985 ₽) — затишье между январским брендированием и июньской партнёрской кампанией.</p>
+
+        <h3 id="r3-2026"><span class="n">03</span> Структура расходов</h3>
+        <p>Три статьи формируют <b>75,2%</b> бюджета первого полугодия — заметно выше, чем 60,1% у топ-3 в 2025 году:</p>
+        <div class="callout">
+          <b>Совместная реклама с поставщиками</b> — 1 320 100 ₽ (46,8%). Почти вся сумма (1 022 100 ₽) пришла одним платежом в июне — это не регулярная статья, а результат одной крупной сделки с партнёром.
+        </div>
+        <p><b>Брендирование</b> (494 701 ₽, 17,5%) — второй по величине, полностью сосредоточен в январе–мае, из них 93,5% пришлось на январь.</p>
+        <p><b>Розыгрыш</b> (306 950 ₽, 10,9%) — активен всего 3 месяца из 7, крупнейший разовый расход — апрель (304 000 ₽).</p>
+        <p>На другом полюсе — регулярные фоновые статьи: <b>«Реклама»</b> (254 833 ₽, активна 6 из 7 месяцев) и <b>«ЛК Авито 305247622»</b> (82 900 ₽, активна 4 месяца) — стабильное операционное присутствие без резких скачков.</p>
+
+        <h3 id="r4-2026"><span class="n">04</span> Риски и наблюдения</h3>
+        <ul>
+          <li><b>Экстремальная концентрация риска.</b> 46,8% полугодового бюджета зависит от одной партнёрской договорённости (июньская сделка) — заметно выше, чем зависимость от топ-статьи в 2025 году (28,1%). Перенос или срыв этой сделки резко исказит картину месяца.</li>
+          <li><b>Январский всплеск не имеет аналога в 2025 году.</b> «Брендирование» на 368 701 ₽ — разовая статья, которую стоит явно отделять от регулярного маркетингового бюджета при план-факт анализе.</li>
+          <li><b>Май — самый тихий месяц за 19 месяцев наблюдений</b> (2025+2026), почти вдвое ниже среднемесячного уровня.</li>
+          <li><b>Экономия год к году (−3,9%) сохраняется</b> несмотря на разовые крупные платежи — регулярные операционные статьи стали более предсказуемыми.</li>
+        </ul>
+
+        <h3 id="r5-2026"><span class="n">05</span> Рекомендации</h3>
+        <ul>
+          <li>Зафиксировать разовый характер июньской сделки с поставщиками и январского брендирования — не закладывать их автоматически в план на второе полугодие (см. Roadmap ниже).</li>
+          <li>Снизить зависимость от одной крупной партнёрской сделки — искать 2–3 параллельных co-marketing партнёрства вместо одного.</li>
+          <li>Использовать май как ориентир минимально необходимого бюджета (≈144 тыс. ₽/мес) при планировании «тихих» месяцев.</li>
+          <li>Сверять факт 2026 года с планом Roadmap ежемесячно — второе полугодие уже спланировано в разделе ниже.</li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2026 MONTHLY × CATEGORY MATRIX ================= -->
+<section id="matrix2026" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">06 · Полная разбивка</div>
+        <div class="sec-title">Расход по каждой категории за каждый месяц</div>
+      </div>
+      <div class="sec-note">Фактические суммы (не средние) по всем 15 статьям и 7 месяцам 2026 года, из бухгалтерской выгрузки.</div>
+    </div>
+    <div class="card reveal">
+      <div class="cc-table-wrap">
+        <table class="cc-table matrix-table">
+          <thead>
+            <tr>
+              <th>Статья расходов</th>
+              <th class="col-month">Январь</th><th class="col-month">Февраль</th><th class="col-month">Март</th><th class="col-month">Апрель</th><th class="col-month">Май</th><th class="col-month">Июнь</th><th class="col-month">Июль</th>
+              <th class="col-total">Итого</th>
+            </tr>
+          </thead>
+          <tbody id="matrixTableBody2026"></tbody>
+          <tfoot id="matrixTableFoot2026"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ================= ROADMAP ================= -->
 <section id="roadmap" style="border-bottom:none;">
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="sec-eyebrow">01 · План действий</div>
+        <div class="sec-eyebrow">07 · План действий</div>
         <div class="sec-title">Roadmap на второе полугодие 2026</div>
       </div>
       <div class="sec-note">Июль – декабрь 2026. Целевой бюджет: 450 000 ₽/мес · 2 700 000 ₽ на полгода — распределите его по статьям ниже.</div>
@@ -1211,6 +1439,54 @@ const DATA = {
   }
 };
 
+// Факт 2026 года (01.01–31.07.2026), из бухгалтерской выгрузки "Доходы и расходы предприятия"
+const DATA2026 = {
+  months: ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль"],
+  monthsShort: ["Янв","Фев","Мар","Апр","Май","Июн","Июл"],
+  monthly: [394141.00,183500.00,238550.00,468700.00,143985.00,1077988.00,314550.00],
+  grand: 2821414.00,
+  categories: [
+    {name:"Совместная реклама с поставщиками", total:1320100.00},
+    {name:"Брендирование", total:494701.00},
+    {name:"Розыгрыш", total:306950.00},
+    {name:"Реклама", total:254833.00},
+    {name:"Стенд на выставке", total:92550.00},
+    {name:"ЛК Авито 305247622", total:82900.00},
+    {name:"Услуги дизайнера", total:72350.00},
+    {name:"Аренда рекламных носителей", total:62000.00},
+    {name:"Состязание ТЗ", total:45000.00},
+    {name:"Сервисы", total:43200.00},
+    {name:"Выставка", total:26000.00},
+    {name:"Для видеоролика в Инстаграм", total:9000.00},
+    {name:"Баннера", total:6730.00},
+    {name:"Музыкально-информационный сервис", total:3600.00},
+    {name:"Сайт", total:1500.00},
+  ],
+  activeMonths: {
+    "Совместная реклама с поставщиками":3, "Брендирование":3, "Розыгрыш":3, "Реклама":6,
+    "Стенд на выставке":1, "ЛК Авито 305247622":4, "Услуги дизайнера":3,
+    "Аренда рекламных носителей":2, "Состязание ТЗ":2, "Сервисы":1, "Выставка":1,
+    "Для видеоролика в Инстаграм":1, "Баннера":1, "Музыкально-информационный сервис":4, "Сайт":1
+  },
+  monthlyByCategory: {
+    "Совместная реклама с поставщиками": [0,0,70000,0,0,1022100,228000],
+    "Брендирование": [368701,102000,0,0,24000,0,0],
+    "Розыгрыш": [0,0,1550,304000,0,1400,0],
+    "Реклама": [25440,80000,132000,5000,19435,-7042,0],
+    "Стенд на выставке": [0,0,0,92550,0,0,0],
+    "ЛК Авито 305247622": [0,0,20000,20000,15000,27900,0],
+    "Услуги дизайнера": [0,0,0,18250,20650,0,33450],
+    "Аренда рекламных носителей": [0,0,0,28000,34000,0,0],
+    "Состязание ТЗ": [0,0,15000,0,30000,0,0],
+    "Сервисы": [0,0,0,0,0,0,43200],
+    "Выставка": [0,0,0,0,0,26000,0],
+    "Для видеоролика в Инстаграм": [0,0,0,0,0,0,9000],
+    "Баннера": [0,0,0,0,0,6730,0],
+    "Музыкально-информационный сервис": [0,0,0,900,900,900,900],
+    "Сайт": [0,1500,0,0,0,0,0]
+  }
+};
+
 const PALETTE = ["#FF7A45","#4DA8FF","#3ECF8E","#9B8CFF","#FFC24D","#FF6B6B","#4DD4D4","#C792EA",
                   "#8FA6C2","#E8935A","#6FA8DC","#B08968","#7BC96F","#F28FAD","#A0A8B8","#D6A2E8","#6C7A89"];
 
@@ -1224,30 +1500,40 @@ const restSum = sorted.slice(topN).reduce((s,c)=>s+c.total,0);
 const donutLabels = [...top.map(c=>c.name), 'Остальные статьи'];
 const donutValues = [...top.map(c=>c.total), restSum];
 const donutColors = [...PALETTE.slice(0,topN), '#3A4452'];
+const donutCircles = [];
+
+const sorted2026 = [...DATA2026.categories].sort((a,b)=>b.total-a.total);
+const top2026 = sorted2026.slice(0,topN);
+const restSum2026 = sorted2026.slice(topN).reduce((s,c)=>s+c.total,0);
+const donutLabels2026 = [...top2026.map(c=>c.name), 'Остальные статьи'];
+const donutValues2026 = [...top2026.map(c=>c.total), restSum2026];
+const donutColors2026 = [...PALETTE.slice(0,topN), '#3A4452'];
+const donutCircles2026 = [];
 
 // ---------- Heatstrip (no chart lib needed) ----------
-(function(){
-  const el = document.getElementById('heatstrip');
-  const max = Math.max(...DATA.monthly);
-  DATA.months.forEach((m,i)=>{
-    const val = DATA.monthly[i];
+function renderHeatstrip(elId, months, monthsShort, monthly, onClick){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  const max = Math.max(...monthly);
+  months.forEach((m,i)=>{
+    const val = monthly[i];
     const ratio = val/max;
     const div = document.createElement('div');
     div.className='heat-cell';
     const alpha = 0.12 + ratio*0.55;
     div.style.background = `rgba(255,122,69,${alpha.toFixed(2)})`;
     div.style.borderColor = ratio>0.85 ? 'rgba(255,122,69,0.6)':'var(--line)';
-    div.innerHTML = `<div class="m">${DATA.monthsShort[i]}</div><div class="v">${(val/1000).toFixed(0)}k</div>`;
-    div.addEventListener('click', ()=> jumpToMonth(i));
+    div.innerHTML = `<div class="m">${monthsShort[i]}</div><div class="v">${(val/1000).toFixed(0)}k</div>`;
+    div.addEventListener('click', ()=> onClick(i));
     el.appendChild(div);
   });
-})();
+}
 
-function jumpToMonth(i){
-  const dynSection = document.getElementById('dynamics');
+function jumpToMonth(barsElId, sectionId, i){
+  const dynSection = document.getElementById(sectionId);
   if(dynSection) dynSection.scrollIntoView({behavior:'smooth', block:'center'});
   setTimeout(()=>{
-    const col = document.querySelectorAll('#barsChart .bar-col')[i];
+    const col = document.querySelectorAll('#'+barsElId+' .bar-col')[i];
     if(col){
       col.classList.add('highlight-flash');
       setTimeout(()=> col.classList.remove('highlight-flash'), 1200);
@@ -1256,10 +1542,11 @@ function jumpToMonth(i){
 }
 
 // ---------- Bar chart (pure CSS, no external library) ----------
-(function(){
-  const el = document.getElementById('barsChart');
-  const max = Math.max(...DATA.monthly);
-  const avg = DATA.grand/12;
+function renderBarsChart(elId, months, monthsShort, monthly, grand, onClick){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  const max = Math.max(...monthly);
+  const avg = grand/monthly.length;
   const avgPct = (avg/max*100).toFixed(2);
 
   const avgLine = document.createElement('div');
@@ -1273,29 +1560,29 @@ function jumpToMonth(i){
   avgTag.textContent = 'ср. ' + (avg/1000).toFixed(0) + 'k';
   el.appendChild(avgTag);
 
-  DATA.monthly.forEach((val,i)=>{
+  monthly.forEach((val,i)=>{
     const isMax = val === max;
     const col = document.createElement('div');
     col.className = 'bar-col' + (isMax ? ' is-max' : '');
     const heightPct = Math.max((val/max*100), 2).toFixed(2);
-    col.title = DATA.months[i] + ': ' + fmt(val) + ' ₽';
+    col.title = months[i] + ': ' + fmt(val) + ' ₽';
     col.innerHTML = `
       <span class="bar-value">${(val/1000).toFixed(0)}k</span>
       <div class="bar-fill" data-target-height="${heightPct}" style="height:0%; background:${isMax ? '#FF7A45' : 'rgba(77,168,255,0.55)'};"></div>`;
-    col.addEventListener('click', ()=> jumpToMonth(i));
+    col.addEventListener('click', ()=> onClick(i));
     el.appendChild(col);
   });
 
   const labels = document.createElement('div');
   labels.className = 'bar-labels';
-  labels.innerHTML = DATA.monthsShort.map(m=>`<span>${m}</span>`).join('');
+  labels.innerHTML = monthsShort.map(m=>`<span>${m}</span>`).join('');
   el.parentElement.insertBefore(labels, el.nextSibling);
-})();
+}
 
 // ---------- Donut chart (pure SVG, no external library) ----------
-const donutCircles = [];
-(function(){
-  const svg = document.getElementById('donutSvg');
+function renderDonut(svgId, labels, values, colors, grand, circlesArr, onHover){
+  const svg = document.getElementById(svgId);
+  if(!svg) return;
   const r = 40, cx = 50, cy = 50;
   const circumference = 2 * Math.PI * r;
   let offsetAcc = 0;
@@ -1304,103 +1591,121 @@ const donutCircles = [];
   bgCircle.setAttribute('fill', 'none'); bgCircle.setAttribute('stroke', '#1E2733'); bgCircle.setAttribute('stroke-width', 14);
   svg.appendChild(bgCircle);
 
-  donutValues.forEach((val,i)=>{
-    const frac = val / DATA.grand;
+  values.forEach((val,i)=>{
+    const frac = val / grand;
     const dash = frac * circumference;
     const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
     circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
     circle.setAttribute('fill', 'none');
-    circle.setAttribute('stroke', donutColors[i]);
+    circle.setAttribute('stroke', colors[i]);
     circle.setAttribute('stroke-width', 14);
     circle.setAttribute('stroke-dasharray', `0 ${circumference}`);
     circle.dataset.targetDash = `${dash} ${circumference-dash}`;
     circle.setAttribute('stroke-dashoffset', -offsetAcc);
     circle.setAttribute('stroke-linecap', 'butt');
-    circle.addEventListener('mouseenter', ()=> setDonutHover(i));
-    circle.addEventListener('mouseleave', ()=> setDonutHover(-1));
+    circle.addEventListener('mouseenter', ()=> onHover(i));
+    circle.addEventListener('mouseleave', ()=> onHover(-1));
     const title = document.createElementNS('http://www.w3.org/2000/svg','title');
-    title.textContent = `${donutLabels[i]}: ${fmt(val)} ₽ (${(frac*100).toFixed(1)}%)`;
+    title.textContent = `${labels[i]}: ${fmt(val)} ₽ (${(frac*100).toFixed(1)}%)`;
     circle.appendChild(title);
     svg.appendChild(circle);
-    donutCircles.push(circle);
+    circlesArr.push(circle);
     offsetAcc += dash;
   });
-})();
+}
 
-function setDonutHover(i){
-  donutCircles.forEach((c,idx)=>{
+function setDonutHover(circlesArr, rankListId, i){
+  circlesArr.forEach((c,idx)=>{
     c.classList.toggle('dimmed', i>=0 && idx!==i);
     c.classList.toggle('emph', idx===i);
   });
-  document.querySelectorAll('.rank-row').forEach((row,idx)=>{
+  document.querySelectorAll('#'+rankListId+' .rank-row').forEach((row,idx)=>{
     row.classList.toggle('hovered', idx===i);
   });
 }
 
 // ---------- Rank list ----------
-(function(){
-  const el = document.getElementById('rankList');
-  sorted.forEach((c,i)=>{
-    const color = i < topN ? PALETTE[i] : '#3A4452';
-    const pct = (c.total/DATA.grand*100).toFixed(1);
+function renderRankList(elId, sortedList, grand, topN, palette, onHover){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  sortedList.forEach((c,i)=>{
+    const color = i < topN ? palette[i] : '#3A4452';
+    const pct = (c.total/grand*100).toFixed(1);
     const row = document.createElement('div');
     row.className='rank-row';
     row.innerHTML = `
       <span class="idx">${String(i+1).padStart(2,'0')}</span>
-      <span class="name"><span class="swatch" style="background:${color}"></span>${c.name}</span>
+      <span class="name"><span class="swatch" style="background:${color}"></span>${escapeHtml(c.name)}</span>
       <span class="pct">${pct}%</span>
       <span class="amt">${fmt(c.total)} ₽</span>`;
-    row.addEventListener('mouseenter', ()=> setDonutHover(i < topN ? i : topN));
-    row.addEventListener('mouseleave', ()=> setDonutHover(-1));
+    row.addEventListener('mouseenter', ()=> onHover(i < topN ? i : topN));
+    row.addEventListener('mouseleave', ()=> onHover(-1));
     el.appendChild(row);
   });
-})();
+}
 
 // ---------- Average table ----------
-(function(){
-  const el = document.getElementById('avgTableBody');
-  const maxTotal = Math.max(...DATA.categories.map(c=>c.total));
-  sorted.forEach((c,i)=>{
-    const color = i < topN ? PALETTE[i] : '#3A4452';
-    const active = DATA.activeMonths[c.name] || 12;
-    const avg12 = c.total/12;
+function renderAvgTable(bodyId, sortedList, grand, activeMonths, totalMonths, topN, palette){
+  const el = document.getElementById(bodyId);
+  if(!el) return;
+  const maxTotal = Math.max(...sortedList.map(c=>c.total));
+  sortedList.forEach((c,i)=>{
+    const color = i < topN ? palette[i] : '#3A4452';
+    const active = activeMonths[c.name] || totalMonths;
+    const avgAll = c.total/totalMonths;
     const avgActive = c.total/active;
-    const pct = (c.total/DATA.grand*100).toFixed(1);
+    const pct = (c.total/grand*100).toFixed(1);
     const barW = (c.total/maxTotal*100).toFixed(0);
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="name"><span class="swatch" style="background:${color}"></span>${c.name}
+      <td class="name"><span class="swatch" style="background:${color}"></span>${escapeHtml(c.name)}
         <div style="flex:1"></div>
       </td>
       <td class="num col-total">${fmt(c.total)} ₽<div class="bar-mini"><i style="width:${barW}%; background:${color}"></i></div></td>
       <td class="num">${pct}%</td>
-      <td class="num">${fmt(avg12)} ₽</td>
+      <td class="num">${fmt(avgAll)} ₽</td>
       <td class="num">${fmt(avgActive)} ₽</td>
       <td class="num">${active}</td>`;
     el.appendChild(tr);
   });
-})();
+}
 
 // ---------- Monthly × category matrix ----------
-(function(){
-  const body = document.getElementById('matrixTableBody');
-  const foot = document.getElementById('matrixTableFoot');
-  sorted.forEach((c,i)=>{
-    const color = i < topN ? PALETTE[i] : '#3A4452';
-    const vals = DATA.monthlyByCategory[c.name] || Array(12).fill(0);
+function renderMatrixTable(bodyId, footId, sortedList, months, monthlyByCategory, monthlyTotals, grand, topN, palette){
+  const body = document.getElementById(bodyId);
+  const foot = document.getElementById(footId);
+  if(!body || !foot) return;
+  sortedList.forEach((c,i)=>{
+    const color = i < topN ? palette[i] : '#3A4452';
+    const vals = monthlyByCategory[c.name] || Array(months.length).fill(0);
     const cells = vals.map(v => `<td class="num">${v ? fmt(v)+' ₽' : '—'}</td>`).join('');
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="name cc-wrap"><span class="swatch" style="background:${color}"></span>${c.name}</td>
+      <td class="name cc-wrap"><span class="swatch" style="background:${color}"></span>${escapeHtml(c.name)}</td>
       ${cells}
       <td class="num col-total" style="color:var(--ink);font-weight:600;">${fmt(c.total)} ₽</td>`;
     body.appendChild(tr);
   });
 
-  const monthTotals = DATA.monthly;
-  const footCells = monthTotals.map(v => `<td class="num">${fmt(v)} ₽</td>`).join('');
-  foot.innerHTML = `<tr><td>Итого по месяцам</td>${footCells}<td class="num col-total">${fmt(DATA.grand)} ₽</td></tr>`;
-})();
+  const footCells = monthlyTotals.map(v => `<td class="num">${fmt(v)} ₽</td>`).join('');
+  foot.innerHTML = `<tr><td>Итого по месяцам</td>${footCells}<td class="num col-total">${fmt(grand)} ₽</td></tr>`;
+}
+
+// ---------- 2025: render with real full-year data ----------
+renderHeatstrip('heatstrip', DATA.months, DATA.monthsShort, DATA.monthly, i => jumpToMonth('barsChart','dynamics',i));
+renderBarsChart('barsChart', DATA.months, DATA.monthsShort, DATA.monthly, DATA.grand, i => jumpToMonth('barsChart','dynamics',i));
+renderDonut('donutSvg', donutLabels, donutValues, donutColors, DATA.grand, donutCircles, i => setDonutHover(donutCircles,'rankList',i));
+renderRankList('rankList', sorted, DATA.grand, topN, PALETTE, i => setDonutHover(donutCircles,'rankList',i));
+renderAvgTable('avgTableBody', sorted, DATA.grand, DATA.activeMonths, 12, topN, PALETTE);
+renderMatrixTable('matrixTableBody', 'matrixTableFoot', sorted, DATA.months, DATA.monthlyByCategory, DATA.monthly, DATA.grand, topN, PALETTE);
+
+// ---------- 2026: render with real H1 data (01.01–31.07.2026) ----------
+renderHeatstrip('heatstrip2026', DATA2026.months, DATA2026.monthsShort, DATA2026.monthly, i => jumpToMonth('barsChart2026','dynamics2026',i));
+renderBarsChart('barsChart2026', DATA2026.months, DATA2026.monthsShort, DATA2026.monthly, DATA2026.grand, i => jumpToMonth('barsChart2026','dynamics2026',i));
+renderDonut('donutSvg2026', donutLabels2026, donutValues2026, donutColors2026, DATA2026.grand, donutCircles2026, i => setDonutHover(donutCircles2026,'rankList2026',i));
+renderRankList('rankList2026', sorted2026, DATA2026.grand, topN, PALETTE, i => setDonutHover(donutCircles2026,'rankList2026',i));
+renderAvgTable('avgTableBody2026', sorted2026, DATA2026.grand, DATA2026.activeMonths, 7, topN, PALETTE);
+renderMatrixTable('matrixTableBody2026', 'matrixTableFoot2026', sorted2026, DATA2026.months, DATA2026.monthlyByCategory, DATA2026.monthly, DATA2026.grand, topN, PALETTE);
 
 // ---------- Custom categories tool (add your own H2 2026 budget lines) ----------
 const CC_MONTHS = ['Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -2311,14 +2616,14 @@ function animateCounter(el){
 }
 
 function growBars(){
-  document.querySelectorAll('#barsChart .bar-fill').forEach(bar=>{
+  document.querySelectorAll('.bars-chart .bar-fill').forEach(bar=>{
     const h = bar.dataset.targetHeight;
     if(h!==undefined) bar.style.height = h + '%';
   });
 }
 
 function growDonut(){
-  donutCircles.forEach(c=>{
+  document.querySelectorAll('.donut-svg circle').forEach(c=>{
     if(c.dataset.targetDash) c.setAttribute('stroke-dasharray', c.dataset.targetDash);
   });
 }
@@ -2341,13 +2646,11 @@ function growDonut(){
       if(!entry.isIntersecting) return;
       const el = entry.target;
       el.classList.add('revealed');
-      if(el.id === 'pulse' || el.querySelector('[data-count]')){
-        el.querySelectorAll('[data-count]').forEach(animateCounter);
-      }
-      if(el.id === 'dynamics' || el.contains(document.getElementById('barsChart'))){
+      el.querySelectorAll('[data-count]').forEach(animateCounter);
+      if(el.querySelector('.bars-chart')){
         growBars();
       }
-      if(el.id === 'structure' || el.contains(document.getElementById('donutSvg'))){
+      if(el.querySelector('.donut-svg')){
         growDonut();
       }
       io.unobserve(el);
