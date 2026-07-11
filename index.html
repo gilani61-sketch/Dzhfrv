@@ -395,7 +395,8 @@
   }
 
   /* ===== PREMIUM ROADMAP ===== */
-  .rm-premium{ position:relative; padding:20px 0 30px; overflow:visible; }
+  .rm-layout{ display:flex; align-items:flex-start; gap:26px; }
+  .rm-premium{ flex:1; min-width:0; position:relative; padding:20px 0 30px; overflow:visible; }
   .rm-bg-fx{ position:absolute; inset:-40px 0 0 0; pointer-events:none; z-index:0; overflow:hidden; }
   .rm-fx-blob{ position:absolute; border-radius:50%; filter:blur(70px); opacity:0.55; will-change:transform; }
   .rm-fx-1{ width:420px; height:420px; top:-100px; left:-80px; background:radial-gradient(circle, rgba(244,119,33,0.35), transparent 70%); animation:rmFloat1 22s ease-in-out infinite; }
@@ -489,6 +490,43 @@
   }
   .rm-table-divider::before, .rm-table-divider::after{ content:""; flex:1; height:1px; background:var(--line); }
 
+  /* -- side analytics panel -- */
+  .rm-insight{
+    width:250px; flex-shrink:0; position:sticky; top:96px;
+    background:rgba(18,18,18,0.55); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,0.08); border-radius:18px; padding:20px;
+  }
+  .rm-insight-label{ font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-mute); margin-bottom:8px; }
+  .rm-insight-month{
+    font-family:'Rubik'; font-weight:700; font-size:16px; color:var(--amber);
+    margin-bottom:10px; transition:opacity .25s ease;
+  }
+  .rm-insight-text{
+    font-size:12.5px; line-height:1.6; color:var(--ink-dim); min-height:88px; transition:opacity .25s ease;
+  }
+  .rm-insight-tags{ display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+  .rm-insight-tag{
+    font-size:11px; padding:4px 10px; border-radius:100px; white-space:nowrap;
+    background:rgba(244,119,33,0.1); border:1px solid rgba(244,119,33,0.25); color:var(--amber);
+  }
+
+  /* -- expandable "+N more" checklist -- */
+  .rm-more-trigger{ cursor:pointer; }
+  .rm-more-trigger:hover .ck-name{ color:var(--amber); }
+  .rm-more-arrow{ display:inline-block; transition:transform .3s ease; color:var(--ink-mute); flex-shrink:0; }
+  .rm-more-trigger.open .rm-more-arrow{ transform:rotate(180deg); }
+  .rm-checklist-extra{
+    display:grid; grid-template-rows:0fr; transition:grid-template-rows .35s ease;
+  }
+  .rm-checklist-extra.open{ grid-template-rows:1fr; }
+  .rm-checklist-extra-inner{ overflow:hidden; }
+  .rm-checklist-sub{ padding-top:8px; margin-top:2px; border-top:1px dashed var(--line); }
+  .rm-checklist-extra.open .rm-checklist-sub li{ opacity:1; transform:translateY(0); }
+
+  @media (max-width:960px){
+    .rm-layout{ flex-direction:column; }
+    .rm-insight{ width:100%; position:static; order:-1; }
+  }
   @media (max-width:860px){
     .rm-phase{ grid-template-columns:40px 1fr; gap:14px; padding:18px 0; }
     .rm-phase-marker{ grid-column:1; }
@@ -846,18 +884,27 @@
       <div class="sec-note">Июль – декабрь 2026. Целевой бюджет: 450 000 ₽/мес · 2 700 000 ₽ на полгода — распределите его по статьям ниже.</div>
     </div>
 
-    <div class="rm-premium" id="rmPremium">
-      <div class="rm-bg-fx" aria-hidden="true">
-        <div class="rm-fx-blob rm-fx-1"></div>
-        <div class="rm-fx-blob rm-fx-2"></div>
-        <div class="rm-fx-blob rm-fx-3"></div>
-      </div>
-      <div class="rm-timeline">
-        <div class="rm-timeline-track">
-          <div class="rm-timeline-fill" id="rmTimelineFill"></div>
+    <div class="rm-layout">
+      <div class="rm-premium" id="rmPremium">
+        <div class="rm-bg-fx" aria-hidden="true">
+          <div class="rm-fx-blob rm-fx-1"></div>
+          <div class="rm-fx-blob rm-fx-2"></div>
+          <div class="rm-fx-blob rm-fx-3"></div>
         </div>
-        <div class="rm-phases" id="rmPhases"></div>
+        <div class="rm-timeline">
+          <div class="rm-timeline-track">
+            <div class="rm-timeline-fill" id="rmTimelineFill"></div>
+          </div>
+          <div class="rm-phases" id="rmPhases"></div>
+        </div>
       </div>
+
+      <aside class="rm-insight" id="rmInsight" aria-live="polite">
+        <div class="rm-insight-label">Аналитика месяца</div>
+        <div class="rm-insight-month" id="rmInsightMonth">—</div>
+        <p class="rm-insight-text" id="rmInsightText">Прокрутите Roadmap, чтобы увидеть разбор каждого месяца.</p>
+        <div class="rm-insight-tags" id="rmInsightTags"></div>
+      </aside>
     </div>
 
     <div class="rm-table-divider">
@@ -1571,7 +1618,23 @@ function renderRoadmapChart(monthTotals){
 
 // ---------- Premium Roadmap visualization ----------
 const RM_ICONS = ['🚀','⚡','📣','🎯','🎉','🏁'];
-const RM_PERIODS = ['01–31 июля','01–31 августа','01–30 сентября','01–31 октября','01–30 ноября','01–31 декабря'];
+const RM_PERIODS = ['1–31 июля','1–31 августа','1–30 сентября','1–31 октября','1–30 ноября','1–31 декабря'];
+
+function rmWordForm(n, one, few, many){
+  return (n%10===1 && n%100!==11) ? one : ((n%10>=2 && n%10<=4 && (n%100<10||n%100>=20)) ? few : many);
+}
+
+// Single source of truth for a month's numbers — reused by both the phase
+// cards and the side analytics panel so they never drift out of sync.
+function rmMonthData(mi){
+  const monthCats = ccList
+    .map(c=>({ name:c.name, amount:c.values[mi]||0 }))
+    .filter(c=>c.amount>0)
+    .sort((a,b)=>b.amount-a.amount);
+  const monthTotal = monthCats.reduce((s,c)=>s+c.amount,0);
+  const pct = Math.round(monthTotal / CC_BUDGET_MONTHLY * 100);
+  return { monthCats, monthTotal, pct };
+}
 
 function revealRmPhase(phase){
   if(!phase || phase.classList.contains('revealed')) return;
@@ -1588,17 +1651,24 @@ function revealRmPhase(phase){
   }
 }
 
+function toggleRmMore(idx){
+  const extra = document.getElementById('rmExtra-' + idx);
+  const trigger = document.getElementById('rmMoreBtn-' + idx);
+  if(!extra || !trigger) return;
+  const open = extra.classList.toggle('open');
+  trigger.classList.toggle('open', open);
+  trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  const label = trigger.querySelector('.rm-more-label');
+  if(label) label.textContent = open ? 'Свернуть' : trigger.dataset.moreLabel;
+}
+
 function renderPremiumRoadmap(){
   const wrap = document.getElementById('rmPhases');
   if(!wrap) return;
+  rmLastActiveIdx = -1; // force the insight panel to refresh even if the active month index stays the same
 
   const html = CC_MONTHS.map((monthName, mi)=>{
-    const monthCats = ccList
-      .map(c=>({ name:c.name, amount:c.values[mi]||0 }))
-      .filter(c=>c.amount>0)
-      .sort((a,b)=>b.amount-a.amount);
-    const monthTotal = monthCats.reduce((s,c)=>s+c.amount,0);
-    const pct = Math.round(monthTotal / CC_BUDGET_MONTHLY * 100);
+    const { monthCats, monthTotal, pct } = rmMonthData(mi);
 
     let statusClass, statusLabel;
     if(monthTotal <= 0){ statusClass = 'st-empty'; statusLabel = 'Не запланировано'; }
@@ -1608,20 +1678,27 @@ function renderPremiumRoadmap(){
 
     const isFinal = mi === CC_MONTHS.length - 1;
     const shown = monthCats.slice(0,4);
-    const extra = monthCats.length - shown.length;
-    const wordForm = (n, one, few, many) => (n%10===1 && n%100!==11) ? one : ((n%10>=2 && n%10<=4 && (n%100<10||n%100>=20)) ? few : many);
+    const hidden = monthCats.slice(4);
 
     const checklistHtml = shown.length
       ? shown.map((c,i)=>`<li style="transition-delay:${(i*0.08).toFixed(2)}s"><span class="ck">✔</span><span class="ck-name">${escapeHtml(c.name)}</span><span class="ck-amt">${fmt(c.amount)} ₽</span></li>`).join('')
-        + (extra>0 ? `<li style="transition-delay:${(shown.length*0.08).toFixed(2)}s"><span class="ck" style="color:var(--ink-mute)">+</span><span class="ck-name" style="color:var(--ink-mute)">ещё ${extra} ${wordForm(extra,'статья','статьи','статей')}</span></li>` : '')
       : `<li><span class="ck" style="color:var(--ink-mute)">–</span><span class="ck-name" style="color:var(--ink-mute)">Добавьте статьи в таблице ниже</span></li>`;
 
+    const moreLabel = `ещё ${hidden.length} ${rmWordForm(hidden.length,'статья','статьи','статей')}`;
+    const moreTriggerHtml = hidden.length ? `<li class="rm-more-trigger" id="rmMoreBtn-${mi}" data-more-label="${escapeHtml(moreLabel)}" tabindex="0" role="button" aria-expanded="false" onclick="toggleRmMore(${mi})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleRmMore(${mi});}" style="transition-delay:${(shown.length*0.08).toFixed(2)}s">
+        <span class="ck rm-more-arrow">▾</span><span class="ck-name rm-more-label">${escapeHtml(moreLabel)}</span>
+      </li>` : '';
+
+    const hiddenListHtml = hidden.length ? `<div class="rm-checklist-extra" id="rmExtra-${mi}"><div class="rm-checklist-extra-inner"><ul class="rm-checklist rm-checklist-sub">${
+      hidden.map((c,i)=>`<li style="transition-delay:${(i*0.05).toFixed(2)}s"><span class="ck">✔</span><span class="ck-name">${escapeHtml(c.name)}</span><span class="ck-amt">${fmt(c.amount)} ₽</span></li>`).join('')
+    }</ul></div></div>` : '';
+
     const desc = monthTotal>0
-      ? `Запланировано ${monthCats.length} ${wordForm(monthCats.length,'статья','статьи','статей')} на ${fmt(monthTotal)} ₽ — ${pct}% от целевого бюджета месяца.`
+      ? `Запланировано ${monthCats.length} ${rmWordForm(monthCats.length,'статья','статьи','статей')} на ${fmt(monthTotal)} ₽ — ${pct}% от целевого бюджета месяца.`
       : `Бюджет на ${monthName.toLowerCase()} пока не распределён.`;
 
     return `
-      <div class="rm-phase${isFinal ? ' rm-phase-final' : ''}">
+      <div class="rm-phase${isFinal ? ' rm-phase-final' : ''}" data-month-index="${mi}">
         <div class="rm-phase-marker"></div>
         <div class="rm-phase-card">
           ${isFinal ? '<div class="rm-final-tag">🏁 Финал полугодия</div>' : ''}
@@ -1638,7 +1715,8 @@ function renderPremiumRoadmap(){
             <div class="rm-phase-bar"><i data-target="${Math.max(Math.min(pct,100),0)}" style="width:0%"></i></div>
           </div>
           <div class="rm-phase-desc">${desc}</div>
-          <ul class="rm-checklist">${checklistHtml}</ul>
+          <ul class="rm-checklist">${checklistHtml}${moreTriggerHtml}</ul>
+          ${hiddenListHtml}
         </div>
       </div>`;
   }).join('');
@@ -1681,7 +1759,57 @@ function initPremiumRoadmap(){
   updateActiveRmPhase();
 }
 
+const RM_MONTHS_PREP = ['июле','августе','сентябре','октябре','ноябре','декабре'];
+
+function rmInsightText(mi, monthName, data){
+  const { monthCats, monthTotal, pct } = data;
+  if(monthTotal <= 0){
+    return `На ${monthName.toLowerCase()} пока не запланировано ни одной статьи расходов. Добавьте позиции в таблице ниже — как только появятся суммы, разбор месяца обновится автоматически.`;
+  }
+  const top = monthCats[0];
+  const topShare = Math.round(top.amount / monthTotal * 100);
+  const top3 = monthCats.slice(0,3);
+  const top3Share = Math.round(top3.reduce((s,c)=>s+c.amount,0) / monthTotal * 100);
+
+  const sentences = [];
+  sentences.push(`В ${RM_MONTHS_PREP[mi]} запланировано ${monthCats.length} ${rmWordForm(monthCats.length,'статья','статьи','статей')} на общую сумму ${fmt(monthTotal)} ₽ — это ${pct}% от целевого бюджета месяца (450 000 ₽).`);
+  sentences.push(top3.length>1
+    ? `Больше всего расходов приходится на «${top.name}» (${topShare}% месяца)${top3.length>=3 ? `, а топ-3 статьи занимают ${top3Share}% бюджета` : ''}.`
+    : `Весь бюджет месяца сейчас сосредоточен в одной статье — «${top.name}».`);
+
+  if(pct > 100){
+    sentences.push(`План превышает целевой бюджет на ${fmt(monthTotal-CC_BUDGET_MONTHLY)} ₽ — стоит перераспределить часть суммы на менее загруженные месяцы.`);
+  } else if(topShare > 50){
+    sentences.push(`Стоит обратить внимание на концентрацию бюджета в одной статье — риск снижается, если распределить расходы шире.`);
+  } else if(pct < 50){
+    sentences.push(`Бюджет месяца заполнен меньше чем наполовину — есть запас, чтобы добавить новые статьи.`);
+  } else {
+    sentences.push(`Распределение выглядит сбалансированным — резких перекосов по статьям не видно.`);
+  }
+  return sentences.join(' ');
+}
+
+function updateRmInsight(mi){
+  const monthEl = document.getElementById('rmInsightMonth');
+  const textEl = document.getElementById('rmInsightText');
+  const tagsEl = document.getElementById('rmInsightTags');
+  if(!monthEl || !textEl || !tagsEl) return;
+  const data = rmMonthData(mi);
+  monthEl.style.opacity = '0';
+  textEl.style.opacity = '0';
+  setTimeout(()=>{
+    monthEl.textContent = CC_MONTHS[mi] + ' 2026';
+    textEl.textContent = rmInsightText(mi, CC_MONTHS[mi], data);
+    tagsEl.innerHTML = data.monthCats.length
+      ? data.monthCats.slice(0,3).map(c=>`<span class="rm-insight-tag">${escapeHtml(c.name)}</span>`).join('')
+      : '<span class="rm-insight-tag" style="opacity:.5;">Нет статей</span>';
+    monthEl.style.opacity = '1';
+    textEl.style.opacity = '1';
+  }, 160);
+}
+
 let rmActiveTicking = false;
+let rmLastActiveIdx = -1;
 function updateActiveRmPhase(){
   rmActiveTicking = false;
   const phases = document.querySelectorAll('#rmPhases .rm-phase');
@@ -1696,7 +1824,14 @@ function updateActiveRmPhase(){
     if(dist < closestDist){ closestDist = dist; closest = p; }
   });
   phases.forEach(p=> p.classList.toggle('active', p===closest));
-  if(closest) wrap.classList.add('has-active');
+  if(closest){
+    wrap.classList.add('has-active');
+    const idx = parseInt(closest.dataset.monthIndex, 10);
+    if(!isNaN(idx) && idx !== rmLastActiveIdx){
+      rmLastActiveIdx = idx;
+      updateRmInsight(idx);
+    }
+  }
 }
 window.addEventListener('scroll', ()=>{
   if(!rmActiveTicking){ rmActiveTicking = true; requestAnimationFrame(updateActiveRmPhase); }
