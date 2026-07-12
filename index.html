@@ -602,6 +602,13 @@
     .change-icon, .proposal-icon{ width:36px; height:36px; font-size:16px; }
   }
 
+  /* Reserved progress/status slot on goal cards — no tracking data yet, so it renders as an
+     empty track with a muted label; ready to fill in once goals get real progress figures. */
+  .goal-progress{ display:flex; align-items:center; gap:10px; margin-top:12px; }
+  .goal-progress-track{ flex:1; height:4px; border-radius:4px; background:var(--line); overflow:hidden; }
+  .goal-progress-track i{ display:block; height:100%; border-radius:4px; background:linear-gradient(90deg, var(--blue), #8fc7ff); }
+  .goal-progress-label{ flex-shrink:0; font-size:10.5px; color:var(--ink-mute); white-space:nowrap; }
+
   /* ===== STATISTICS HUB ===== */
   .stat-layout{ display:flex; align-items:flex-start; gap:22px; }
   .stat-sidebar{
@@ -1609,10 +1616,11 @@
             <div class="rm-phase-marker"></div>
             <div class="rm-phase-card">
               <div class="change-row">
-                <div class="proposal-icon">👥</div>
+                <div class="proposal-icon">🎯</div>
                 <div class="proposal-body">
                   <div class="proposal-title">Instagram: 50 000 подписчиков</div>
-                  <p>50 000 подписчиков в Instagram.</p>
+                  <p>Достичь 50 000 подписчиков в Instagram.</p>
+                  <div class="goal-progress"><div class="goal-progress-track"><i style="width:0%"></i></div><span class="goal-progress-label">Прогресс появится позже</span></div>
                 </div>
               </div>
             </div>
@@ -1622,10 +1630,11 @@
             <div class="rm-phase-marker"></div>
             <div class="rm-phase-card">
               <div class="change-row">
-                <div class="proposal-icon">📊</div>
+                <div class="proposal-icon">📈</div>
                 <div class="proposal-body">
                   <div class="proposal-title">Охват Instagram</div>
-                  <p>Достичь ежемесячного охвата Instagram 2–3 млн пользователей.</p>
+                  <p>Обеспечить ежемесячный охват Instagram 2–3 млн пользователей.</p>
+                  <div class="goal-progress"><div class="goal-progress-track"><i style="width:0%"></i></div><span class="goal-progress-label">Прогресс появится позже</span></div>
                 </div>
               </div>
             </div>
@@ -1637,8 +1646,9 @@
               <div class="change-row">
                 <div class="proposal-icon">🏆</div>
                 <div class="proposal-body">
-                  <div class="proposal-title">Узнаваемость бренда</div>
-                  <p>Повысить узнаваемость бренда на региональном уровне.</p>
+                  <div class="proposal-title">Узнаваемость бренда «Обер»</div>
+                  <p>Повысить узнаваемость бренда «Обер» на региональном уровне.</p>
+                  <div class="goal-progress"><div class="goal-progress-track"><i style="width:0%"></i></div><span class="goal-progress-label">Прогресс появится позже</span></div>
                 </div>
               </div>
             </div>
@@ -1650,8 +1660,9 @@
               <div class="change-row">
                 <div class="proposal-icon">⭐</div>
                 <div class="proposal-body">
-                  <div class="proposal-title">Рейтинг в навигаторах</div>
-                  <p>Поддерживать рейтинг компании в навигаторах не ниже 4.9.</p>
+                  <div class="proposal-title">Рейтинг в Яндекс Картах и 2ГИС</div>
+                  <p>Поддерживать рейтинг компании в Яндекс Картах и 2ГИС не ниже 4,9.</p>
+                  <div class="goal-progress"><div class="goal-progress-track"><i style="width:0%"></i></div><span class="goal-progress-label">Прогресс появится позже</span></div>
                 </div>
               </div>
             </div>
@@ -1661,10 +1672,39 @@
             <div class="rm-phase-marker"></div>
             <div class="rm-phase-card">
               <div class="change-row">
-                <div class="proposal-icon">🎯</div>
+                <div class="proposal-icon">📩</div>
                 <div class="proposal-body">
                   <div class="proposal-title">План по заявкам</div>
-                  <p>Установить и выполнять план по количеству заявок из социальных сетей.</p>
+                  <p>Выполнять установленный план по количеству заявок из социальных сетей.</p>
+                  <div class="goal-progress"><div class="goal-progress-track"><i style="width:0%"></i></div><span class="goal-progress-label">Прогресс появится позже</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">📞</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Обращения в день</div>
+                  <p>Достичь 20–30 обращений в день через цифровые каналы (Instagram, Авито, Яндекс Карты, 2ГИС, Telegram и другие источники).</p>
+                  <div class="goal-progress"><div class="goal-progress-track"><i style="width:0%"></i></div><span class="goal-progress-label">Прогресс появится позже</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">📊</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Эффективность каналов</div>
+                  <p>Постоянно увеличивать эффективность маркетинговых каналов и распределения рекламного бюджета.</p>
+                  <div class="goal-progress"><div class="goal-progress-track"><i style="width:0%"></i></div><span class="goal-progress-label">Прогресс появится позже</span></div>
                 </div>
               </div>
             </div>
