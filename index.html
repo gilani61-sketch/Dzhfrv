@@ -2382,7 +2382,10 @@ let ccDeletedLog = dedupeByName((function(){
   try{ const raw = localStorage.getItem(CC_DELETED_KEY); if(raw) return JSON.parse(raw); }catch(e){}
   return [];
 })());
-ccSaveDeletedLog();
+// Local-only re-persist after dedup — deliberately NOT ccSaveDeletedLog(), which also writes to
+// Firestore: firing that here, before the seed check below runs, used to create the shared
+// roadmap doc with only ccDeletedLog and no ccList, so ccList could never get seeded.
+try{ localStorage.setItem(CC_DELETED_KEY, JSON.stringify(ccDeletedLog)); }catch(e){}
 
 function ccSaveDeletedLog(){
   try{ localStorage.setItem(CC_DELETED_KEY, JSON.stringify(ccDeletedLog)); }catch(e){}
@@ -2391,27 +2394,32 @@ function ccSaveDeletedLog(){
   }
 }
 
+function ccApplyRemoteSnapshot(snap){
+  const data = snap.data();
+  if(!data) return;
+  fbApplyingRemoteRoadmap = true;
+  if(data.ccList){
+    ccList = data.ccList;
+    try{ localStorage.setItem(CC_STORAGE_KEY, JSON.stringify(ccList)); }catch(e){}
+  }
+  if(data.ccDeletedLog){
+    ccDeletedLog = dedupeByName(data.ccDeletedLog);
+    try{ localStorage.setItem(CC_DELETED_KEY, JSON.stringify(ccDeletedLog)); }catch(e){}
+  }
+  if(typeof renderCustomCategories === 'function') renderCustomCategories();
+  fbApplyingRemoteRoadmap = false;
+}
+
 if(FB_ROADMAP_DOC){
-  FB_ROADMAP_DOC.onSnapshot(snap=>{
-    if(!snap.exists){
-      // Nothing shared yet — seed Firestore from whatever this device currently has,
-      // so every other device converges on it instead of the code's built-in defaults.
-      FB_ROADMAP_DOC.set({ ccList: ccList, ccDeletedLog: ccDeletedLog });
-      return;
+  // Check once (not via the live listener) whether the shared doc is missing or incomplete —
+  // catches both "never created" and "partially created by a stale/older version of this code" —
+  // and only then seed it, before any live updates can race with the seed itself.
+  FB_ROADMAP_DOC.get().then(snap=>{
+    if(!snap.exists || snap.data().ccList === undefined){
+      FB_ROADMAP_DOC.set({ ccList: ccList, ccDeletedLog: ccDeletedLog }, { merge:true });
     }
-    const data = snap.data();
-    fbApplyingRemoteRoadmap = true;
-    if(data.ccList){
-      ccList = data.ccList;
-      try{ localStorage.setItem(CC_STORAGE_KEY, JSON.stringify(ccList)); }catch(e){}
-    }
-    if(data.ccDeletedLog){
-      ccDeletedLog = dedupeByName(data.ccDeletedLog);
-      try{ localStorage.setItem(CC_DELETED_KEY, JSON.stringify(ccDeletedLog)); }catch(e){}
-    }
-    if(typeof renderCustomCategories === 'function') renderCustomCategories();
-    fbApplyingRemoteRoadmap = false;
-  }, err=>{ console.error('Firestore listen (roadmap) failed', err); showSyncWarning(); });
+    FB_ROADMAP_DOC.onSnapshot(ccApplyRemoteSnapshot, err=>{ console.error('Firestore listen (roadmap) failed', err); showSyncWarning(); });
+  }).catch(err=>{ console.error('Firestore get (roadmap) failed', err); showSyncWarning(); });
 }
 
 function ccPushUndo(){
@@ -3053,24 +3061,26 @@ function statEnsureChannel(channelId){
   }catch(e){}
 })();
 
+function statApplyRemoteSnapshot(snap){
+  const data = snap.data();
+  if(!data || !data.channels) return;
+  fbApplyingRemoteStats = true;
+  statData = data.channels;
+  try{ localStorage.setItem(STAT_STORAGE_KEY, JSON.stringify(statData)); }catch(e){}
+  if(typeof renderStatSidebar === 'function') renderStatSidebar();
+  if(typeof renderStatDetail === 'function') renderStatDetail();
+  fbApplyingRemoteStats = false;
+}
+
 if(FB_STATS_DOC){
-  FB_STATS_DOC.onSnapshot(snap=>{
-    if(!snap.exists){
-      // Nothing shared yet — seed Firestore from whatever this device currently has
-      // (including anything just migrated above), so other devices converge on it.
-      FB_STATS_DOC.set({ channels: statData });
-      return;
+  // Same check-then-seed-then-listen pattern as the roadmap doc above, so a partial write
+  // from an older code path can never leave channels permanently unseeded.
+  FB_STATS_DOC.get().then(snap=>{
+    if(!snap.exists || snap.data().channels === undefined){
+      FB_STATS_DOC.set({ channels: statData }, { merge:true });
     }
-    const data = snap.data();
-    if(data.channels){
-      fbApplyingRemoteStats = true;
-      statData = data.channels;
-      try{ localStorage.setItem(STAT_STORAGE_KEY, JSON.stringify(statData)); }catch(e){}
-      if(typeof renderStatSidebar === 'function') renderStatSidebar();
-      if(typeof renderStatDetail === 'function') renderStatDetail();
-      fbApplyingRemoteStats = false;
-    }
-  }, err=>{ console.error('Firestore listen (stats) failed', err); showSyncWarning(); });
+    FB_STATS_DOC.onSnapshot(statApplyRemoteSnapshot, err=>{ console.error('Firestore listen (stats) failed', err); showSyncWarning(); });
+  }).catch(err=>{ console.error('Firestore get (stats) failed', err); showSyncWarning(); });
 }
 
 function statPushUndo(){
