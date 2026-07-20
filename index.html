@@ -1879,6 +1879,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script>
 window.addEventListener('error', function(e){
   try{
@@ -1951,6 +1953,46 @@ window.switchYear = function(year){
 try{
 
 if(!storageWorks()) showStorageWarning();
+
+// ---------- Shared cloud storage (Firebase Firestore) ----------
+// Roadmap and Statistics keep localStorage as an instant local cache (so the page never shows
+// blank/zero while the network round-trip happens), but every save also writes to Firestore, and
+// a live listener applies whatever's in Firestore over the top — so every device converges on the
+// same shared numbers instead of each one showing its own local edits.
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyC7GMAgFIgIvT3roQcNeLJTZj4dCBdwdyU",
+  authDomain: "ober-53024.firebaseapp.com",
+  projectId: "ober-53024",
+  storageBucket: "ober-53024.firebasestorage.app",
+  messagingSenderId: "713265900081",
+  appId: "1:713265900081:web:67a40371d81106e8750310"
+};
+
+function fbInit(){
+  try{
+    if(typeof firebase === 'undefined') return null;
+    firebase.initializeApp(FIREBASE_CONFIG);
+    return firebase.firestore();
+  }catch(e){
+    console.error('Firebase init failed', e);
+    return null;
+  }
+}
+const fbDb = fbInit();
+const FB_ROADMAP_DOC = fbDb ? fbDb.collection('ober').doc('roadmap') : null;
+const FB_STATS_DOC = fbDb ? fbDb.collection('ober').doc('stats') : null;
+let fbApplyingRemoteRoadmap = false;
+let fbApplyingRemoteStats = false;
+
+function showSyncWarning(){
+  if(document.getElementById('sync-warning-banner')) return;
+  const b = document.createElement('div');
+  b.id = 'sync-warning-banner';
+  b.style.cssText = 'position:fixed; bottom:16px; left:16px; right:16px; z-index:9997; max-width:640px; margin:0 auto; background:#3a2a14; color:#ffd9a8; font-size:13px; padding:14px 18px; border-radius:12px; border:1px solid #6b4a1e; box-shadow:0 10px 30px rgba(0,0,0,0.4);';
+  b.innerHTML = 'Не удалось подключиться к общей базе данных — изменения сохраняются только в этом браузере и не видны на других устройствах, пока не восстановится соединение. <span style="cursor:pointer; text-decoration:underline; margin-left:8px;" onclick="this.parentElement.remove()">Скрыть</span>';
+  document.body.appendChild(b);
+}
+if(!fbDb) showSyncWarning();
 
 const DATA = {
   months: ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"],
@@ -2305,6 +2347,9 @@ function ccLoad(){
 }
 function ccSave(list){
   try{ localStorage.setItem(CC_STORAGE_KEY, JSON.stringify(list)); }catch(e){}
+  if(FB_ROADMAP_DOC && !fbApplyingRemoteRoadmap){
+    FB_ROADMAP_DOC.set({ ccList: list }, { merge:true }).catch(e=> console.error('Firestore save (roadmap) failed', e));
+  }
 }
 
 window.ccRestoreMissingDefaults = function(){
@@ -2341,6 +2386,32 @@ ccSaveDeletedLog();
 
 function ccSaveDeletedLog(){
   try{ localStorage.setItem(CC_DELETED_KEY, JSON.stringify(ccDeletedLog)); }catch(e){}
+  if(FB_ROADMAP_DOC && !fbApplyingRemoteRoadmap){
+    FB_ROADMAP_DOC.set({ ccDeletedLog: ccDeletedLog }, { merge:true }).catch(e=> console.error('Firestore save (roadmap deleted log) failed', e));
+  }
+}
+
+if(FB_ROADMAP_DOC){
+  FB_ROADMAP_DOC.onSnapshot(snap=>{
+    if(!snap.exists){
+      // Nothing shared yet — seed Firestore from whatever this device currently has,
+      // so every other device converges on it instead of the code's built-in defaults.
+      FB_ROADMAP_DOC.set({ ccList: ccList, ccDeletedLog: ccDeletedLog });
+      return;
+    }
+    const data = snap.data();
+    fbApplyingRemoteRoadmap = true;
+    if(data.ccList){
+      ccList = data.ccList;
+      try{ localStorage.setItem(CC_STORAGE_KEY, JSON.stringify(ccList)); }catch(e){}
+    }
+    if(data.ccDeletedLog){
+      ccDeletedLog = dedupeByName(data.ccDeletedLog);
+      try{ localStorage.setItem(CC_DELETED_KEY, JSON.stringify(ccDeletedLog)); }catch(e){}
+    }
+    if(typeof renderCustomCategories === 'function') renderCustomCategories();
+    fbApplyingRemoteRoadmap = false;
+  }, err=>{ console.error('Firestore listen (roadmap) failed', err); showSyncWarning(); });
 }
 
 function ccPushUndo(){
@@ -2930,7 +3001,12 @@ function statLoad(){
   try{ const raw = localStorage.getItem(STAT_STORAGE_KEY); if(raw) return JSON.parse(raw); }catch(e){}
   return {};
 }
-function statSave(){ try{ localStorage.setItem(STAT_STORAGE_KEY, JSON.stringify(statData)); }catch(e){} }
+function statSave(){
+  try{ localStorage.setItem(STAT_STORAGE_KEY, JSON.stringify(statData)); }catch(e){}
+  if(FB_STATS_DOC && !fbApplyingRemoteStats){
+    FB_STATS_DOC.set({ channels: statData }, { merge:true }).catch(e=> console.error('Firestore save (stats) failed', e));
+  }
+}
 
 let statData = statLoad();
 let statUndoStack = [];
@@ -2976,6 +3052,26 @@ function statEnsureChannel(channelId){
     statSave();
   }catch(e){}
 })();
+
+if(FB_STATS_DOC){
+  FB_STATS_DOC.onSnapshot(snap=>{
+    if(!snap.exists){
+      // Nothing shared yet — seed Firestore from whatever this device currently has
+      // (including anything just migrated above), so other devices converge on it.
+      FB_STATS_DOC.set({ channels: statData });
+      return;
+    }
+    const data = snap.data();
+    if(data.channels){
+      fbApplyingRemoteStats = true;
+      statData = data.channels;
+      try{ localStorage.setItem(STAT_STORAGE_KEY, JSON.stringify(statData)); }catch(e){}
+      if(typeof renderStatSidebar === 'function') renderStatSidebar();
+      if(typeof renderStatDetail === 'function') renderStatDetail();
+      fbApplyingRemoteStats = false;
+    }
+  }, err=>{ console.error('Firestore listen (stats) failed', err); showSyncWarning(); });
+}
 
 function statPushUndo(){
   statUndoStack.push(JSON.parse(JSON.stringify(statData)));
