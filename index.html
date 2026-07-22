@@ -3200,24 +3200,26 @@ function anRenderDonut(year){
     if(centerEl) centerEl.innerHTML = `<div class="n mono">—</div><div class="t">нет данных</div>`;
     return;
   }
-  const sortedIdx = s.avail.slice().sort((a,b)=> AN_SALES[year][b].revenue - AN_SALES[year][a].revenue);
-  const labels = sortedIdx.map(i=> AN_MONTHS[i]);
-  const values = sortedIdx.map(i=> AN_SALES[year][i].revenue);
-  const colors = sortedIdx.map((_,k)=> AN_MONTH_COLORS[k % AN_MONTH_COLORS.length]);
+  // Хронологический порядок (январь → декабрь), а не по убыванию выручки —
+  // и цвет месяца фиксирован по его номеру, а не по позиции в рейтинге.
+  const chronoIdx = s.avail; // anYearStats builds avail in ascending month order already
+  const labels = chronoIdx.map(i=> AN_MONTHS[i]);
+  const values = chronoIdx.map(i=> AN_SALES[year][i].revenue);
+  const colors = chronoIdx.map(i=> AN_MONTH_COLORS[i % AN_MONTH_COLORS.length]);
   const circles = [];
   AN_DONUT_CIRCLES[year] = circles;
   renderDonut('anDonut'+year, labels, values, colors, s.totalRevenue, circles, i=> setDonutHover(circles, 'anRankList'+year, i));
   if(centerEl){
     centerEl.innerHTML = `<div class="n mono">${s.avail.length}</div><div class="t">${rmWordForm(s.avail.length,'месяц','месяца','месяцев')}<br>с данными</div>`;
   }
-  sortedIdx.forEach((mi, idx)=>{
+  chronoIdx.forEach((mi, idx)=>{
     const color = colors[idx];
     const val = values[idx];
     const pct = (val/s.totalRevenue*100).toFixed(1);
     const row = document.createElement('div');
     row.className = 'rank-row';
     row.innerHTML = `
-      <span class="idx">${String(idx+1).padStart(2,'0')}</span>
+      <span class="idx">${String(mi+1).padStart(2,'0')}</span>
       <span class="name"><span class="swatch" style="background:${color}"></span>${AN_MONTHS[mi]}</span>
       <span class="pct">${pct}%</span>
       <span class="amt">${fmt(val)} ₽</span>`;
