@@ -609,140 +609,82 @@
   .goal-progress-track i{ display:block; height:100%; border-radius:4px; background:linear-gradient(90deg, var(--blue), #8fc7ff); }
   .goal-progress-label{ flex-shrink:0; font-size:10.5px; color:var(--ink-mute); white-space:nowrap; }
 
-  /* ===== STATISTICS HUB ===== */
-  .stat-layout{ display:flex; align-items:flex-start; gap:22px; }
-  .stat-sidebar{
-    width:270px; flex-shrink:0; position:sticky; top:88px;
-    background:rgba(18,18,18,0.55); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-    border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px;
-    max-height:calc(100vh - 120px); overflow-y:auto;
-  }
-  .stat-search{ margin-bottom:10px; }
-  .stat-search input{
-    width:100%; background:var(--bg-alt); border:1px solid var(--line); border-radius:9px;
-    padding:9px 12px; color:var(--ink); font-family:'Inter'; font-size:13px;
-  }
-  .stat-search input:focus{ outline:none; border-color:var(--amber); }
-  .stat-channel-list{ display:flex; flex-direction:column; gap:3px; }
-  .stat-channel-item{
-    display:flex; align-items:center; gap:10px; padding:10px 11px; border-radius:10px;
-    cursor:pointer; border:1px solid transparent; transition:background .15s ease, border-color .15s ease;
-  }
-  .stat-channel-item:hover{ background:rgba(255,255,255,0.04); }
-  .stat-channel-item.active{ background:rgba(244,119,33,0.1); border-color:rgba(244,119,33,0.3); }
-  .stat-channel-icon{ flex-shrink:0; font-size:17px; width:26px; text-align:center; }
-  .stat-channel-name{ flex:1; min-width:0; font-size:13.5px; color:var(--ink-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .stat-channel-item.active .stat-channel-name{ color:var(--ink); font-weight:600; }
-  .stat-channel-badge{ flex-shrink:0; font-size:10.5px; color:var(--ink-mute); font-family:'JetBrains Mono'; white-space:nowrap; }
-  .stat-channel-empty{ color:var(--ink-mute); font-size:12.5px; text-align:center; padding:16px 8px; }
+  /* ===== ANALYTICS DASHBOARD (sales) ===== */
+  .an-year-pane{ display:none; }
+  .an-year-pane.active{ display:block; }
 
-  .stat-detail{ flex:1; min-width:0; display:flex; flex-direction:column; gap:16px; }
-  .stat-detail-head{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
-  .stat-detail-title{ display:flex; align-items:center; gap:12px; }
-  .stat-detail-icon{
-    width:44px; height:44px; border-radius:12px; font-size:21px; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
-    background:rgba(244,119,33,0.1); border:1px solid rgba(244,119,33,0.25);
-  }
-  .stat-detail-name{ font-family:'Rubik'; font-weight:700; font-size:19px; color:var(--ink); }
-  .stat-detail-sub{ font-size:12px; color:var(--ink-mute); margin-top:2px; }
-  .stat-toolbar{ display:flex; gap:8px; flex-wrap:wrap; }
+  .kpi-grid.cols-6{ grid-template-columns:repeat(6,1fr); }
+  @media (max-width:1100px){ .kpi-grid.cols-6{ grid-template-columns:repeat(3,1fr); } }
+  @media (max-width:640px){ .kpi-grid.cols-6{ grid-template-columns:repeat(2,1fr); } }
 
-  .stat-insight-row{ display:flex; gap:12px; flex-wrap:wrap; }
-  .stat-insight-chip{
+  .an-insight-row{ display:flex; gap:12px; flex-wrap:wrap; margin:16px 0; }
+  .an-insight-chip{
     display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-dim);
     background:rgba(255,255,255,0.03); border:1px solid var(--line); border-radius:100px; padding:7px 14px;
   }
-  .stat-insight-chip b{ color:var(--ink); font-family:'JetBrains Mono'; }
+  .an-insight-chip b{ color:var(--ink); font-family:'JetBrains Mono'; }
+  .an-insight-chip.up{ border-color:rgba(62,207,142,0.3); color:var(--green); }
+  .an-insight-chip.down{ border-color:rgba(255,107,107,0.3); color:var(--red); }
 
-  .stat-section{
-    background:var(--card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;
-  }
-  .stat-section > summary{
-    list-style:none; cursor:pointer; padding:18px 24px; display:flex; align-items:center; justify-content:space-between;
-    font-family:'Rubik'; font-weight:600; font-size:14.5px; color:var(--ink); user-select:none;
-  }
-  .stat-section > summary::-webkit-details-marker{ display:none; }
-  .stat-section > summary::after{
-    content:"⌄"; color:var(--ink-mute); font-size:16px; transition:transform .25s ease; margin-left:12px;
-  }
-  .stat-section[open] > summary::after{ transform:rotate(180deg); }
-  .stat-section > summary:hover{ color:var(--amber); }
-  .stat-section-body{ padding:0 24px 24px; }
+  .an-charts-grid{ display:grid; grid-template-columns:1.4fr 1fr; gap:16px; align-items:stretch; }
+  @media (max-width:900px){ .an-charts-grid{ grid-template-columns:1fr; } }
 
-  .stat-metric-tabs{ display:flex; gap:6px; margin-bottom:14px; }
+  /* -- line chart (custom SVG, no external library) -- */
+  .line-chart-wrap{ width:100%; }
+  .line-chart-svg{ width:100%; height:180px; display:block; overflow:visible; }
+  .line-chart-grid{ stroke:var(--line); stroke-width:1; }
+  .line-chart-path{
+    fill:none; stroke-width:3; stroke-linecap:round; stroke-linejoin:round;
+    stroke-dasharray:1000; stroke-dashoffset:1000; transition:stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1);
+  }
+  .line-chart-svg.grown .line-chart-path{ stroke-dashoffset:0; }
+  .line-chart-dot{ transition:r .15s ease; }
+  .line-chart-dot:hover{ r:6; }
+  .line-chart-labels{ display:flex; justify-content:space-between; margin-top:8px; font-size:11px; color:var(--ink-mute); }
+  .line-chart-labels span.is-empty{ opacity:0.35; }
+  .an-legend{ display:flex; gap:14px; margin-top:10px; flex-wrap:wrap; }
+  .an-legend-item{ display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--ink-dim); }
+  .an-legend-item i{ width:10px; height:10px; border-radius:3px; display:inline-block; }
 
-  .stat-cat-toolbar{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; align-items:center; }
-  .stat-cat-toolbar input[type="text"]{
-    background:var(--bg-alt); border:1px solid var(--line); border-radius:9px; padding:8px 12px;
-    color:var(--ink); font-size:12.5px; font-family:'Inter'; min-width:160px;
-  }
-  .stat-cat-toolbar select{
-    background:var(--bg-alt); border:1px solid var(--line); border-radius:9px; padding:8px 12px;
-    color:var(--ink-dim); font-size:12.5px; font-family:'Inter'; cursor:pointer;
-  }
-  .stat-row-actions{ position:relative; display:inline-flex; align-items:center; gap:2px; }
-  .stat-menu-btn{
-    background:none; border:none; color:var(--ink-mute); cursor:pointer; font-size:16px; line-height:1;
-    padding:3px 7px; border-radius:6px;
-  }
-  .stat-menu-btn:hover{ color:var(--ink); background:rgba(255,255,255,0.06); }
-  .stat-menu{
-    position:fixed; z-index:9980; min-width:190px;
-    background:var(--card-2); border:1px solid var(--line); border-radius:10px; padding:5px;
-    box-shadow:0 16px 32px -12px rgba(0,0,0,0.6); display:none;
-  }
-  .stat-menu.open{ display:block; }
-  .stat-menu button{
-    display:flex; width:100%; text-align:left; background:none; border:none; color:var(--ink-dim);
-    font-size:12.5px; padding:8px 10px; border-radius:6px; cursor:pointer; font-family:'Inter';
-  }
-  .stat-menu button:hover{ background:rgba(255,255,255,0.06); color:var(--ink); }
-  .stat-menu button.danger:hover{ color:var(--red); }
+  .bar-col-empty .bar-fill{ transition:none; }
+  .bar-col-empty{ cursor:default; }
 
-  .stat-textarea{
-    width:100%; background:var(--bg-alt); border:1px solid var(--line); border-radius:10px;
-    padding:12px 14px; color:var(--ink); font-family:'Inter'; font-size:13px; resize:vertical; line-height:1.5;
+  /* -- leads-by-channel donut empty state -- */
+  .an-leads-empty{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+    padding:36px 20px; color:var(--ink-mute); font-size:13px; text-align:center;
   }
-  .stat-textarea:focus{ outline:none; border-color:var(--amber); }
+  .an-leads-empty .n{ font-size:28px; }
 
-  .stat-comment-list{ display:flex; flex-direction:column; gap:8px; margin-top:12px; }
-  .stat-comment-item{
-    background:var(--card-2); border:1px solid var(--line); border-radius:10px; padding:10px 14px;
+  .an-channel-list{ display:flex; flex-direction:column; gap:6px; margin-top:12px; }
+  .an-channel-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--card-2); border:1px solid var(--line); border-radius:8px; padding:8px 12px;
+    font-size:12.5px; color:var(--ink-dim);
   }
-  .stat-comment-text{ font-size:13px; color:var(--ink-dim); line-height:1.5; }
-  .stat-comment-meta{ display:flex; align-items:center; justify-content:space-between; margin-top:6px; gap:8px; }
-  .stat-comment-date{ font-size:11px; color:var(--ink-mute); font-family:'JetBrains Mono'; }
-  .stat-comment-del{ background:none; border:none; color:var(--ink-mute); cursor:pointer; font-size:12px; }
-  .stat-comment-del:hover{ color:var(--red); }
+  .an-channel-row .amt{ font-family:'JetBrains Mono'; color:var(--ink-mute); }
 
-  .stat-import-methods{ display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; }
-  .stat-import-pane{ display:none; }
-  .stat-import-pane.active{ display:block; }
-  .stat-drop{
-    border:1.5px dashed var(--line); border-radius:12px; padding:26px 18px; text-align:center;
-    color:var(--ink-mute); font-size:13px; cursor:pointer; transition:border-color .15s ease, color .15s ease;
+  /* -- compare tab -- */
+  .an-compare-table{ width:100%; border-collapse:collapse; }
+  .an-compare-table th{
+    text-align:right; font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-mute);
+    padding:0 10px 10px; font-weight:500; border-bottom:1px solid var(--line); white-space:nowrap;
   }
-  .stat-drop:hover{ border-color:var(--amber); color:var(--ink-dim); }
+  .an-compare-table th:first-child{ text-align:left; }
+  .an-compare-table td{ padding:12px 10px; border-bottom:1px solid var(--line); font-size:13.5px; text-align:right; white-space:nowrap; }
+  .an-compare-table td:first-child{ text-align:left; font-family:'Inter'; color:var(--ink); }
+  .an-compare-table td.num{ font-family:'JetBrains Mono'; }
+  .an-compare-table td.delta.up{ color:var(--green); }
+  .an-compare-table td.delta.down{ color:var(--red); }
+  .an-compare-table td.delta.flat{ color:var(--ink-mute); }
 
-  .stat-modal-backdrop{
-    position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index:9990;
-    display:none; align-items:flex-start; justify-content:center; padding:6vh 20px; overflow-y:auto;
+  #page-analytics .callout{
+    background:var(--card-2); border:1px solid var(--line); border-left:3px solid var(--amber);
+    border-radius:10px; padding:16px 18px; margin:16px 0 0; font-size:13.5px; color:var(--ink-dim);
   }
-  .stat-modal-backdrop.open{ display:flex; }
-  .stat-modal{
-    width:100%; max-width:560px; background:var(--card); border:1px solid var(--line); border-radius:18px;
-    padding:26px; box-shadow:0 30px 70px -20px rgba(0,0,0,0.7);
-  }
-  .stat-modal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-  .stat-modal-head h3{ font-family:'Rubik'; font-size:17px; font-weight:700; color:var(--ink); margin:0; }
-  .stat-modal-close{ background:none; border:none; color:var(--ink-mute); font-size:20px; cursor:pointer; line-height:1; }
-  .stat-modal-close:hover{ color:var(--ink); }
-
-  @media (max-width:960px){
-    .stat-layout{ flex-direction:column; }
-    .stat-sidebar{ width:100%; position:static; max-height:none; }
-  }
+  #page-analytics .callout b{ color:var(--amber); }
+  #page-analytics .card-title{ margin-bottom:10px; }
+  #page-analytics .an-year-pane p{ color:var(--ink-dim); font-size:14px; margin:0 0 10px; }
 
   /* ===== FOOTER ===== */
   footer{ padding:36px 0 60px; }
@@ -797,7 +739,7 @@
     <div class="page-tabs">
       <button class="page-tab-btn active" data-page="home" onclick="switchPage('home')">Главная</button>
       <button class="page-tab-btn" data-page="finance" onclick="switchPage('finance')">Финансы</button>
-      <button class="page-tab-btn" data-page="stats" onclick="switchPage('stats')">Статистика</button>
+      <button class="page-tab-btn" data-page="analytics" onclick="switchPage('analytics')">Аналитика</button>
     </div>
   </div>
 </nav>
@@ -817,10 +759,10 @@
           <p>Бюджет 2025 года, динамика по месяцам, структура расходов, аналитика и Roadmap на второе полугодие 2026 с целевым бюджетом.</p>
           <div class="hc-arrow">Открыть →</div>
         </div>
-        <div class="home-card" onclick="switchPage('stats')">
+        <div class="home-card" onclick="switchPage('analytics')">
           <div class="hc-icon" style="--hc-accent:var(--blue)">Σ</div>
-          <h3>Статистика</h3>
-          <p>Учёт аккаунтов, социальных сетей и площадок продвижения — отдельно от финансового отчёта.</p>
+          <h3>Аналитика</h3>
+          <p>Продажи по месяцам: выручка, чек, посетители, заявки по каналам и сравнение 2025 vs 2026.</p>
           <div class="hc-arrow">Открыть →</div>
         </div>
       </div>
@@ -1800,73 +1742,86 @@
 
 </div><!-- /page-finance -->
 
-<!-- ================= STATS PAGE (marketing analytics hub) ================= -->
-<div class="page-pane" id="page-stats">
-<section id="stats-hub" style="border-bottom:none;">
+<!-- ================= ANALYTICS PAGE (sales dashboard) ================= -->
+<div class="page-pane" id="page-analytics">
+<section id="analytics-hub" style="border-bottom:none;">
   <div class="wrap">
     <div class="sec-head">
       <div>
-        <div class="sec-eyebrow">01 · Статистика</div>
-        <div class="sec-title">Центр аналитики маркетинга</div>
+        <div class="sec-eyebrow">01 · Аналитика</div>
+        <div class="sec-title">Продажи и заявки</div>
       </div>
-      <div class="sec-note">Каналы трафика, категории внутри каждого канала, расходы, заявки и конверсия — выберите источник слева.</div>
+      <div class="sec-note">Выручка, чек, посетители и заявки по каналам — 2025, 2026 и сравнение периодов.</div>
     </div>
 
-    <div class="stat-layout reveal">
-      <aside class="stat-sidebar">
-        <div class="stat-search"><input type="text" id="statSearchInput" placeholder="Поиск канала…" oninput="renderStatSidebar(this.value)"></div>
-        <div class="stat-channel-list" id="statChannelList"></div>
-      </aside>
-      <div class="stat-detail" id="statDetail"></div>
+    <div class="page-tabs year-tabs reveal" style="margin-bottom:24px;">
+      <button class="page-tab-btn an-year-tab-btn active" data-ayear="2025" onclick="switchAnalyticsYear('2025')">2025</button>
+      <button class="page-tab-btn an-year-tab-btn" data-ayear="2026" onclick="switchAnalyticsYear('2026')">2026</button>
+      <button class="page-tab-btn an-year-tab-btn" data-ayear="compare" onclick="switchAnalyticsYear('compare')">Сравнение</button>
+    </div>
+
+    <div class="an-year-pane active" id="analytics-2025">
+      <div class="kpi-grid cols-6" id="anKpi2025"></div>
+      <div class="an-insight-row" id="anInsight2025"></div>
+      <div class="an-charts-grid">
+        <div class="card reveal">
+          <div class="card-title">Динамика выручки по месяцам</div>
+          <div class="card-desc">Приглушённые подписи — месяцы, по которым пока нет выгрузки.</div>
+          <div class="line-chart-wrap" id="anLine2025"></div>
+        </div>
+        <div class="card reveal">
+          <div class="card-title">Заявки по источникам</div>
+          <div class="card-desc">Instagram, Авито, WhatsApp, Telegram, звонки.</div>
+          <div id="anLeads2025"></div>
+        </div>
+      </div>
+      <div class="card reveal" style="margin-top:16px;">
+        <div class="card-title">Чеки по месяцам</div>
+        <div class="card-desc">Количество пробитых чеков ККМ, оранжевый — самый загруженный месяц.</div>
+        <div class="bars-chart" id="anBars2025"></div>
+      </div>
+      <div class="card reveal" style="margin-top:16px;" id="anSummary2025"></div>
+    </div>
+
+    <div class="an-year-pane" id="analytics-2026">
+      <div class="kpi-grid cols-6" id="anKpi2026"></div>
+      <div class="an-insight-row" id="anInsight2026"></div>
+      <div class="an-charts-grid">
+        <div class="card reveal">
+          <div class="card-title">Динамика выручки по месяцам</div>
+          <div class="card-desc">Приглушённые подписи — месяцы, по которым пока нет выгрузки.</div>
+          <div class="line-chart-wrap" id="anLine2026"></div>
+        </div>
+        <div class="card reveal">
+          <div class="card-title">Заявки по источникам</div>
+          <div class="card-desc">Instagram, Авито, WhatsApp, Telegram, звонки.</div>
+          <div id="anLeads2026"></div>
+        </div>
+      </div>
+      <div class="card reveal" style="margin-top:16px;">
+        <div class="card-title">Чеки по месяцам</div>
+        <div class="card-desc">Количество пробитых чеков ККМ, оранжевый — самый загруженный месяц.</div>
+        <div class="bars-chart" id="anBars2026"></div>
+      </div>
+      <div class="card reveal" style="margin-top:16px;" id="anSummary2026"></div>
+    </div>
+
+    <div class="an-year-pane" id="analytics-compare">
+      <div class="card reveal">
+        <div class="card-title">2025 vs 2026 — по общим месяцам</div>
+        <div class="card-desc" id="anCompareNote"></div>
+        <div class="cc-table-wrap"><table class="an-compare-table" id="anCompareTable"></table></div>
+      </div>
+      <div class="card reveal" style="margin-top:16px;">
+        <div class="card-title">Выручка по месяцам — 2025 и 2026</div>
+        <div class="card-desc">Обе линии на одном графике для прямого сравнения.</div>
+        <div class="line-chart-wrap" id="anCompareLine"></div>
+      </div>
+      <div class="card reveal" style="margin-top:16px;" id="anCompareConclusions"></div>
     </div>
   </div>
 </section>
-</div><!-- /page-stats -->
-
-<!-- ================= STATS: import modal ================= -->
-<div class="stat-modal-backdrop" id="statImportBackdrop" onclick="if(event.target===this) closeStatImport()">
-  <div class="stat-modal">
-    <div class="stat-modal-head">
-      <h3 id="statImportTitle">Загрузить данные</h3>
-      <button class="stat-modal-close" onclick="closeStatImport()">✕</button>
-    </div>
-
-    <div class="cc-field" style="margin-bottom:16px;">
-      <label>Что импортируем</label>
-      <select id="statImportMetric">
-        <option value="spend">Расходы, ₽</option>
-        <option value="contacts">Обращения</option>
-        <option value="leads">Заявки</option>
-      </select>
-    </div>
-
-    <div class="stat-import-methods">
-      <button class="page-tab-btn active" data-import-method="text" onclick="statSetImportMethod('text')">📋 Текст</button>
-      <button class="page-tab-btn" data-import-method="file" onclick="statSetImportMethod('file')">📁 Excel / CSV</button>
-      <button class="page-tab-btn" data-import-method="pdf" onclick="statSetImportMethod('pdf')">📄 PDF</button>
-    </div>
-
-    <div class="stat-import-pane active" id="statImportPaneText">
-      <textarea id="statImportText" rows="5" class="stat-textarea mono" placeholder="Reels	12	18	9	0	0	0&#10;Stories	5	7	4	0	0	0"></textarea>
-      <div class="cc-note" style="margin-top:6px;">Строка на категорию: название, затем числа по месяцам подряд с января (через таб или запятую). Существующая категория обновится, новая — добавится.</div>
-      <div style="display:flex; gap:8px; margin-top:12px;">
-        <button class="cc-add-btn" onclick="statImportFromText()">Импортировать</button>
-        <button class="cc-undo-btn" onclick="closeStatImport()">Отмена</button>
-      </div>
-    </div>
-
-    <div class="stat-import-pane" id="statImportPaneFile">
-      <div class="stat-drop" onclick="document.getElementById('statFileInput').click()">📁 Нажмите, чтобы выбрать файл .xlsx / .csv</div>
-      <input type="file" id="statFileInput" accept=".xlsx,.xls,.csv,.txt,.tsv" style="display:none;" onchange="statHandleFile(event)">
-    </div>
-
-    <div class="stat-import-pane" id="statImportPanePdf">
-      <div class="stat-drop" onclick="document.getElementById('statPdfInput').click()">📄 Нажмите, чтобы выбрать PDF-отчёт</div>
-      <input type="file" id="statPdfInput" accept=".pdf" style="display:none;" onchange="statHandlePdf(event)">
-      <div class="cc-note" style="margin-top:8px;">Качество распознавания зависит от структуры PDF — лучше всего работает для простых табличных отчётов. Если результат некорректный, используйте вставку текста или Excel/CSV.</div>
-    </div>
-  </div>
-</div>
+</div><!-- /page-analytics -->
 
 <footer>
   <div class="wrap">
@@ -1875,10 +1830,8 @@
   </div>
 </footer>
 
-<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script>
@@ -1919,7 +1872,7 @@ function showStorageWarning(){
 }
 
 window.switchPage = function(page){
-  document.querySelectorAll('.page-tab-btn:not(.year-tab-btn)').forEach(b=> b.classList.toggle('active', b.dataset.page===page));
+  document.querySelectorAll('.page-tab-btn:not(.year-tab-btn):not(.an-year-tab-btn)').forEach(b=> b.classList.toggle('active', b.dataset.page===page));
   document.querySelectorAll('.page-pane').forEach(p=> p.classList.remove('active'));
   const target = document.getElementById('page-'+page);
   if(!target) return;
@@ -1932,6 +1885,7 @@ window.switchPage = function(page){
   });
   if(typeof growBars === 'function') growBars();
   if(typeof growDonut === 'function') growDonut();
+  if(typeof growLineCharts === 'function') growLineCharts();
   if(typeof refreshRmVisibility === 'function') setTimeout(refreshRmVisibility, 50);
 };
 
@@ -1980,9 +1934,7 @@ function fbInit(){
 }
 const fbDb = fbInit();
 const FB_ROADMAP_DOC = fbDb ? fbDb.collection('ober').doc('roadmap') : null;
-const FB_STATS_DOC = fbDb ? fbDb.collection('ober').doc('stats') : null;
 let fbApplyingRemoteRoadmap = false;
-let fbApplyingRemoteStats = false;
 
 function showSyncWarning(){
   if(document.getElementById('sync-warning-banner')) return;
@@ -2941,681 +2893,348 @@ initTimelineSection('goalsPhases', 'goalsTimelineFill', 'goalsFillTrigger');
 updateActiveRmPhase();
 
 
-// ---------- Shared text/table parsing (used by every import pipeline: paste, Excel/CSV, PDF) ----------
-function rowsFromLines(raw){
-  return raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0)
-    .map(line => line.includes('\t') ? line.split('\t') : line.split(','));
-}
+// ---------- Analytics dashboard (sales): source data, aggregation, rendering ----------
+const AN_MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const AN_MONTHS_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
 
-function parseAOAToLeads(aoa){
-  const parsedRows = [];
-  aoa.forEach(cellsRaw=>{
-    const cells = cellsRaw.map(c => (c===undefined || c===null) ? '' : String(c).trim()).filter((c,i)=> i===0 || c!=='');
-    if(cells.length < 1) return;
-    const name = cells[0];
-    if(!name) return;
-    const nums = cells.slice(1).map(v => {
-      const n = parseFloat(String(v).replace(/\s/g,'').replace(',', '.'));
-      return isNaN(n) ? 0 : n;
-    });
-    // skip an obvious header row (e.g. "Канал, Январь, Февраль…" with no numbers at all)
-    if(cells.length > 1 && nums.every(n=>n===0) && cells.slice(1).some(v=>!/^-?\d/.test(String(v)))) return;
-    const values = Array(12).fill(0);
-    nums.slice(0,12).forEach((n,i)=> values[i]=n);
-    parsedRows.push({ name, values });
-  });
-  return parsedRows;
-}
+// Index 0 = январь … 11 = декабрь. null = месяц пока не выгружен.
+// avgCheck / avgDepth — как есть из источника (см. предупреждение о несопоставимости методик 2025/2026 на вкладке «Сравнение»).
+const AN_SALES = {
+  '2025': [
+    { revenue:21397690.95, receipts:14904, avgCheck:41497.89, avgDepth:102.14, visitors:34210 },
+    { revenue:18248426.54, receipts:12790, avgCheck:38536.52, avgDepth:85.93,  visitors:30008 },
+    { revenue:22978447.06, receipts:16092, avgCheck:42269.56, avgDepth:96.14,  visitors:36304 },
+    { revenue:23883559.30, receipts:16823, avgCheck:41305.70, avgDepth:97.11,  visitors:38217 },
+    null,
+    null,
+    { revenue:32473579.21, receipts:19957, avgCheck:47769.20, avgDepth:101.04, visitors:43286 },
+    null,
+    null,
+    { revenue:33986570.96, receipts:20798, avgCheck:47328.07, avgDepth:86.71,  visitors:35094 },
+    null,
+    null
+  ],
+  '2026': [
+    { revenue:27173253.10, receipts:17221, avgCheck:1389.14, avgDepth:2.74, visitors:null },
+    { revenue:22793379.54, receipts:15289, avgCheck:1376.18, avgDepth:2.71, visitors:null },
+    { revenue:22222793.88, receipts:17671, avgCheck:1357.00, avgDepth:2.19, visitors:null },
+    { revenue:28457184.54, receipts:18931, avgCheck:1498.88, avgDepth:2.80, visitors:null },
+    { revenue:29861192.69, receipts:20849, avgCheck:1382.99, avgDepth:2.78, visitors:null },
+    { revenue:31686808.82, receipts:20676, avgCheck:1318.53, avgDepth:2.84, visitors:null },
+    null, null, null, null, null, null
+  ]
+};
 
-// ---------- Statistics: marketing analytics hub ----------
-// Single source of truth for the whole module: statData (keyed by channel id), persisted to localStorage.
-// Every UI surface (sidebar badges, KPI tiles, charts, category table) is derived from it on each render,
-// so there is never a second copy of the same number to fall out of sync.
-const STAT_MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-const STAT_STORAGE_KEY = 'ober-stats-channels-v1';
-const STAT_CHANNELS_META = [
-  {id:'instagram', name:'Instagram', icon:'📷'},
-  {id:'telegram', name:'Telegram', icon:'📱'},
-  {id:'avito', name:'Авито', icon:'📌'},
-  {id:'yandex-maps', name:'Яндекс Карты', icon:'🗺️'},
-  {id:'2gis', name:'2ГИС', icon:'📍'},
-  {id:'google-maps', name:'Google Maps', icon:'🌍'},
-  {id:'site', name:'Сайт', icon:'💻'},
-  {id:'whatsapp', name:'WhatsApp', icon:'💬'},
-  {id:'tv', name:'Телевидение', icon:'📺'},
-  {id:'outdoor', name:'Наружная реклама', icon:'🪧'},
-  {id:'bloggers', name:'Блогеры', icon:'🎤'},
-  {id:'other', name:'Другое', icon:'✨'}
+const AN_LEADS_CHANNELS = [
+  { key:'instagram', label:'Instagram', color:'#E1306C' },
+  { key:'avito',     label:'Авито',     color:'#00A046' },
+  { key:'whatsapp',  label:'WhatsApp',  color:'#25D366' },
+  { key:'telegram',  label:'Telegram',  color:'#2AABEE' },
+  { key:'calls',     label:'Звонки',    color:'#4DA8FF' }
 ];
-const STAT_DEFAULT_CATEGORIES = {
-  'instagram': ['Reels','Stories','Посты','Таргет','Блогеры','Конкурсы'],
-  'avito': ['Тариф','Продвижение','Реклама','Дополнительные услуги'],
-  'yandex-maps': ['Приоритетное размещение','Отзывы','Карточка организации']
-};
+// Заполнится, когда появится выгрузка заявок из Bitrix — пока данных нет.
+const AN_LEADS = { '2025': null, '2026': null };
 
-function statEmptyMonthly(){ return Array.from({length:12}, () => ({spend:0, contacts:0, leads:0})); }
-function statUid(){ return 's' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
-
-function statDefaultChannel(channelId){
-  const seedNames = STAT_DEFAULT_CATEGORIES[channelId] || [];
-  return {
-    categories: seedNames.map(name => ({ id: statUid(), name, monthly: statEmptyMonthly() })),
-    notes: '',
-    comments: []
-  };
-}
-
-function statLoad(){
-  try{ const raw = localStorage.getItem(STAT_STORAGE_KEY); if(raw) return JSON.parse(raw); }catch(e){}
-  return {};
-}
-function statSave(){
-  try{ localStorage.setItem(STAT_STORAGE_KEY, JSON.stringify(statData)); }catch(e){}
-  if(FB_STATS_DOC && !fbApplyingRemoteStats){
-    FB_STATS_DOC.set({ channels: statData }, { merge:true }).catch(e=> console.error('Firestore save (stats) failed', e));
-  }
-}
-
-let statData = statLoad();
-let statUndoStack = [];
-let statActiveChannelId = null;
-let statActiveMetric = 'spend';
-let statCatSearch = '';
-let statCatSort = 'name-asc';
-let statImportMethod = 'text';
-let statImportChannelId = null;
-
-function statEnsureChannel(channelId){
-  if(!statData[channelId]) statData[channelId] = statDefaultChannel(channelId);
-  return statData[channelId];
-}
-
-// One-time migration from the old single-metric "Мои социальные сети" tracker, if the new
-// hub hasn't been used yet — preserves any leads figures already entered by fuzzy-matching
-// channel names, instead of silently discarding them.
-(function statMigrateOldLeads(){
-  try{
-    if(localStorage.getItem(STAT_STORAGE_KEY)) return;
-    const raw = localStorage.getItem('ober-leads-by-channel-v2');
-    if(!raw) return;
-    const oldList = JSON.parse(raw);
-    if(!Array.isArray(oldList) || oldList.length === 0) return;
-    const nameToChannel = {
-      'instagram':'instagram', 'telegram':'telegram', 'авито':'avito',
-      'яндекс':'yandex-maps', '2гис':'2gis', 'google':'google-maps',
-      'сайт':'site', 'whatsapp':'whatsapp', 'ватсап':'whatsapp',
-      'телевидение':'tv', ' тв':'tv', 'наружн':'outdoor', 'блогер':'bloggers'
-    };
-    oldList.forEach(item=>{
-      const lower = item.name.toLowerCase();
-      let matched = null;
-      for(const key in nameToChannel){ if(lower.includes(key)){ matched = nameToChannel[key]; break; } }
-      const channelId = matched || 'other';
-      const channel = statEnsureChannel(channelId);
-      const catName = matched ? 'Импорт (прошлые данные)' : item.name;
-      let cat = channel.categories.find(c=>c.name.toLowerCase()===catName.toLowerCase());
-      if(!cat){ cat = { id:statUid(), name:catName, monthly: statEmptyMonthly() }; channel.categories.push(cat); }
-      (item.values||[]).forEach((v,i)=>{ if(i<12) cat.monthly[i].leads = v||0; });
-    });
-    statSave();
-  }catch(e){}
-})();
-
-function statApplyRemoteSnapshot(snap){
-  const data = snap.data();
-  if(!data || !data.channels) return;
-  fbApplyingRemoteStats = true;
-  statData = data.channels;
-  try{ localStorage.setItem(STAT_STORAGE_KEY, JSON.stringify(statData)); }catch(e){}
-  if(typeof renderStatSidebar === 'function') renderStatSidebar();
-  if(typeof renderStatDetail === 'function') renderStatDetail();
-  fbApplyingRemoteStats = false;
-}
-
-if(FB_STATS_DOC){
-  // Same check-then-seed-then-listen pattern as the roadmap doc above, so a partial write
-  // from an older code path can never leave channels permanently unseeded.
-  FB_STATS_DOC.get().then(snap=>{
-    if(!snap.exists || snap.data().channels === undefined){
-      FB_STATS_DOC.set({ channels: statData }, { merge:true });
-    }
-    FB_STATS_DOC.onSnapshot(statApplyRemoteSnapshot, err=>{ console.error('Firestore listen (stats) failed', err); showSyncWarning(); });
-  }).catch(err=>{ console.error('Firestore get (stats) failed', err); showSyncWarning(); });
-}
-
-function statPushUndo(){
-  statUndoStack.push(JSON.parse(JSON.stringify(statData)));
-  if(statUndoStack.length > 15) statUndoStack.shift();
-}
-window.statUndo = function(){
-  if(statUndoStack.length === 0) return;
-  statData = statUndoStack.pop();
-  statSave();
-  renderStatSidebar();
-  renderStatDetail();
-};
-
-// ---------- Category CRUD ----------
-window.statAddCategory = function(channelId){
-  const input = document.getElementById('statNewCatInput');
-  const name = input ? input.value.trim() : '';
-  if(!name){ if(input){ input.focus(); input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',900); } return; }
-  const channel = statEnsureChannel(channelId);
-  statPushUndo();
-  channel.categories.push({ id: statUid(), name, monthly: statEmptyMonthly() });
-  statSave();
-  renderStatSidebar();
-  renderStatDetail();
-};
-
-window.statRenameCategory = function(channelId, catId, newName){
-  const name = newName.trim();
-  if(!name) return;
-  const channel = statEnsureChannel(channelId);
-  const cat = channel.categories.find(c=>c.id===catId);
-  if(!cat) return;
-  statPushUndo();
-  cat.name = name;
-  statSave();
-  renderStatSidebar();
-  renderStatDetail();
-};
-
-window.statDeleteCategory = function(channelId, catId){
-  const channel = statEnsureChannel(channelId);
-  const cat = channel.categories.find(c=>c.id===catId);
-  if(!cat) return;
-  if(!confirm(`Удалить категорию «${cat.name}»?`)) return;
-  statPushUndo();
-  channel.categories = channel.categories.filter(c=>c.id!==catId);
-  statSave();
-  renderStatSidebar();
-  renderStatDetail();
-};
-
-window.statMergeCategories = function(channelId, sourceCatId, targetCatId){
-  if(!targetCatId || sourceCatId === targetCatId) return;
-  const channel = statEnsureChannel(channelId);
-  const source = channel.categories.find(c=>c.id===sourceCatId);
-  const target = channel.categories.find(c=>c.id===targetCatId);
-  if(!source || !target) return;
-  if(!confirm(`Объединить «${source.name}» с «${target.name}»? Значения сложатся, «${source.name}» будет удалена.`)) return;
-  statPushUndo();
-  target.monthly.forEach((m,i)=>{
-    m.spend += source.monthly[i].spend||0;
-    m.contacts += source.monthly[i].contacts||0;
-    m.leads += source.monthly[i].leads||0;
+function anYearStats(year){
+  const months = AN_SALES[year];
+  const avail = [];
+  months.forEach((m,i)=>{ if(m) avail.push(i); });
+  const totalRevenue = avail.reduce((s,i)=> s + months[i].revenue, 0);
+  const totalReceipts = avail.reduce((s,i)=> s + months[i].receipts, 0);
+  const hasVisitors = avail.every(i=> months[i].visitors != null) && avail.length>0;
+  const totalVisitors = hasVisitors ? avail.reduce((s,i)=> s + months[i].visitors, 0) : null;
+  const avgCheck = totalReceipts>0 ? totalRevenue/totalReceipts : 0;
+  const avgDepth = totalReceipts>0 ? avail.reduce((s,i)=> s + months[i].avgDepth*months[i].receipts, 0)/totalReceipts : 0;
+  const conversion = hasVisitors && totalVisitors>0 ? (totalReceipts/totalVisitors*100) : null;
+  let bestIdx = null, worstIdx = null;
+  avail.forEach(i=>{
+    if(bestIdx===null || months[i].revenue > months[bestIdx].revenue) bestIdx = i;
+    if(worstIdx===null || months[i].revenue < months[worstIdx].revenue) worstIdx = i;
   });
-  channel.categories = channel.categories.filter(c=>c.id!==sourceCatId);
-  statSave();
-  renderStatSidebar();
-  renderStatDetail();
-};
-
-window.statUpdateMetricValue = function(channelId, catId, monthIdx, metric, val){
-  const channel = statEnsureChannel(channelId);
-  const cat = channel.categories.find(c=>c.id===catId);
-  if(!cat) return;
-  statPushUndo();
-  const v = parseFloat(val);
-  cat.monthly[monthIdx][metric] = isNaN(v) ? 0 : v;
-  statSave();
-  renderStatSidebar();
-  renderStatDetail();
-};
-
-window.statSetNotes = function(channelId, value){
-  statEnsureChannel(channelId).notes = value;
-  statSave();
-};
-
-window.statAddComment = function(channelId){
-  const input = document.getElementById('statCommentInput');
-  const text = input ? input.value.trim() : '';
-  if(!text) return;
-  statEnsureChannel(channelId).comments.unshift({ id: statUid(), text, ts: Date.now() });
-  statSave();
-  renderStatDetail();
-};
-
-window.statDeleteComment = function(channelId, commentId){
-  const channel = statEnsureChannel(channelId);
-  channel.comments = channel.comments.filter(c=>c.id!==commentId);
-  statSave();
-  renderStatDetail();
-};
-
-window.statToggleMenu = function(catId, evt){
-  if(evt) evt.stopPropagation();
-  const menu = document.getElementById('statMenu-'+catId);
-  if(!menu) return;
-  const wasOpen = menu.classList.contains('open');
-  document.querySelectorAll('.stat-menu.open').forEach(m=>m.classList.remove('open'));
-  if(!wasOpen && evt && evt.currentTarget){
-    const r = evt.currentTarget.getBoundingClientRect();
-    const menuWidth = 190;
-    const left = Math.min(r.right - menuWidth, window.innerWidth - menuWidth - 8);
-    menu.style.top = (r.bottom + 4) + 'px';
-    menu.style.left = Math.max(8, left) + 'px';
-    menu.classList.add('open');
-  }
-};
-document.addEventListener('click', ()=>{ document.querySelectorAll('.stat-menu.open').forEach(m=>m.classList.remove('open')); });
-
-window.statSetCatSearch = function(v){ statCatSearch = v.toLowerCase(); renderStatCategoryTable(); };
-window.statSetCatSort = function(v){ statCatSort = v; renderStatCategoryTable(); };
-window.statSetMetric = function(metric){ statActiveMetric = metric; renderStatDetail(); };
-
-window.statSelectChannel = function(channelId){
-  statActiveChannelId = channelId;
-  statActiveMetric = 'spend';
-  statCatSearch = '';
-  statCatSort = 'name-asc';
-  renderStatSidebar();
-  renderStatDetail();
-};
-
-// ---------- Analytics (computed live from statData — never stored/duplicated) ----------
-function statChannelStats(channel){
-  const spendByMonth = Array(12).fill(0), contactsByMonth = Array(12).fill(0), leadsByMonth = Array(12).fill(0);
-  let spend=0, contacts=0, leads=0;
-  const categoryTotals = channel.categories.map(cat=>{
-    let cSpend=0, cContacts=0, cLeads=0;
-    cat.monthly.forEach((m,i)=>{
-      cSpend += m.spend||0; cContacts += m.contacts||0; cLeads += m.leads||0;
-      spendByMonth[i] += m.spend||0; contactsByMonth[i] += m.contacts||0; leadsByMonth[i] += m.leads||0;
-    });
-    spend += cSpend; contacts += cContacts; leads += cLeads;
-    return { id:cat.id, name:cat.name, spend:cSpend, contacts:cContacts, leads:cLeads };
-  });
-  const cpl = (spend>0 && leads>0) ? spend/leads : null;
-  const cpc = (spend>0 && contacts>0) ? spend/contacts : null;
-  const conv = (contacts>0 && leads>0) ? (leads/contacts*100) : null;
-  let bestMonth = null, bestCPL = Infinity;
-  for(let i=0;i<12;i++){
-    if(spendByMonth[i]>0 && leadsByMonth[i]>0){
-      const c = spendByMonth[i]/leadsByMonth[i];
-      if(c < bestCPL){ bestCPL = c; bestMonth = i; }
-    }
-  }
-  const topCostCategory = [...categoryTotals].filter(c=>c.spend>0).sort((a,b)=>b.spend-a.spend)[0] || null;
-  return { spend, contacts, leads, cpl, cpc, conv, spendByMonth, contactsByMonth, leadsByMonth, categoryTotals, bestMonth, bestCPL: bestMonth!==null?bestCPL:null, topCostCategory };
+  const missing = [];
+  months.forEach((m,i)=>{ if(!m) missing.push(AN_MONTHS[i]); });
+  return { avail, totalRevenue, totalReceipts, totalVisitors, avgCheck, avgDepth, conversion, bestIdx, worstIdx, missing };
 }
 
-function statMetricLabel(metric){ return metric==='spend' ? 'расходы' : (metric==='contacts' ? 'обращения' : 'заявки'); }
+function anKpiTile(accent, label, count, decimals, suffix, sub){
+  return `<div class="kpi reveal" style="--kpi-accent:${accent}">
+    <div class="kpi-label">${label}</div>
+    <div class="kpi-value mono" data-count="${count}" data-decimals="${decimals}" data-suffix="${suffix}">0${suffix}</div>
+    <div class="kpi-sub">${sub}</div>
+  </div>`;
+}
 
-// ---------- Sidebar ----------
-function renderStatSidebar(filterText){
-  const el = document.getElementById('statChannelList');
+function anRenderKpi(year){
+  const el = document.getElementById('anKpi'+year);
   if(!el) return;
-  const q = (filterText !== undefined ? filterText : (document.getElementById('statSearchInput')?.value || '')).trim().toLowerCase();
-  const items = STAT_CHANNELS_META.filter(m => !q || m.name.toLowerCase().includes(q));
-  if(items.length === 0){ el.innerHTML = '<div class="stat-channel-empty">Ничего не найдено</div>'; return; }
-  if(!statActiveChannelId) statActiveChannelId = STAT_CHANNELS_META[0].id;
-  el.innerHTML = items.map(m=>{
-    const channel = statData[m.id];
-    const stats = channel ? statChannelStats(channel) : null;
-    const badge = stats && stats.spend>0 ? fmt(stats.spend)+' ₽' : (stats && stats.leads>0 ? fmt(stats.leads)+' зая.' : '—');
-    const active = m.id === statActiveChannelId ? ' active' : '';
-    return `<div class="stat-channel-item${active}" onclick="statSelectChannel('${m.id}')">
-      <span class="stat-channel-icon">${m.icon}</span>
-      <span class="stat-channel-name">${escapeHtml(m.name)}</span>
-      <span class="stat-channel-badge">${badge}</span>
-    </div>`;
-  }).join('');
+  const s = anYearStats(year);
+  const monthsWord = rmWordForm(s.avail.length, 'месяц', 'месяца', 'месяцев');
+  el.innerHTML = [
+    anKpiTile('var(--amber)', 'Общая выручка', Math.round(s.totalRevenue), 0, ' ₽', `за ${s.avail.length} ${monthsWord}`),
+    anKpiTile('var(--blue)', 'Чеков пробито', s.totalReceipts, 0, '', 'сумма по загруженным месяцам'),
+    anKpiTile('var(--green)', 'Средний чек', Math.round(s.avgCheck), 0, ' ₽', 'выручка / чеков (сопоставимо между годами)'),
+    anKpiTile('var(--amber)', 'Глубина чека', s.avgDepth, 2, '', 'средневзвеш. по источнику'),
+    anKpiTile('var(--blue)', 'Посетители', s.totalVisitors == null ? 0 : s.totalVisitors, 0, '', s.totalVisitors == null ? 'нет данных за период' : `за ${s.avail.length} ${monthsWord}`),
+    anKpiTile('var(--green)', 'Конверсия в чек', s.conversion == null ? 0 : s.conversion, 1, '%', s.conversion == null ? 'нет данных о посетителях' : 'посетители → пробитый чек')
+  ].join('');
 }
 
-// ---------- Category table (isolated re-render so the search box never loses focus) ----------
-function statBuildCategoryTableHtml(meta, channel, stats){
-  let cats = channel.categories.filter(c => !statCatSearch || c.name.toLowerCase().includes(statCatSearch));
-  const catStatsMap = {}; stats.categoryTotals.forEach(c=> catStatsMap[c.id]=c);
-  cats = cats.map(c=> ({ ref:c, total: (catStatsMap[c.id]||{spend:0,contacts:0,leads:0})[statActiveMetric] || 0 }));
-  if(statCatSort==='name-asc') cats.sort((a,b)=>a.ref.name.localeCompare(b.ref.name,'ru'));
-  else if(statCatSort==='name-desc') cats.sort((a,b)=>b.ref.name.localeCompare(a.ref.name,'ru'));
-  else if(statCatSort==='total-desc') cats.sort((a,b)=>b.total-a.total);
-  else if(statCatSort==='total-asc') cats.sort((a,b)=>a.total-b.total);
-
-  if(channel.categories.length === 0) return '<div class="cc-empty">Пока нет категорий. Добавьте первую выше или импортируйте данные.</div>';
-  if(cats.length === 0) return '<div class="cc-empty">Ничего не найдено по запросу.</div>';
-
-  const rows = cats.map(({ref:cat})=>{
-    const cells = cat.monthly.map((m,mi)=>`<td class="num"><input type="number" class="cc-cell-input" value="${m[statActiveMetric] || ''}" min="0" step="${statActiveMetric==='spend'?1000:1}" placeholder="0" onchange="statUpdateMetricValue('${meta.id}','${cat.id}',${mi},'${statActiveMetric}',this.value)"></td>`).join('');
-    const rowTotal = cat.monthly.reduce((s,m)=>s+(m[statActiveMetric]||0),0);
-    const otherCats = channel.categories.filter(c=>c.id!==cat.id);
-    const mergeBlock = otherCats.length ? `
-      <div style="padding:6px 10px;">
-        <label style="font-size:10.5px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:5px;">Объединить с</label>
-        <select id="statMergeSelect-${cat.id}" style="width:100%;background:var(--bg-alt);border:1px solid var(--line);border-radius:6px;padding:5px 7px;color:var(--ink-dim);font-size:12px;">
-          ${otherCats.map(o=>`<option value="${o.id}">${escapeHtml(o.name)}</option>`).join('')}
-        </select>
-        <button class="cc-add-btn" style="width:100%;margin-top:6px;padding:6px;font-size:12px;" onclick="statMergeCategories('${meta.id}','${cat.id}', document.getElementById('statMergeSelect-${cat.id}').value)">🔀 Слить</button>
-      </div>` : '<div style="padding:10px 12px; font-size:12px; color:var(--ink-mute);">Нет других категорий</div>';
-    return `<tr>
-      <td class="cc-name-cell">
-        <input type="text" class="cc-cell-input cc-cell-name" value="${escapeHtml(cat.name)}" onchange="statRenameCategory('${meta.id}','${cat.id}',this.value)">
-        <div class="stat-row-actions" onclick="event.stopPropagation()">
-          <button class="stat-menu-btn" onclick="statToggleMenu('${cat.id}', event)" title="Ещё">⋯</button>
-          <div class="stat-menu" id="statMenu-${cat.id}">
-            ${mergeBlock}
-            <button class="danger" onclick="statDeleteCategory('${meta.id}','${cat.id}')">🗑 Удалить категорию</button>
-          </div>
-        </div>
-      </td>
-      ${cells}
-      <td class="num col-total" style="color:var(--ink);font-weight:600;">${fmt(rowTotal)}${statActiveMetric==='spend'?' ₽':''}</td>
-    </tr>`;
-  }).join('');
-
-  return `<div class="cc-table-wrap"><table class="cc-table roadmap-table"><thead><tr><th>Категория</th>${STAT_MONTHS.map(m=>`<th class="col-month">${m.slice(0,3)}</th>`).join('')}<th class="col-total">Итого</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-}
-
-function renderStatCategoryTable(){
-  const wrap = document.getElementById('statCatTableWrap');
-  if(!wrap || !statActiveChannelId) return;
-  const meta = STAT_CHANNELS_META.find(m=>m.id===statActiveChannelId);
-  if(!meta) return;
-  const channel = statEnsureChannel(meta.id);
-  const stats = statChannelStats(channel);
-  wrap.innerHTML = statBuildCategoryTableHtml(meta, channel, stats);
-}
-
-// ---------- Detail panel (KPIs, charts, category manager, notes, comments) ----------
-function renderStatDetail(){
-  const el = document.getElementById('statDetail');
+function anRenderInsight(year){
+  const el = document.getElementById('anInsight'+year);
   if(!el) return;
-  if(!statActiveChannelId) statActiveChannelId = STAT_CHANNELS_META[0].id;
-  const meta = STAT_CHANNELS_META.find(m=>m.id===statActiveChannelId) || STAT_CHANNELS_META[0];
-  const channel = statEnsureChannel(meta.id);
-  const stats = statChannelStats(channel);
+  const s = anYearStats(year);
+  const chips = [];
+  chips.push(`<div class="an-insight-chip">Доступно данных: <b>${s.avail.length} из 12</b> месяцев</div>`);
+  if(s.bestIdx !== null){
+    chips.push(`<div class="an-insight-chip up">Пиковый месяц: <b>${AN_MONTHS[s.bestIdx]} · ${fmt(AN_SALES[year][s.bestIdx].revenue)} ₽</b></div>`);
+  }
+  if(s.worstIdx !== null && s.worstIdx !== s.bestIdx){
+    chips.push(`<div class="an-insight-chip down">Минимальный месяц: <b>${AN_MONTHS[s.worstIdx]} · ${fmt(AN_SALES[year][s.worstIdx].revenue)} ₽</b></div>`);
+  }
+  if(s.missing.length){
+    chips.push(`<div class="an-insight-chip">Нет выгрузки за: <b>${s.missing.join(', ').toLowerCase()}</b></div>`);
+  }
+  el.innerHTML = chips.join('');
+}
 
-  const kpiHtml = `
-    <div class="kpi-grid cols-5">
-      <div class="kpi" style="--kpi-accent:var(--amber)">
-        <div class="kpi-label">Общий расход</div>
-        <div class="kpi-value mono" data-count="${Math.round(stats.spend)}" data-suffix=" ₽">0 ₽</div>
-        <div class="kpi-sub">${stats.spend>0 ? 'за весь период' : 'нет данных'}</div>
-      </div>
-      <div class="kpi" style="--kpi-accent:var(--blue)">
-        <div class="kpi-label">Заявок</div>
-        <div class="kpi-value mono" data-count="${Math.round(stats.leads)}">0</div>
-        <div class="kpi-sub">${stats.contacts>0 ? `из ${fmt(stats.contacts)} обращений` : (stats.leads>0 ? 'обращения не указаны' : 'нет данных')}</div>
-      </div>
-      <div class="kpi" style="--kpi-accent:var(--green)">
-        <div class="kpi-label">Стоимость заявки</div>
-        <div class="kpi-value mono">${stats.cpl!==null ? fmt(stats.cpl)+' ₽' : '—'}</div>
-        <div class="kpi-sub">${stats.cpl!==null ? 'расход / заявки' : 'нужны расходы и заявки'}</div>
-      </div>
-      <div class="kpi" style="--kpi-accent:var(--violet)">
-        <div class="kpi-label">Стоимость обращения</div>
-        <div class="kpi-value mono">${stats.cpc!==null ? fmt(stats.cpc)+' ₽' : '—'}</div>
-        <div class="kpi-sub">${stats.cpc!==null ? 'расход / обращения' : 'нужны расходы и обращения'}</div>
-      </div>
-      <div class="kpi" style="--kpi-accent:var(--red)">
-        <div class="kpi-label">Конверсия</div>
-        <div class="kpi-value mono">${stats.conv!==null ? stats.conv.toFixed(1).replace('.', ',')+'%' : '—'}</div>
-        <div class="kpi-sub">${stats.conv!==null ? 'заявки / обращения' : 'нужны обращения и заявки'}</div>
-      </div>
+function anRenderLeads(year){
+  const el = document.getElementById('anLeads'+year);
+  if(!el) return;
+  const data = AN_LEADS[year];
+  if(!data){
+    el.innerHTML = `<div class="an-leads-empty">
+      <div class="n">—</div>
+      <div>Нет данных по заявкам за ${year} год.<br>Загрузите выгрузку из Bitrix, чтобы увидеть распределение по каналам (Instagram, Авито, WhatsApp, Telegram, звонки).</div>
     </div>`;
-
-  const insightHtml = (stats.bestMonth!==null || stats.topCostCategory) ? `
-    <div class="stat-insight-row">
-      ${stats.bestMonth!==null ? `<div class="stat-insight-chip">🏆 Лучший период по цене заявки: <b>${STAT_MONTHS[stats.bestMonth]}</b> — ${fmt(stats.bestCPL)} ₽/заявка</div>` : ''}
-      ${stats.topCostCategory ? `<div class="stat-insight-chip">💸 Самая затратная категория: <b>${escapeHtml(stats.topCostCategory.name)}</b> — ${fmt(stats.topCostCategory.spend)} ₽</div>` : ''}
-    </div>` : '';
-
-  const byMonth = statActiveMetric==='spend' ? stats.spendByMonth : (statActiveMetric==='contacts' ? stats.contactsByMonth : stats.leadsByMonth);
-  const metricGrand = byMonth.reduce((s,v)=>s+v,0);
-
-  const tableHtml = statBuildCategoryTableHtml(meta, channel, stats);
-
-  el.innerHTML = `
-    <div class="stat-detail-head">
-      <div class="stat-detail-title">
-        <div class="stat-detail-icon">${meta.icon}</div>
-        <div>
-          <div class="stat-detail-name">${escapeHtml(meta.name)}</div>
-          <div class="stat-detail-sub">${channel.categories.length} ${rmWordForm(channel.categories.length,'категория','категории','категорий')}</div>
-        </div>
-      </div>
-      <div class="stat-toolbar">
-        <button class="cc-undo-btn" onclick="openStatImport('${meta.id}')">📥 Загрузить данные</button>
-        <button class="cc-undo-btn" onclick="statUndo()">↶ Отменить</button>
-      </div>
-    </div>
-
-    ${kpiHtml}
-    ${insightHtml}
-
-    <details class="stat-section reveal" open>
-      <summary>Динамика и распределение</summary>
-      <div class="stat-section-body">
-        <div class="stat-metric-tabs">
-          <button class="page-tab-btn${statActiveMetric==='spend'?' active':''}" onclick="statSetMetric('spend')">Расходы</button>
-          <button class="page-tab-btn${statActiveMetric==='contacts'?' active':''}" onclick="statSetMetric('contacts')">Обращения</button>
-          <button class="page-tab-btn${statActiveMetric==='leads'?' active':''}" onclick="statSetMetric('leads')">Заявки</button>
-        </div>
-        <div class="card" style="margin-bottom:14px;">
-          <div class="card-title">Динамика по месяцам — ${statMetricLabel(statActiveMetric)}</div>
-          <div class="bars-chart" id="statBarsChart"></div>
-        </div>
-        <div class="card">
-          <div class="card-title">Распределение по категориям</div>
-          <div class="donut-wrap">
-            <div class="donut-center">
-              <svg viewBox="0 0 100 100" class="donut-svg" id="statDonutSvg"></svg>
-              <div class="donut-center-label">
-                <div class="n mono" id="statDonutTotal">0</div>
-                <div class="t">всего</div>
-              </div>
-            </div>
-            <div class="rank-list" id="statRankList"></div>
-          </div>
-        </div>
-      </div>
-    </details>
-
-    <details class="stat-section reveal" open>
-      <summary>Категории (${channel.categories.length})</summary>
-      <div class="stat-section-body">
-        <div class="stat-cat-toolbar">
-          <input type="text" id="statCatSearchInput" placeholder="Поиск категории…" value="${escapeHtml(statCatSearch)}" oninput="statSetCatSearch(this.value)">
-          <select onchange="statSetCatSort(this.value)">
-            <option value="name-asc"${statCatSort==='name-asc'?' selected':''}>Имя А→Я</option>
-            <option value="name-desc"${statCatSort==='name-desc'?' selected':''}>Имя Я→А</option>
-            <option value="total-desc"${statCatSort==='total-desc'?' selected':''}>Сумма ↓</option>
-            <option value="total-asc"${statCatSort==='total-asc'?' selected':''}>Сумма ↑</option>
-          </select>
-          <div style="flex:1"></div>
-          <input type="text" id="statNewCatInput" placeholder="Новая категория…" style="max-width:200px;">
-          <button class="cc-add-btn" onclick="statAddCategory('${meta.id}')">+ Добавить</button>
-        </div>
-        <div id="statCatTableWrap">${tableHtml}</div>
-      </div>
-    </details>
-
-    <details class="stat-section reveal">
-      <summary>Заметки</summary>
-      <div class="stat-section-body">
-        <textarea class="stat-textarea" rows="3" placeholder="Заметки по каналу…" onchange="statSetNotes('${meta.id}', this.value)">${escapeHtml(channel.notes||'')}</textarea>
-      </div>
-    </details>
-
-    <details class="stat-section reveal">
-      <summary>Комментарии (${channel.comments.length})</summary>
-      <div class="stat-section-body">
-        <div style="display:flex; gap:8px;">
-          <input type="text" id="statCommentInput" placeholder="Добавить комментарий…" style="flex:1; background:var(--bg-alt); border:1px solid var(--line); border-radius:9px; padding:9px 12px; color:var(--ink); font-size:13px;" onkeydown="if(event.key==='Enter'){statAddComment('${meta.id}');}">
-          <button class="cc-add-btn" onclick="statAddComment('${meta.id}')">Добавить</button>
-        </div>
-        <div class="stat-comment-list">
-          ${channel.comments.length ? channel.comments.map(cm=>`
-            <div class="stat-comment-item">
-              <div class="stat-comment-text">${escapeHtml(cm.text)}</div>
-              <div class="stat-comment-meta">
-                <span class="stat-comment-date">${new Date(cm.ts).toLocaleDateString('ru-RU')}</span>
-                <button class="stat-comment-del" onclick="statDeleteComment('${meta.id}','${cm.id}')">Удалить</button>
-              </div>
-            </div>`).join('') : '<div class="cc-empty" style="padding:16px;">Пока нет комментариев.</div>'}
-        </div>
-      </div>
-    </details>
-  `;
-
-  renderBarsChart('statBarsChart', STAT_MONTHS, STAT_MONTHS.map(m=>m.slice(0,3)), byMonth, metricGrand, ()=>{});
-
-  const distList = stats.categoryTotals
-    .map(c=>({ name:c.name, total: statActiveMetric==='spend'?c.spend : (statActiveMetric==='contacts'?c.contacts:c.leads) }))
-    .filter(c=>c.total>0)
-    .sort((a,b)=>b.total-a.total);
-  const distGrand = distList.reduce((s,c)=>s+c.total,0);
-  const donutTotalEl = document.getElementById('statDonutTotal');
-  if(donutTotalEl) donutTotalEl.textContent = fmt(distGrand) + (statActiveMetric==='spend'?' ₽':'');
-  if(distGrand > 0){
-    const distColors = distList.map((_,i)=> PALETTE[i % PALETTE.length]);
-    renderDonut('statDonutSvg', distList.map(c=>c.name), distList.map(c=>c.total), distColors, distGrand, [], ()=>{});
-    renderRankList('statRankList', distList, distGrand, distList.length, distColors, ()=>{});
-  } else {
-    const rankEl = document.getElementById('statRankList');
-    if(rankEl) rankEl.innerHTML = '<div class="cc-empty">Пока нет данных для разбивки.</div>';
-  }
-
-  requestAnimationFrame(()=> requestAnimationFrame(()=>{
-    if(typeof growBars === 'function') growBars();
-    if(typeof growDonut === 'function') growDonut();
-  }));
-  document.querySelectorAll('#statDetail [data-count]').forEach(c => typeof animateCounter==='function' && animateCounter(c));
-}
-
-// ---------- Import: paste text / Excel / CSV / PDF — all funnel into statImportRows() ----------
-// A future API integration only needs to produce the same {name, values[12]} row shape and
-// call statImportRows(channelId, metric, rows) — no other part of the pipeline would change.
-window.openStatImport = function(channelId){
-  statImportChannelId = channelId;
-  const meta = STAT_CHANNELS_META.find(m=>m.id===channelId);
-  const titleEl = document.getElementById('statImportTitle');
-  if(titleEl) titleEl.textContent = 'Загрузить данные — ' + (meta ? meta.name : '');
-  document.getElementById('statImportBackdrop').classList.add('open');
-  window.statSetImportMethod('text');
-};
-window.closeStatImport = function(){
-  document.getElementById('statImportBackdrop').classList.remove('open');
-  const t = document.getElementById('statImportText'); if(t) t.value = '';
-  const f = document.getElementById('statFileInput'); if(f) f.value = '';
-  const p = document.getElementById('statPdfInput'); if(p) p.value = '';
-};
-window.statSetImportMethod = function(method){
-  statImportMethod = method;
-  document.querySelectorAll('[data-import-method]').forEach(b=> b.classList.toggle('active', b.dataset.importMethod===method));
-  document.getElementById('statImportPaneText').classList.toggle('active', method==='text');
-  document.getElementById('statImportPaneFile').classList.toggle('active', method==='file');
-  document.getElementById('statImportPanePdf').classList.toggle('active', method==='pdf');
-};
-
-function statImportRows(channelId, metric, parsedRows){
-  if(!channelId || parsedRows.length === 0){ alert('Не удалось распознать данные — проверьте формат.'); return; }
-  const channel = statEnsureChannel(channelId);
-  statPushUndo();
-  parsedRows.forEach(row=>{
-    let cat = channel.categories.find(c=>c.name.toLowerCase()===row.name.toLowerCase());
-    if(!cat){ cat = { id: statUid(), name: row.name, monthly: statEmptyMonthly() }; channel.categories.push(cat); }
-    row.values.slice(0,12).forEach((v,i)=>{ cat.monthly[i][metric] = v; });
-  });
-  statSave();
-  renderStatSidebar();
-  renderStatDetail();
-  alert('Импортировано категорий: ' + parsedRows.length);
-}
-
-window.statImportFromText = function(){
-  const raw = document.getElementById('statImportText').value;
-  if(!raw.trim()) return;
-  const metric = document.getElementById('statImportMetric').value;
-  const rows = parseAOAToLeads(rowsFromLines(raw));
-  const channelId = statImportChannelId;
-  closeStatImport();
-  statImportRows(channelId, metric, rows);
-};
-
-window.statHandleFile = function(event){
-  const file = event.target.files[0];
-  if(!file) return;
-  const metric = document.getElementById('statImportMetric').value;
-  const channelId = statImportChannelId;
-  const ext = file.name.split('.').pop().toLowerCase();
-  if(ext === 'csv' || ext === 'txt' || ext === 'tsv'){
-    const reader = new FileReader();
-    reader.onload = e => { const rows = parseAOAToLeads(rowsFromLines(e.target.result)); closeStatImport(); statImportRows(channelId, metric, rows); };
-    reader.readAsText(file, 'UTF-8');
-  } else {
-    if(typeof XLSX === 'undefined'){
-      alert('Не удалось загрузить библиотеку для чтения Excel-файлов — проверьте подключение к интернету, либо сохраните файл как .csv.');
-      event.target.value = '';
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = e => {
-      try{
-        const wb = XLSX.read(e.target.result, { type:'array' });
-        const sheet = wb.Sheets[wb.SheetNames[0]];
-        const aoa = XLSX.utils.sheet_to_json(sheet, { header:1, raw:false, defval:'' });
-        const rows = parseAOAToLeads(aoa);
-        closeStatImport();
-        statImportRows(channelId, metric, rows);
-      }catch(err){
-        alert('Не удалось прочитать файл: ' + err.message);
-      }
-    };
-    reader.readAsArrayBuffer(file);
-  }
-  event.target.value = '';
-};
-
-async function statExtractPdfText(arrayBuffer){
-  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-  const lines = [];
-  for(let p=1; p<=pdf.numPages; p++){
-    const page = await pdf.getPage(p);
-    const content = await page.getTextContent();
-    const rowsMap = new Map();
-    content.items.forEach(it=>{
-      const y = Math.round(it.transform[5]);
-      if(!rowsMap.has(y)) rowsMap.set(y, []);
-      rowsMap.get(y).push({ x: it.transform[4], str: it.str });
-    });
-    const ys = [...rowsMap.keys()].sort((a,b)=> b-a);
-    ys.forEach(y=>{
-      const items = rowsMap.get(y).sort((a,b)=> a.x-b.x);
-      lines.push(items.map(i=>i.str).join('\t'));
-    });
-  }
-  return lines.join('\n');
-}
-
-window.statHandlePdf = async function(event){
-  const file = event.target.files[0];
-  if(!file) return;
-  const metric = document.getElementById('statImportMetric').value;
-  const channelId = statImportChannelId;
-  if(typeof pdfjsLib === 'undefined'){
-    alert('Не удалось загрузить библиотеку для чтения PDF — проверьте подключение к интернету, либо вставьте текст или загрузите Excel/CSV.');
-    event.target.value = '';
     return;
   }
-  try{
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    const buf = await file.arrayBuffer();
-    const text = await statExtractPdfText(buf);
-    const rows = parseAOAToLeads(rowsFromLines(text));
-    closeStatImport();
-    statImportRows(channelId, metric, rows);
-  }catch(err){
-    alert('Не удалось прочитать PDF: ' + err.message + '. Попробуйте вставить текст или загрузить Excel/CSV.');
+  const total = AN_LEADS_CHANNELS.reduce((s,c)=> s + (data[c.key]||0), 0);
+  const rows = AN_LEADS_CHANNELS.slice().sort((a,b)=> (data[b.key]||0)-(data[a.key]||0)).map(c=>{
+    const v = data[c.key]||0;
+    const pct = total>0 ? (v/total*100).toFixed(1) : '0.0';
+    return `<div class="an-channel-row"><span><i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${c.color};margin-right:8px;"></i>${c.label}</span><span class="amt">${v} · ${pct}%</span></div>`;
+  }).join('');
+  el.innerHTML = `<div class="an-channel-list">${rows}</div>`;
+}
+
+function anRenderSummary(year){
+  const el = document.getElementById('anSummary'+year);
+  if(!el) return;
+  const s = anYearStats(year);
+  if(s.avail.length===0){ el.innerHTML = '<div class="card-title">Аналитика и выводы</div><p class="card-desc">Нет загруженных месяцев за этот год.</p>'; return; }
+  let trendText = '';
+  if(s.avail.length>=2){
+    const first = s.avail[0], last = s.avail[s.avail.length-1];
+    const growth = ((AN_SALES[year][last].revenue - AN_SALES[year][first].revenue)/AN_SALES[year][first].revenue*100);
+    const dir = growth>=0 ? 'выросла' : 'снизилась';
+    trendText = `<p>С ${AN_MONTHS[first]} по ${AN_MONTHS[last]} выручка ${dir} на <b class="mono" style="color:${growth>=0?'var(--green)':'var(--red)'}">${growth>=0?'+':''}${growth.toFixed(1)}%</b> (сравнение только первого и последнего из загруженных месяцев, промежуточные пропуски в счёт не берутся).</p>`;
   }
-  event.target.value = '';
+  el.innerHTML = `
+    <div class="card-title">Аналитика и выводы — ${year}</div>
+    <p>За ${s.avail.length} загруженных ${rmWordForm(s.avail.length,'месяц','месяца','месяцев')} выручка составила <b class="mono" style="color:var(--amber)">${fmt(s.totalRevenue)} ₽</b>, пробито <b class="mono">${fmt(s.totalReceipts)}</b> чеков, средний чек — <b class="mono" style="color:var(--green)">${fmt(Math.round(s.avgCheck))} ₽</b>.</p>
+    ${trendText}
+    ${s.missing.length ? `<p style="color:var(--ink-mute)">Не хватает выгрузки за: ${s.missing.join(', ').toLowerCase()} — как только эти месяцы появятся, дашборд обновится автоматически.</p>` : ''}
+  `;
+}
+
+// ---------- Line chart (custom SVG, no external library) ----------
+// series: [{ label, color, values:[12 значений или null] }]
+function renderLineChart(wrapId, series, opts){
+  opts = opts || {};
+  const wrap = document.getElementById(wrapId);
+  if(!wrap) return;
+  const W = 640, H = 180, padX = 8, padY = 14;
+  const allVals = [];
+  series.forEach(s=> s.values.forEach(v=>{ if(v!=null) allVals.push(v); }));
+  const max = allVals.length ? Math.max(...allVals) : 1;
+  const min = allVals.length ? Math.min(0, Math.min(...allVals)) : 0;
+  const range = (max-min) || 1;
+  const xStep = (W - padX*2)/11;
+  function xOf(i){ return padX + xStep*i; }
+  function yOf(v){ return H - padY - ((v-min)/range)*(H-padY*2); }
+
+  let gridSvg = '';
+  for(let g=0; g<=3; g++){
+    const y = padY + (H-padY*2)/3*g;
+    gridSvg += `<line class="line-chart-grid" x1="${padX}" y1="${y.toFixed(1)}" x2="${W-padX}" y2="${y.toFixed(1)}"></line>`;
+  }
+
+  let pathsSvg = '';
+  let dotsSvg = '';
+  series.forEach(s=>{
+    let segments = [];
+    let current = null;
+    s.values.forEach((v,i)=>{
+      if(v==null){ current = null; return; }
+      const pt = `${xOf(i).toFixed(1)},${yOf(v).toFixed(1)}`;
+      if(current===null){ current = 'M'+pt; segments.push(current); }
+      else { segments[segments.length-1] += ' L'+pt; }
+      current = segments[segments.length-1];
+      dotsSvg += `<circle class="line-chart-dot" cx="${xOf(i).toFixed(1)}" cy="${yOf(v).toFixed(1)}" r="3.5" fill="${s.color}"><title>${AN_MONTHS[i]}: ${fmt(v)}${opts.suffix||''}</title></circle>`;
+    });
+    segments.forEach(d=>{
+      pathsSvg += `<path class="line-chart-path" d="${d}" pathLength="1000" stroke="${s.color}"></path>`;
+    });
+  });
+
+  const labelsSvg = AN_MONTHS_SHORT.map((m,i)=>{
+    const hasAny = series.some(s=> s.values[i]!=null);
+    return `<span class="${hasAny?'':'is-empty'}">${m}</span>`;
+  }).join('');
+
+  const legendSvg = series.length>1 ? `<div class="an-legend">${series.map(s=>`<div class="an-legend-item"><i style="background:${s.color}"></i>${s.label}</div>`).join('')}</div>` : '';
+
+  wrap.innerHTML = `
+    <svg class="line-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+      ${gridSvg}
+      ${pathsSvg}
+      ${dotsSvg}
+    </svg>
+    <div class="line-chart-labels">${labelsSvg}</div>
+    ${legendSvg}
+  `;
+}
+
+function growLineCharts(){
+  document.querySelectorAll('.line-chart-svg:not(.grown)').forEach(svg=>{
+    svg.classList.add('grown');
+  });
+}
+
+// ---------- Bar chart with gap-aware empty columns (checks per month) ----------
+function renderSalesBarChart(elId, values){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  el.innerHTML = '';
+  const avail = values.filter(v=> v!=null);
+  const max = avail.length ? Math.max(...avail) : 1;
+
+  values.forEach((val,i)=>{
+    const col = document.createElement('div');
+    if(val==null){
+      col.className = 'bar-col bar-col-empty';
+      col.title = AN_MONTHS[i] + ': нет данных';
+      col.innerHTML = `<span class="bar-value">—</span><div class="bar-fill" style="height:4%; background:rgba(255,255,255,0.06); border:1px dashed var(--line);"></div>`;
+    } else {
+      const isMax = val === max;
+      col.className = 'bar-col' + (isMax ? ' is-max' : '');
+      const heightPct = Math.max((val/max*100), 2).toFixed(2);
+      col.title = AN_MONTHS[i] + ': ' + fmt(val) + ' чеков';
+      col.innerHTML = `<span class="bar-value">${fmt(val)}</span><div class="bar-fill" data-target-height="${heightPct}" style="height:0%; background:${isMax ? '#FF7A45' : 'rgba(77,168,255,0.55)'};"></div>`;
+    }
+    el.appendChild(col);
+  });
+
+  const labels = document.createElement('div');
+  labels.className = 'bar-labels';
+  labels.innerHTML = AN_MONTHS_SHORT.map(m=>`<span>${m}</span>`).join('');
+  el.parentElement.insertBefore(labels, el.nextSibling);
+}
+
+function anRenderYear(year){
+  anRenderKpi(year);
+  anRenderInsight(year);
+  renderLineChart('anLine'+year, [{ label:'Выручка', color:'var(--amber)', values: AN_SALES[year].map(m=> m ? m.revenue : null) }], { suffix:' ₽' });
+  anRenderLeads(year);
+  renderSalesBarChart('anBars'+year, AN_SALES[year].map(m=> m ? m.receipts : null));
+  anRenderSummary(year);
+}
+
+function anRenderCompare(){
+  const commonIdx = [];
+  for(let i=0;i<12;i++){ if(AN_SALES['2025'][i] && AN_SALES['2026'][i]) commonIdx.push(i); }
+
+  const noteEl = document.getElementById('anCompareNote');
+  if(noteEl){
+    noteEl.textContent = commonIdx.length
+      ? `Сравниваются только месяцы, за которые есть выгрузка в обоих годах: ${commonIdx.map(i=>AN_MONTHS[i]).join(', ').toLowerCase()}.`
+      : 'Нет ни одного месяца, загруженного одновременно за оба года.';
+  }
+
+  const tableEl = document.getElementById('anCompareTable');
+  if(tableEl){
+    let rows = `<tr><th>Месяц</th><th>Выручка 2025</th><th>Выручка 2026</th><th>Δ выручка</th><th>Чеков 2025</th><th>Чеков 2026</th><th>Δ чеков</th><th>Ср. чек 2025</th><th>Ср. чек 2026</th></tr>`;
+    let sum25rev=0, sum26rev=0, sum25rc=0, sum26rc=0;
+    commonIdx.forEach(i=>{
+      const a = AN_SALES['2025'][i], b = AN_SALES['2026'][i];
+      sum25rev+=a.revenue; sum26rev+=b.revenue; sum25rc+=a.receipts; sum26rc+=b.receipts;
+      const dRev = (b.revenue-a.revenue)/a.revenue*100;
+      const dRc = (b.receipts-a.receipts)/a.receipts*100;
+      const dCls = v => v>1 ? 'up' : (v<-1 ? 'down' : 'flat');
+      rows += `<tr>
+        <td>${AN_MONTHS[i]}</td>
+        <td class="num">${fmt(a.revenue)} ₽</td>
+        <td class="num">${fmt(b.revenue)} ₽</td>
+        <td class="delta ${dCls(dRev)}">${dRev>=0?'+':''}${dRev.toFixed(1)}%</td>
+        <td class="num">${fmt(a.receipts)}</td>
+        <td class="num">${fmt(b.receipts)}</td>
+        <td class="delta ${dCls(dRc)}">${dRc>=0?'+':''}${dRc.toFixed(1)}%</td>
+        <td class="num">${fmt(Math.round(a.revenue/a.receipts))} ₽</td>
+        <td class="num">${fmt(Math.round(b.revenue/b.receipts))} ₽</td>
+      </tr>`;
+    });
+    if(commonIdx.length){
+      const dRevTot = (sum26rev-sum25rev)/sum25rev*100;
+      const dRcTot = (sum26rc-sum25rc)/sum25rc*100;
+      const dCls = v => v>1 ? 'up' : (v<-1 ? 'down' : 'flat');
+      rows += `<tr style="font-weight:600;">
+        <td>Итого по общим месяцам</td>
+        <td class="num">${fmt(sum25rev)} ₽</td>
+        <td class="num">${fmt(sum26rev)} ₽</td>
+        <td class="delta ${dCls(dRevTot)}">${dRevTot>=0?'+':''}${dRevTot.toFixed(1)}%</td>
+        <td class="num">${fmt(sum25rc)}</td>
+        <td class="num">${fmt(sum26rc)}</td>
+        <td class="delta ${dCls(dRcTot)}">${dRcTot>=0?'+':''}${dRcTot.toFixed(1)}%</td>
+        <td class="num">${fmt(Math.round(sum25rev/sum25rc))} ₽</td>
+        <td class="num">${fmt(Math.round(sum26rev/sum26rc))} ₽</td>
+      </tr>`;
+    }
+    tableEl.innerHTML = rows;
+  }
+
+  renderLineChart('anCompareLine', [
+    { label:'2025', color:'#9AA4B2', values: AN_SALES['2025'].map(m=> m ? m.revenue : null) },
+    { label:'2026', color:'var(--amber)', values: AN_SALES['2026'].map(m=> m ? m.revenue : null) }
+  ], { suffix:' ₽' });
+
+  const concEl = document.getElementById('anCompareConclusions');
+  if(concEl){
+    let growthBlock = '';
+    if(commonIdx.length){
+      const sum25 = commonIdx.reduce((s,i)=> s+AN_SALES['2025'][i].revenue, 0);
+      const sum26 = commonIdx.reduce((s,i)=> s+AN_SALES['2026'][i].revenue, 0);
+      const g = (sum26-sum25)/sum25*100;
+      growthBlock = `<p>По ${commonIdx.length} общим ${rmWordForm(commonIdx.length,'месяцу','месяцам','месяцам')} выручка 2026 года ${g>=0?'выше':'ниже'} 2025-го на <b class="mono" style="color:${g>=0?'var(--green)':'var(--red)'}">${g>=0?'+':''}${g.toFixed(1)}%</b>.</p>`;
+    }
+    concEl.innerHTML = `
+      <div class="card-title">Выводы по сравнению периодов</div>
+      ${growthBlock}
+      <div class="callout"><b>Важно:</b> поля «Средний чек» и «Средняя глубина чека» в выгрузках 2025 и 2026 годов посчитаны по разным методикам источника (масштаб отличается в десятки раз) и напрямую не сопоставимы. В таблице выше и во всех расчётах сравнения используется единая производная величина — выручка ÷ количество чеков ККМ, которая корректно сопоставима между годами. Рекомендуем уточнить у источника данных (1С/ККМ-отчёт), почему методика расчёта среднего чека отличается между годами.</div>
+    `;
+  }
+}
+
+function renderAnalyticsPage(){
+  anRenderYear('2025');
+  anRenderYear('2026');
+  anRenderCompare();
+}
+
+window.switchAnalyticsYear = function(year){
+  document.querySelectorAll('.an-year-tab-btn').forEach(b=> b.classList.toggle('active', b.dataset.ayear===year));
+  document.querySelectorAll('.an-year-pane').forEach(p=> p.classList.remove('active'));
+  const target = document.getElementById('analytics-'+year);
+  if(!target) return;
+  target.classList.add('active');
+  target.querySelectorAll('.reveal:not(.revealed)').forEach(el=>{
+    el.classList.add('revealed');
+    el.querySelectorAll('[data-count]').forEach(c => typeof animateCounter === 'function' && animateCounter(c));
+  });
+  if(typeof growBars === 'function') growBars();
+  if(typeof growLineCharts === 'function') growLineCharts();
 };
 
-renderStatSidebar();
-renderStatDetail();
+renderAnalyticsPage();
 
 // ---------- Animation engine: counters + scroll reveal + chart grow-in ----------
 function animateCounter(el){
@@ -3664,6 +3283,7 @@ function growDonut(){
     counterEls.forEach(animateCounter);
     growBars();
     growDonut();
+    if(typeof growLineCharts === 'function') growLineCharts();
     return;
   }
 
@@ -3678,6 +3298,9 @@ function growDonut(){
       }
       if(el.querySelector('.donut-svg')){
         growDonut();
+      }
+      if(el.querySelector('.line-chart-svg') && typeof growLineCharts === 'function'){
+        growLineCharts();
       }
       io.unobserve(el);
     });
