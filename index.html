@@ -678,6 +678,15 @@
   .an-compare-table td.delta.down{ color:var(--red); }
   .an-compare-table td.delta.flat{ color:var(--ink-mute); }
 
+  .an-month-table tr.is-best-month{ background:rgba(62,207,142,0.08); }
+  .an-month-table tr.is-best-month td:first-child{ color:var(--green); font-weight:600; }
+  .an-month-table tr.is-worst-month{ background:rgba(255,107,107,0.07); }
+  .an-month-table tr.is-worst-month td:first-child{ color:var(--red); font-weight:600; }
+  .an-month-table tr.is-missing-month td{ color:var(--ink-mute); font-style:italic; }
+  .an-month-table .month-badge{ font-size:9.5px; margin-left:6px; padding:1px 7px; border-radius:100px; text-transform:uppercase; letter-spacing:0.03em; }
+  .an-month-table .month-badge.best{ background:rgba(62,207,142,0.16); color:var(--green); }
+  .an-month-table .month-badge.worst{ background:rgba(255,107,107,0.16); color:var(--red); }
+
   #page-analytics .callout{
     background:var(--card-2); border:1px solid var(--line); border-left:3px solid var(--amber);
     border-radius:10px; padding:16px 18px; margin:16px 0 0; font-size:13.5px; color:var(--ink-dim);
@@ -1780,6 +1789,28 @@
         <div class="card-desc">Количество пробитых чеков ККМ, оранжевый — самый загруженный месяц.</div>
         <div class="bars-chart" id="anBars2025"></div>
       </div>
+      <div class="card reveal" style="margin-top:16px;">
+        <div class="card-title">Доля выручки по месяцам</div>
+        <div class="card-desc">Круговая диаграмма: вклад каждого загруженного месяца в годовую выручку.</div>
+        <div class="donut-wrap">
+          <div class="donut-center">
+            <svg viewBox="0 0 100 100" class="donut-svg" id="anDonut2025"></svg>
+            <div class="donut-center-label" id="anDonutCenter2025"></div>
+          </div>
+          <div class="rank-list" id="anRankList2025"></div>
+        </div>
+      </div>
+      <div class="card reveal" style="margin-top:16px;">
+        <div class="card-title">Помесячная таблица</div>
+        <div class="card-desc">Зелёным — лучший месяц по выручке, красным — худший из загруженных.</div>
+        <div class="cc-table-wrap"><table class="avg-table an-month-table">
+          <thead><tr>
+            <th>Месяц</th><th class="num">Выручка</th><th class="num">Чеков</th>
+            <th class="num">Ср. чек</th><th class="num">Глубина чека</th><th class="num">Посетители</th><th class="num">Конверсия</th>
+          </tr></thead>
+          <tbody id="anMonthTable2025"></tbody>
+        </table></div>
+      </div>
       <div class="card reveal" style="margin-top:16px;" id="anSummary2025"></div>
     </div>
 
@@ -1802,6 +1833,28 @@
         <div class="card-title">Чеки по месяцам</div>
         <div class="card-desc">Количество пробитых чеков ККМ, оранжевый — самый загруженный месяц.</div>
         <div class="bars-chart" id="anBars2026"></div>
+      </div>
+      <div class="card reveal" style="margin-top:16px;">
+        <div class="card-title">Доля выручки по месяцам</div>
+        <div class="card-desc">Круговая диаграмма: вклад каждого загруженного месяца в годовую выручку.</div>
+        <div class="donut-wrap">
+          <div class="donut-center">
+            <svg viewBox="0 0 100 100" class="donut-svg" id="anDonut2026"></svg>
+            <div class="donut-center-label" id="anDonutCenter2026"></div>
+          </div>
+          <div class="rank-list" id="anRankList2026"></div>
+        </div>
+      </div>
+      <div class="card reveal" style="margin-top:16px;">
+        <div class="card-title">Помесячная таблица</div>
+        <div class="card-desc">Зелёным — лучший месяц по выручке, красным — худший из загруженных.</div>
+        <div class="cc-table-wrap"><table class="avg-table an-month-table">
+          <thead><tr>
+            <th>Месяц</th><th class="num">Выручка</th><th class="num">Чеков</th>
+            <th class="num">Ср. чек</th><th class="num">Глубина чека</th><th class="num">Посетители</th><th class="num">Конверсия</th>
+          </tr></thead>
+          <tbody id="anMonthTable2026"></tbody>
+        </table></div>
       </div>
       <div class="card reveal" style="margin-top:16px;" id="anSummary2026"></div>
     </div>
@@ -2905,14 +2958,14 @@ const AN_SALES = {
     { revenue:18248426.54, receipts:12790, avgCheck:38536.52, avgDepth:85.93,  visitors:30008 },
     { revenue:22978447.06, receipts:16092, avgCheck:42269.56, avgDepth:96.14,  visitors:36304 },
     { revenue:23883559.30, receipts:16823, avgCheck:41305.70, avgDepth:97.11,  visitors:38217 },
-    null,
+    { revenue:26560021.90, receipts:18781, avgCheck:42735.21, avgDepth:104.12, visitors:41551 },
     { revenue:26828561.52, receipts:18727, avgCheck:42125.67, avgDepth:101.15, visitors:41241 },
     { revenue:32473579.21, receipts:19957, avgCheck:47769.20, avgDepth:101.04, visitors:43286 },
     { revenue:28844546.73, receipts:18859, avgCheck:45285.59, avgDepth:88.9,   visitors:38495 },
     { revenue:30798192.87, receipts:19056, avgCheck:43787.97, avgDepth:82.94,  visitors:35791 },
     { revenue:33986570.96, receipts:20798, avgCheck:47328.07, avgDepth:86.71,  visitors:35094 },
     { revenue:30015118.02, receipts:19775, avgCheck:40616.46, avgDepth:83.62,  visitors:38457 },
-    null
+    { revenue:31992769.79, receipts:19815, avgCheck:44933.32, avgDepth:83.9,   visitors:39092 }
   ],
   '2026': [
     { revenue:27173253.10, receipts:17221, avgCheck:1389.14, avgDepth:2.74, visitors:null },
@@ -3131,12 +3184,86 @@ function renderSalesBarChart(elId, values){
   el.parentElement.insertBefore(labels, el.nextSibling);
 }
 
+// ---------- Revenue-share donut (reuses the generic renderDonut/setDonutHover from Финансы) ----------
+const AN_MONTH_COLORS = ['#FF7A45','#FFB020','#F2C94C','#8BD17C','#3ECF8E','#4DA8FF','#5B8DEF','#9B6BFF','#E1306C','#FF6B6B','#00A046','#2AABEE'];
+const AN_DONUT_CIRCLES = {};
+
+function anRenderDonut(year){
+  const svg = document.getElementById('anDonut'+year);
+  const centerEl = document.getElementById('anDonutCenter'+year);
+  const rankEl = document.getElementById('anRankList'+year);
+  if(!svg || !rankEl) return;
+  svg.innerHTML = '';
+  rankEl.innerHTML = '';
+  const s = anYearStats(year);
+  if(s.avail.length===0){
+    if(centerEl) centerEl.innerHTML = `<div class="n mono">—</div><div class="t">нет данных</div>`;
+    return;
+  }
+  const sortedIdx = s.avail.slice().sort((a,b)=> AN_SALES[year][b].revenue - AN_SALES[year][a].revenue);
+  const labels = sortedIdx.map(i=> AN_MONTHS[i]);
+  const values = sortedIdx.map(i=> AN_SALES[year][i].revenue);
+  const colors = sortedIdx.map((_,k)=> AN_MONTH_COLORS[k % AN_MONTH_COLORS.length]);
+  const circles = [];
+  AN_DONUT_CIRCLES[year] = circles;
+  renderDonut('anDonut'+year, labels, values, colors, s.totalRevenue, circles, i=> setDonutHover(circles, 'anRankList'+year, i));
+  if(centerEl){
+    centerEl.innerHTML = `<div class="n mono">${s.avail.length}</div><div class="t">${rmWordForm(s.avail.length,'месяц','месяца','месяцев')}<br>с данными</div>`;
+  }
+  sortedIdx.forEach((mi, idx)=>{
+    const color = colors[idx];
+    const val = values[idx];
+    const pct = (val/s.totalRevenue*100).toFixed(1);
+    const row = document.createElement('div');
+    row.className = 'rank-row';
+    row.innerHTML = `
+      <span class="idx">${String(idx+1).padStart(2,'0')}</span>
+      <span class="name"><span class="swatch" style="background:${color}"></span>${AN_MONTHS[mi]}</span>
+      <span class="pct">${pct}%</span>
+      <span class="amt">${fmt(val)} ₽</span>`;
+    row.addEventListener('mouseenter', ()=> setDonutHover(circles, 'anRankList'+year, idx));
+    row.addEventListener('mouseleave', ()=> setDonutHover(circles, 'anRankList'+year, -1));
+    rankEl.appendChild(row);
+  });
+}
+
+// ---------- Monthly breakdown table with best/worst highlighting ----------
+function anRenderMonthTable(year){
+  const el = document.getElementById('anMonthTable'+year);
+  if(!el) return;
+  const s = anYearStats(year);
+  let rows = '';
+  for(let i=0;i<12;i++){
+    const m = AN_SALES[year][i];
+    if(!m){
+      rows += `<tr class="is-missing-month"><td>${AN_MONTHS[i]}</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>`;
+      continue;
+    }
+    const cls = i===s.bestIdx ? 'is-best-month' : (i===s.worstIdx ? 'is-worst-month' : '');
+    const badge = i===s.bestIdx ? ' <span class="month-badge best">пик</span>' : (i===s.worstIdx ? ' <span class="month-badge worst">мин</span>' : '');
+    const conv = m.visitors!=null ? (m.receipts/m.visitors*100).toFixed(1)+'%' : '—';
+    const visitorsText = m.visitors!=null ? fmt(m.visitors) : '—';
+    rows += `<tr class="${cls}">
+      <td>${AN_MONTHS[i]}${badge}</td>
+      <td class="num">${fmt(m.revenue)} ₽</td>
+      <td class="num">${fmt(m.receipts)}</td>
+      <td class="num">${fmt(Math.round(m.avgCheck))} ₽</td>
+      <td class="num">${m.avgDepth.toFixed(2)}</td>
+      <td class="num">${visitorsText}</td>
+      <td class="num">${conv}</td>
+    </tr>`;
+  }
+  el.innerHTML = rows;
+}
+
 function anRenderYear(year){
   anRenderKpi(year);
   anRenderInsight(year);
   renderLineChart('anLine'+year, [{ label:'Выручка', color:'var(--amber)', values: AN_SALES[year].map(m=> m ? m.revenue : null) }], { suffix:' ₽' });
   anRenderLeads(year);
   renderSalesBarChart('anBars'+year, AN_SALES[year].map(m=> m ? m.receipts : null));
+  anRenderDonut(year);
+  anRenderMonthTable(year);
   anRenderSummary(year);
 }
 
@@ -3231,6 +3358,7 @@ window.switchAnalyticsYear = function(year){
     el.querySelectorAll('[data-count]').forEach(c => typeof animateCounter === 'function' && animateCounter(c));
   });
   if(typeof growBars === 'function') growBars();
+  if(typeof growDonut === 'function') growDonut();
   if(typeof growLineCharts === 'function') growLineCharts();
 };
 
