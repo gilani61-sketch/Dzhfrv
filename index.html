@@ -91,11 +91,11 @@
   .page-tabs{ display:flex; gap:6px; }
   .page-tab-btn{
     font-family:'Rubik'; font-size:13.5px; font-weight:600; color:var(--ink-dim);
-    background:none; border:1px solid transparent; padding:8px 16px; border-radius:100px;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); padding:8px 16px; border-radius:100px;
     cursor:pointer; transition:.15s;
   }
-  .page-tab-btn:hover{ color:var(--ink); }
-  .page-tab-btn.active{ color:#0A0D12; background:var(--amber); }
+  .page-tab-btn:hover{ color:var(--ink); background:rgba(255,255,255,0.08); }
+  .page-tab-btn.active{ color:#0A0D12; background:var(--amber); border-color:var(--amber); }
   @media (max-width:640px){ .page-tab-btn{ padding:8px 11px; font-size:12.5px; } }
 
   /* ===== PAGES (Главная / Финансы / Статистика) ===== */
@@ -685,10 +685,12 @@
   /* -- compare tab -- */
   .an-compare-table{ width:100%; border-collapse:collapse; }
   .an-compare-table th{
-    text-align:right; font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-mute);
-    padding:0 10px 10px; font-weight:500; border-bottom:1px solid var(--line); white-space:nowrap;
+    text-align:right; font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--amber);
+    padding:10px 10px; font-weight:600; border-bottom:2px solid var(--amber); white-space:nowrap;
+    background:rgba(255,122,69,0.1);
   }
-  .an-compare-table th:first-child{ text-align:left; }
+  .an-compare-table th:first-child{ text-align:left; border-radius:8px 0 0 8px; padding-left:14px; }
+  .an-compare-table th:last-child{ border-radius:0 8px 8px 0; padding-right:14px; }
   .an-compare-table td{ padding:12px 10px; border-bottom:1px solid var(--line); font-size:13.5px; text-align:right; white-space:nowrap; }
   .an-compare-table td:first-child{ text-align:left; font-family:'Inter'; color:var(--ink); }
   .an-compare-table td.num{ font-family:'JetBrains Mono'; }
@@ -696,6 +698,9 @@
   .an-compare-table .delta.up{ color:var(--green); }
   .an-compare-table .delta.down{ color:var(--red); }
   .an-compare-table .delta.flat{ color:var(--ink-mute); }
+  .an-compare-table tr.an-total-row td{ background:rgba(255,122,69,0.08); }
+  .an-compare-table tr.an-total-row td:first-child{ border-radius:8px 0 0 8px; }
+  .an-compare-table tr.an-total-row td:last-child{ border-radius:0 8px 8px 0; }
 
   .an-month-table thead th{
     background:rgba(255,122,69,0.14); color:var(--amber); padding:12px 10px; border-bottom:2px solid var(--amber); font-weight:700;
@@ -3565,7 +3570,7 @@ function anRenderCompare(){
     if(commonIdx.length){
       const acA = sum25rev/sum25rc, acB = sum26rev/sum26rc;
       const cvA = vis25ok ? sum25rc/sum25vis*100 : null, cvB = vis26ok ? sum26rc/sum26vis*100 : null;
-      rows += `<tr style="font-weight:600;">
+      rows += `<tr class="an-total-row" style="font-weight:600;">
         <td>Итого по общим месяцам</td>
         <td class="num">${fmt(sum25rev)} ₽</td><td class="num">${fmt(sum26rev)} ₽</td><td class="num">${dTxt(pct(sum26rev,sum25rev))}</td>
         <td class="num">${fmt(sum25rc)}</td><td class="num">${fmt(sum26rc)}</td><td class="num">${dTxt(pct(sum26rc,sum25rc))}</td>
