@@ -3125,13 +3125,57 @@ const AN_LEADS_CHANNELS = [
 // как появится выгрузка из Bitrix24. Авито уже частично заполнено ниже вручную из
 // присланных отчётов (там нет данных о продажах, только заявки = контакты).
 const AN_LEADS = {
+  // dubgis.leads = звонки + клики в мессенджер (самые прямые обращения из карточки в 2ГИС,
+  // та же логика, что и «контакты» у Авито). Показы/клики без обращения в заявки не считаем.
   '2025': (() => {
     const m = Array(12).fill(null);
-    m[4] = { avito:{ leads:134, sales:null } }; // май
-    m[5] = { avito:{ leads:110, sales:null } }; // июнь
+    m[0] = { dubgis:{ leads:200+44, sales:null } };  // январь
+    m[1] = { dubgis:{ leads:175+42, sales:null } };  // февраль
+    m[2] = { dubgis:{ leads:198+60, sales:null } };  // март
+    m[3] = { dubgis:{ leads:221+50, sales:null } };  // апрель
+    m[4] = { avito:{ leads:134, sales:null },  dubgis:{ leads:241+54, sales:null } }; // май
+    m[5] = { avito:{ leads:110, sales:null },  dubgis:{ leads:146+58, sales:null } }; // июнь
     return m;
   })(),
-  '2026': null
+  '2026': (() => {
+    const m = Array(12).fill(null);
+    m[2] = { dubgis:{ leads:159+34, sales:null } }; // март
+    m[3] = { dubgis:{ leads:159+27, sales:null } }; // апрель
+    m[4] = { dubgis:{ leads:164+35, sales:null } }; // май
+    m[5] = { dubgis:{ leads:178+41, sales:null } }; // июнь
+    return m;
+  })()
+};
+
+// Расширенная статистика размещения в 2ГИС — «общая» включает органику + контекстную
+// рекламу вместе (как в самом отчёте площадки), «context» — та же раскладка только
+// по контекстной рекламе (подмножество общей, показано отдельно для сравнения).
+// otherActivities = открытия фотогалереи + прочие активности (из отдельной расшифровки).
+const AN_2GIS_EXT = {
+  '2025': {
+    0: { impressions:16376, clicks:1061, siteClicks:28, messengerClicks:44, calls:200, addressClicks:9, actionButton:66, routeBuilds:232, photoGallery:173, otherActivities:276,
+         context:{ impressions:12882, clicks:557, siteClicks:17, messengerClicks:23, calls:93, addressClicks:5, actionButton:42, routeBuilds:92, photoGallery:103, otherActivities:145 } },
+    1: { impressions:14212, clicks:899, siteClicks:30, messengerClicks:42, calls:175, addressClicks:6, actionButton:81, routeBuilds:190, photoGallery:186, otherActivities:267,
+         context:{ impressions:11165, clicks:508, siteClicks:22, messengerClicks:26, calls:89, addressClicks:2, actionButton:63, routeBuilds:87, photoGallery:114, otherActivities:149 } },
+    2: { impressions:15564, clicks:1038, siteClicks:32, messengerClicks:60, calls:198, addressClicks:8, actionButton:66, routeBuilds:219, photoGallery:209, otherActivities:292,
+         context:{ impressions:12398, clicks:591, siteClicks:22, messengerClicks:38, calls:110, addressClicks:7, actionButton:51, routeBuilds:99, photoGallery:140, otherActivities:179 } },
+    3: { impressions:15776, clicks:1177, siteClicks:27, messengerClicks:50, calls:221, addressClicks:5, actionButton:71, routeBuilds:276, photoGallery:216, otherActivities:292,
+         context:{ impressions:12518, clicks:660, siteClicks:22, messengerClicks:26, calls:110, addressClicks:3, actionButton:53, routeBuilds:106, photoGallery:144, otherActivities:182 } },
+    4: { impressions:19318, clicks:1164, siteClicks:25, messengerClicks:54, calls:241, addressClicks:6, actionButton:72, routeBuilds:274, photoGallery:207, otherActivities:294,
+         context:{ impressions:15107, clicks:619, siteClicks:16, messengerClicks:31, calls:121, addressClicks:3, actionButton:53, routeBuilds:101, photoGallery:144, otherActivities:191 } },
+    5: { impressions:20333, clicks:1123, siteClicks:34, messengerClicks:58, calls:146, addressClicks:3, actionButton:143, routeBuilds:268, photoGallery:213, otherActivities:303,
+         context:{ impressions:15350, clicks:602, siteClicks:24, messengerClicks:35, calls:66, addressClicks:1, actionButton:91, routeBuilds:104, photoGallery:140, otherActivities:184 } }
+  },
+  '2026': {
+    2: { impressions:15511, clicks:1246, siteClicks:43, messengerClicks:34, calls:159, addressClicks:6, actionButton:201, routeBuilds:272, photoGallery:205, otherActivities:273,
+         context:{ impressions:11331, clicks:604, siteClicks:32, messengerClicks:16, calls:79, addressClicks:0, actionButton:86, routeBuilds:98, photoGallery:120, otherActivities:154 } },
+    3: { impressions:19945, clicks:1185, siteClicks:30, messengerClicks:27, calls:159, addressClicks:6, actionButton:196, routeBuilds:270, photoGallery:185, otherActivities:276,
+         context:{ impressions:14408, clicks:552, siteClicks:22, messengerClicks:12, calls:70, addressClicks:4, actionButton:99, routeBuilds:96, photoGallery:101, otherActivities:129 } },
+    4: { impressions:17908, clicks:1185, siteClicks:30, messengerClicks:35, calls:164, addressClicks:11, actionButton:168, routeBuilds:235, photoGallery:178, otherActivities:303,
+         context:{ impressions:12134, clicks:534, siteClicks:15, messengerClicks:17, calls:56, addressClicks:6, actionButton:62, routeBuilds:90, photoGallery:101, otherActivities:132 } },
+    5: { impressions:20706, clicks:1272, siteClicks:39, messengerClicks:41, calls:178, addressClicks:3, actionButton:167, routeBuilds:336, photoGallery:166, otherActivities:275,
+         context:{ impressions:14186, clicks:603, siteClicks:17, messengerClicks:19, calls:75, addressClicks:1, actionButton:78, routeBuilds:114, photoGallery:106, otherActivities:132 } }
+  }
 };
 
 // Расширенная статистика рекламного кабинета Авито — есть только там, где загружен
@@ -3309,6 +3353,14 @@ function anRenderLeadsInsights(){
     bullets.push(`Авито: контактов в июне ${dContacts>=0?'больше':'меньше'} на <b>${dContacts>=0?'+':''}${dContacts.toFixed(1)}%</b> относительно мая (${avitoMay.contacts} → ${avitoJun.contacts}), при этом конверсия просмотр→контакт ${dConv>=0?'выросла':'снизилась'} на ${Math.abs(dConv*100).toFixed(1)} п.п.`);
     bullets.push(`Стоимость контакта на Авито: ${avitoMay.avgContactCost} ₽ в мае → ${avitoJun.avgContactCost} ₽ в июне. Продаж и стоимости продажи по Авито пока нет — нужна выгрузка сделок из Bitrix24, связанная с источником «Авито».`);
   }
+  const gisFlat = [];
+  ['2025','2026'].forEach(y=>{ const months = AN_2GIS_EXT[y]; if(!months) return; Object.keys(months).map(Number).sort((a,b)=>a-b).forEach(i=> gisFlat.push({ year:y, mi:i, d:months[i] })); });
+  if(gisFlat.length>=2){
+    const last = gisFlat[gisFlat.length-1], prev = gisFlat[gisFlat.length-2];
+    const leadsOf = f=> f.d.calls+f.d.messengerClicks;
+    const dLeads = (leadsOf(last)-leadsOf(prev))/leadsOf(prev)*100;
+    bullets.push(`2ГИС, динамика заявок (${AN_MONTHS[prev.mi]} ${prev.year} → ${AN_MONTHS[last.mi]} ${last.year}): ${leadsOf(prev)} → ${leadsOf(last)} (<b>${dLeads>=0?'+':''}${dLeads.toFixed(1)}%</b>). Доля контекстной рекламы в показах — ${(last.d.context.impressions/last.d.impressions*100).toFixed(1)}%.`);
+  }
   el.innerHTML = `<div class="card-title">Инсайты</div><ul class="an-insight-list">${bullets.map(b=>`<li>${b}</li>`).join('')}</ul>`;
 }
 
@@ -3478,6 +3530,52 @@ window.anSelectLeadsChannel = function(key){
       { label:'Контакты', value:last.contacts, color:'var(--amber)' },
       { label:'из них звонки', value:last.calls, color:'var(--blue)', sub: (last.calls/last.contacts*100).toFixed(1)+'% от контактов' },
       { label:'из них сообщения', value:last.messages, color:'var(--green)', sub: (last.messages/last.contacts*100).toFixed(1)+'% от контактов' },
+      { label:'Продажи', value:null, color:'var(--red)', sub:'ждём данные из Bitrix24' }
+    ]);
+    return;
+  }
+
+  if(key==='dubgis' && (AN_2GIS_EXT['2025'] || AN_2GIS_EXT['2026'])){
+    const flat = [];
+    ['2025','2026'].forEach(y=>{
+      const months = AN_2GIS_EXT[y];
+      if(!months) return;
+      Object.keys(months).map(Number).sort((a,b)=>a-b).forEach(i=> flat.push({ year:y, mi:i, d:months[i] }));
+    });
+    const last = flat[flat.length-1], prev = flat.length>1 ? flat[flat.length-2] : null;
+    const delta = (cur, before) => (before!=null && before>0) ? ((cur-before)/before*100) : null;
+    const dTxt = v => v==null ? '<span class="an-mom flat">нет пред. месяца</span>' : `<span class="an-mom ${v>=0?'up':'down'}">${v>=0?'+':''}${v.toFixed(1)}% к пред. мес.</span>`;
+    const leads = d => d.calls + d.messengerClicks;
+    const ctr = d => d.clicks/d.impressions*100;
+    const contextShare = d => d.context ? (d.context.impressions/d.impressions*100) : null;
+    const l = last.d, p = prev && prev.d;
+    el.innerHTML = `
+      <div class="card-title">2ГИС — расширенная статистика площадки (${AN_MONTHS[last.mi]} ${last.year})</div>
+      <div class="card-desc">Цифры включают органическую выдачу и контекстную рекламу вместе — как в отчёте площадки; доля контекстной рекламы показана отдельно.</div>
+      <div class="an-md-kpis">
+        <div class="an-md-tile"><div class="an-md-label">Показы</div><div class="an-md-value">${fmt(l.impressions)}</div>${dTxt(delta(l.impressions, p&&p.impressions))}</div>
+        <div class="an-md-tile"><div class="an-md-label">Клики (CTR)</div><div class="an-md-value">${fmt(l.clicks)} · ${ctr(l).toFixed(1)}%</div>${dTxt(delta(l.clicks, p&&p.clicks))}</div>
+        <div class="an-md-tile"><div class="an-md-label">Звонки</div><div class="an-md-value">${fmt(l.calls)}</div>${dTxt(delta(l.calls, p&&p.calls))}</div>
+        <div class="an-md-tile"><div class="an-md-label">Клики в мессенджер</div><div class="an-md-value">${fmt(l.messengerClicks)}</div>${dTxt(delta(l.messengerClicks, p&&p.messengerClicks))}</div>
+        <div class="an-md-tile"><div class="an-md-label">Заявки (звонки+мессенджер)</div><div class="an-md-value">${fmt(leads(l))}</div>${dTxt(delta(leads(l), p&&leads(p)))}</div>
+        <div class="an-md-tile"><div class="an-md-label">Доля контекстной рекламы</div><div class="an-md-value">${contextShare(l)!=null?contextShare(l).toFixed(1)+'%':'—'}</div><span class="an-mom flat">от показов</span></div>
+      </div>
+      <div class="card-title" style="font-size:14px; margin-top:18px;">Воронка обращений (${AN_MONTHS[last.mi]} ${last.year})</div>
+      <div class="an-funnel" id="an2gisFunnel"></div>
+      <div class="card-desc" style="margin-top:10px;">Из ${fmt(leads(l))} заявок: ${l.calls} звонков и ${l.messengerClicks} кликов в мессенджер. Также было ${l.actionButton} нажатий «кнопка-действие» и ${l.routeBuilds} построений маршрута — не считаются заявкой напрямую, но показывают интерес. Продаж и стоимости обращения по 2ГИС пока нет — нужна выгрузка сделок из Bitrix24 с привязкой к источнику «2ГИС».</div>
+      <div class="cc-table-wrap" style="margin-top:16px;"><table class="avg-table an-month-table"><thead><tr>
+        <th>Месяц</th><th class="num">Показы</th><th class="num">Клики</th><th class="num">CTR</th><th class="num">Звонки</th><th class="num">Мессенджер</th><th class="num">Заявки</th>
+      </tr></thead><tbody>${flat.map(f=>{
+        const d = f.d;
+        return `<tr><td>${AN_MONTHS[f.mi]} ${f.year}</td><td class="num">${fmt(d.impressions)}</td><td class="num">${fmt(d.clicks)}</td><td class="num">${ctr(d).toFixed(1)}%</td><td class="num">${fmt(d.calls)}</td><td class="num">${fmt(d.messengerClicks)}</td><td class="num">${fmt(leads(d))}</td></tr>`;
+      }).join('')}</tbody></table></div>
+    `;
+    anRenderFunnel('an2gisFunnel', [
+      { label:'Показы', value:l.impressions, color:'#9AA4B2' },
+      { label:'Клики', value:l.clicks, color:'#7A8699' },
+      { label:'Заявки (звонки+мессенджер)', value:leads(l), color:'var(--amber)' },
+      { label:'из них звонки', value:l.calls, color:'var(--blue)', sub:(l.calls/leads(l)*100).toFixed(1)+'% от заявок' },
+      { label:'из них мессенджер', value:l.messengerClicks, color:'var(--green)', sub:(l.messengerClicks/leads(l)*100).toFixed(1)+'% от заявок' },
       { label:'Продажи', value:null, color:'var(--red)', sub:'ждём данные из Bitrix24' }
     ]);
     return;
