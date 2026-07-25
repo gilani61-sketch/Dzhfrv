@@ -664,6 +664,24 @@
   }
   .an-channel-row .amt{ font-family:'JetBrains Mono'; color:var(--ink-mute); }
 
+  /* -- dedicated leads section: clickable channel cards -- */
+  .an-lead-cards{ display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-top:14px; }
+  @media (max-width:900px){ .an-lead-cards{ grid-template-columns:repeat(3,1fr); } }
+  @media (max-width:560px){ .an-lead-cards{ grid-template-columns:repeat(2,1fr); } }
+  .an-lead-card{
+    background:var(--card-2); border:1px solid var(--line); border-radius:12px; padding:16px 14px;
+    text-align:center; cursor:pointer; transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+  .an-lead-card:hover{ transform:translateY(-3px); border-color:var(--lead-accent); box-shadow:0 10px 24px -14px var(--lead-accent); }
+  .an-lead-card.active{ border-color:var(--lead-accent); background:rgba(255,255,255,0.06); }
+  .an-lead-icon{
+    width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    font-family:'Rubik'; font-weight:700; font-size:13px; margin:0 auto 10px;
+  }
+  .an-lead-name{ font-size:12.5px; color:var(--ink-dim); margin-bottom:6px; }
+  .an-lead-count{ font-family:'JetBrains Mono'; font-size:18px; color:var(--ink); }
+  .an-lead-pct{ font-size:11px; color:var(--ink-mute); margin-top:2px; }
+
   /* -- compare tab -- */
   .an-compare-table{ width:100%; border-collapse:collapse; }
   .an-compare-table th{
@@ -691,6 +709,27 @@
   .an-month-table .month-badge{ font-size:9.5px; margin-left:6px; padding:1px 7px; border-radius:100px; text-transform:uppercase; letter-spacing:0.03em; }
   .an-month-table .month-badge.best{ background:rgba(62,207,142,0.16); color:var(--green); }
   .an-month-table .month-badge.worst{ background:rgba(255,107,107,0.16); color:var(--red); }
+
+  .an-month-row{ cursor:pointer; transition:background .15s ease; }
+  .an-month-row:hover{ background:rgba(255,122,69,0.06); }
+  .an-expand-hint{ float:right; color:var(--ink-mute); font-size:11px; transition:transform .2s ease; }
+  .an-month-row.is-expanded .an-expand-hint{ transform:rotate(180deg); color:var(--amber); }
+  .an-month-row.is-expanded{ background:rgba(255,122,69,0.08); }
+  .an-month-detail-row td{ padding:0; border-bottom:1px solid var(--line); }
+  .an-month-detail{ padding:18px 14px 20px; background:rgba(255,255,255,0.015); animation:anMdIn .25s ease; }
+  @keyframes anMdIn{ from{ opacity:0; transform:translateY(-6px); } to{ opacity:1; transform:translateY(0); } }
+  .an-md-kpis{ display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-bottom:16px; }
+  @media (max-width:900px){ .an-md-kpis{ grid-template-columns:repeat(3,1fr); } }
+  @media (max-width:560px){ .an-md-kpis{ grid-template-columns:repeat(2,1fr); } }
+  .an-md-tile{ background:var(--card-2); border:1px solid var(--line); border-radius:10px; padding:10px 12px; }
+  .an-md-label{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-mute); margin-bottom:4px; }
+  .an-md-value{ font-family:'JetBrains Mono'; font-size:15px; color:var(--ink); margin-bottom:4px; }
+  .an-mom{ font-size:11px; }
+  .an-mom.up{ color:var(--green); }
+  .an-mom.down{ color:var(--red); }
+  .an-mom.flat{ color:var(--ink-mute); }
+  .an-daily-table-wrap{ max-height:320px; overflow-y:auto; margin-top:14px; border:1px solid var(--line); border-radius:10px; }
+  .an-daily-table-wrap .an-month-table thead th{ position:sticky; top:0; z-index:1; }
 
   #page-analytics .callout{
     background:var(--card-2); border:1px solid var(--line); border-left:3px solid var(--amber);
@@ -1772,22 +1811,16 @@
       <button class="page-tab-btn an-year-tab-btn active" data-ayear="2025" onclick="switchAnalyticsYear('2025')">2025</button>
       <button class="page-tab-btn an-year-tab-btn" data-ayear="2026" onclick="switchAnalyticsYear('2026')">2026</button>
       <button class="page-tab-btn an-year-tab-btn" data-ayear="compare" onclick="switchAnalyticsYear('compare')">Сравнение</button>
+      <button class="page-tab-btn an-year-tab-btn" data-ayear="leads" onclick="switchAnalyticsYear('leads')">Заявки</button>
     </div>
 
     <div class="an-year-pane active" id="analytics-2025">
       <div class="kpi-grid cols-6" id="anKpi2025"></div>
       <div class="an-insight-row" id="anInsight2025"></div>
-      <div class="an-charts-grid">
-        <div class="card reveal">
-          <div class="card-title">Динамика выручки по месяцам</div>
-          <div class="card-desc">Приглушённые подписи — месяцы, по которым пока нет выгрузки.</div>
-          <div class="line-chart-wrap" id="anLine2025"></div>
-        </div>
-        <div class="card reveal">
-          <div class="card-title">Заявки по источникам</div>
-          <div class="card-desc">Instagram, Авито, WhatsApp, Telegram, звонки.</div>
-          <div id="anLeads2025"></div>
-        </div>
+      <div class="card reveal">
+        <div class="card-title">Динамика выручки по месяцам</div>
+        <div class="card-desc">Приглушённые подписи — месяцы, по которым пока нет выгрузки.</div>
+        <div class="line-chart-wrap" id="anLine2025"></div>
       </div>
       <div class="card reveal" style="margin-top:16px;">
         <div class="card-title">Чеки по месяцам</div>
@@ -1822,17 +1855,10 @@
     <div class="an-year-pane" id="analytics-2026">
       <div class="kpi-grid cols-6" id="anKpi2026"></div>
       <div class="an-insight-row" id="anInsight2026"></div>
-      <div class="an-charts-grid">
-        <div class="card reveal">
-          <div class="card-title">Динамика выручки по месяцам</div>
-          <div class="card-desc">Приглушённые подписи — месяцы, по которым пока нет выгрузки.</div>
-          <div class="line-chart-wrap" id="anLine2026"></div>
-        </div>
-        <div class="card reveal">
-          <div class="card-title">Заявки по источникам</div>
-          <div class="card-desc">Instagram, Авито, WhatsApp, Telegram, звонки.</div>
-          <div id="anLeads2026"></div>
-        </div>
+      <div class="card reveal">
+        <div class="card-title">Динамика выручки по месяцам</div>
+        <div class="card-desc">Приглушённые подписи — месяцы, по которым пока нет выгрузки.</div>
+        <div class="line-chart-wrap" id="anLine2026"></div>
       </div>
       <div class="card reveal" style="margin-top:16px;">
         <div class="card-title">Чеки по месяцам</div>
@@ -1870,12 +1896,33 @@
         <div class="card-desc" id="anCompareNote"></div>
         <div class="cc-table-wrap"><table class="an-compare-table" id="anCompareTable"></table></div>
       </div>
-      <div class="card reveal" style="margin-top:16px;">
-        <div class="card-title">Выручка по месяцам — 2025 и 2026</div>
-        <div class="card-desc">Обе линии на одном графике для прямого сравнения.</div>
-        <div class="line-chart-wrap" id="anCompareLine"></div>
+      <div class="an-charts-grid" style="margin-top:16px;">
+        <div class="card reveal">
+          <div class="card-title">Выручка по месяцам — 2025 и 2026</div>
+          <div class="card-desc">Обе линии на одном графике для прямого сравнения.</div>
+          <div class="line-chart-wrap" id="anCompareLine"></div>
+        </div>
+        <div class="card reveal">
+          <div class="card-title">Средний чек — 2025 и 2026</div>
+          <div class="card-desc">Выручка ÷ количество чеков, помесячно.</div>
+          <div class="line-chart-wrap" id="anCompareLineCheck"></div>
+        </div>
       </div>
       <div class="card reveal" style="margin-top:16px;" id="anCompareConclusions"></div>
+    </div>
+
+    <div class="an-year-pane" id="analytics-leads">
+      <div class="card reveal">
+        <div class="card-title">Заявки по источникам</div>
+        <div class="card-desc">Instagram, Авито, WhatsApp, Telegram, звонки — данные загружаются отдельной выгрузкой из Bitrix. Пока выгрузки нет, разделы ниже пустые и заполнятся автоматически, как только она появится.</div>
+      </div>
+      <div class="kpi-grid cols-6" id="anLeadsKpi" style="margin-top:16px;"></div>
+      <div class="card reveal" style="margin-top:16px;">
+        <div class="card-title">Источники</div>
+        <div class="card-desc">Нажмите на карточку, чтобы открыть подробную аналитику по источнику.</div>
+        <div class="an-lead-cards" id="anLeadsChannels"></div>
+      </div>
+      <div class="card reveal" style="margin-top:16px;" id="anLeadsChannelDetail"></div>
     </div>
   </div>
 </section>
@@ -2958,19 +3005,22 @@ const AN_MONTHS_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','
 // Index 0 = январь … 11 = декабрь. null = месяц пока не выгружен.
 // avgCheck / avgDepth — как есть из источника (см. предупреждение о несопоставимости методик 2025/2026 на вкладке «Сравнение»).
 const AN_SALES = {
+  // Пересчитано целиком из ежедневной выгрузки за весь 2025 год (Дата/Чеков/Ср.чек/Глубина/Посетители/Конверсия).
+  // Старые помесячные отчёты для 2025 признаны недействительными и полностью заменены.
+  // Выручка = чеков × ср.чек (в источнике нет отдельного столбца выручки); в выгрузке отсутствует один день — 31.03.2025.
   '2025': [
-    { revenue:21397690.95, receipts:14904, avgCheck:41497.89, avgDepth:102.14, visitors:34210 },
-    { revenue:18248426.54, receipts:12790, avgCheck:38536.52, avgDepth:85.93,  visitors:30008 },
-    { revenue:22978447.06, receipts:16092, avgCheck:42269.56, avgDepth:96.14,  visitors:36304 },
-    { revenue:23883559.30, receipts:16823, avgCheck:41305.70, avgDepth:97.11,  visitors:38217 },
-    { revenue:26560021.90, receipts:18781, avgCheck:42735.21, avgDepth:104.12, visitors:41551 },
-    { revenue:26828561.52, receipts:18727, avgCheck:42125.67, avgDepth:101.15, visitors:41241 },
-    { revenue:32473579.21, receipts:19957, avgCheck:47769.20, avgDepth:101.04, visitors:43286 },
-    { revenue:28844546.73, receipts:18859, avgCheck:45285.59, avgDepth:88.9,   visitors:38495 },
-    { revenue:30798192.87, receipts:19056, avgCheck:43787.97, avgDepth:82.94,  visitors:35791 },
-    { revenue:33986570.96, receipts:20798, avgCheck:47328.07, avgDepth:86.71,  visitors:35094 },
-    { revenue:30015118.02, receipts:19775, avgCheck:40616.46, avgDepth:83.62,  visitors:38457 },
-    { revenue:31992769.79, receipts:19815, avgCheck:44933.32, avgDepth:83.9,   visitors:39092 }
+    { revenue:19926902, receipts:14904, avgCheck:1337.02, avgDepth:3.29, visitors:34210 },
+    { revenue:17660973, receipts:12790, avgCheck:1380.84, avgDepth:3.09, visitors:30008 },
+    { revenue:22592949, receipts:16092, avgCheck:1403.99, avgDepth:3.21, visitors:36266 },
+    { revenue:23222598, receipts:16823, avgCheck:1380.41, avgDepth:3.24, visitors:38217 },
+    { revenue:25841240, receipts:18781, avgCheck:1375.92, avgDepth:3.36, visitors:41551 },
+    { revenue:26343091, receipts:18727, avgCheck:1406.69, avgDepth:3.37, visitors:41241 },
+    { revenue:30764299, receipts:19957, avgCheck:1541.53, avgDepth:3.26, visitors:43286 },
+    { revenue:27497140, receipts:18859, avgCheck:1458.04, avgDepth:2.87, visitors:38495 },
+    { revenue:28120838, receipts:19056, avgCheck:1475.69, avgDepth:2.77, visitors:35791 },
+    { revenue:31826444, receipts:20798, avgCheck:1530.26, avgDepth:2.80, visitors:35094 },
+    { revenue:26787245, receipts:19775, avgCheck:1354.60, avgDepth:2.79, visitors:38457 },
+    { revenue:28817356, receipts:19815, avgCheck:1454.32, avgDepth:2.70, visitors:39092 }
   ],
   '2026': [
     { revenue:27173253.10, receipts:17221, avgCheck:1389.14, avgDepth:2.74, visitors:null },
@@ -2983,6 +3033,23 @@ const AN_SALES = {
   ]
 };
 
+// Ежедневные данные 2025 — [день, чеков, выручка, ср.чек, глубина чека, посетители, конверсия%]
+// выручка = чеков × ср.чек (в источнике нет отдельного столбца выручки); 31.03.2025 отсутствует в выгрузке.
+const AN_DAILY_2025 = {
+  0: [[1,486,556562,1145.19,3.5,1006,48.31], [2,545,694946,1275.13,3.17,1187,45.91], [3,557,647373,1162.25,2.95,1177,47.32], [4,549,673431,1226.65,3.16,1223,44.89], [5,527,558341,1059.47,3.14,1209,43.59], [6,503,688174,1368.14,3.21,1172,42.92], [7,455,706551,1552.86,2.95,1108,41.06], [8,466,523090,1122.51,3.19,1114,41.83], [9,498,741547,1489.05,3.49,1069,46.59], [10,433,478824,1105.83,3.36,1038,41.71], [11,532,689137,1295.37,3.51,1223,43.5], [12,561,780418,1391.12,3.29,1229,45.65], [13,461,662309,1436.68,3.05,1069,43.12], [14,486,684876,1409.21,3.39,1023,47.51], [15,448,751076,1676.51,3.55,1113,40.25], [16,500,820580,1641.16,3.16,1179,42.41], [17,485,656399,1353.4,3.28,1114,43.54], [18,519,688220,1326.05,3.86,1057,49.1], [19,494,645539,1306.76,3.35,1089,45.36], [20,412,559673,1358.43,3.27,972,42.39], [21,469,635228,1354.43,2.96,1136,41.29], [22,456,571705,1253.74,3.28,994,45.88], [23,430,488037,1134.97,2.9,1057,40.68], [24,430,521788,1213.46,3.53,1056,40.72], [25,463,532357,1149.8,3.58,1062,43.6], [26,497,726341,1461.45,3.67,1165,42.66], [27,459,656930,1431.22,3.11,986,46.55], [28,459,831180,1810.85,3.18,1084,42.34], [29,475,563583,1186.49,3.14,1150,41.3], [30,407,520862,1279.76,3.69,1017,40.02], [31,442,671822,1519.96,3.29,1132,39.05]],
+  1: [[1,558,649596,1164.15,3.24,1212,46.04], [2,537,823634,1533.77,3.24,1325,40.53], [3,474,703534,1484.25,3.42,1196,39.63], [4,527,698375,1325.19,3.29,1136,46.39], [5,483,614618,1272.5,3.34,1083,44.6], [6,472,748715,1586.26,3.05,1071,44.07], [7,467,603373,1292.02,3.26,1107,42.19], [8,498,706169,1418.01,3.32,1183,42.1], [9,501,734807,1466.68,2.97,1198,41.82], [10,449,647638,1442.4,3.38,1052,42.68], [11,459,849003,1849.68,3.42,1003,45.76], [12,532,850391,1598.48,3.14,1114,47.76], [13,470,680452,1447.77,3.15,1075,43.72], [14,438,658581,1503.61,2.76,1072,40.86], [15,503,640123,1272.61,3.5,1188,42.34], [16,539,738295,1369.75,3.24,1248,43.19], [17,463,595955,1287.16,3,965,47.98], [18,435,488579,1123.17,2.43,1083,40.17], [19,419,695783,1660.58,2.9,994,42.15], [20,379,453898,1197.62,2.67,881,43.02], [21,366,471225,1287.5,2.59,848,43.16], [22,460,544829,1184.41,2.88,1118,41.14], [23,412,603168,1464,3.21,1037,39.73], [24,390,464455,1190.91,2.64,928,42.03], [25,427,570950,1337.12,2.98,1070,39.91], [26,388,491968,1267.96,2.79,924,41.99], [27,374,424490,1135,3.26,964,38.8], [28,370,508369,1373.97,2.88,933,39.66]],
+  2: [[1,422,689902,1634.84,2.87,1080,39.07], [2,530,1028348,1940.28,2.79,1319,40.18], [3,411,533318,1297.61,2.99,1151,35.71], [4,510,850440,1667.53,3.49,1200,42.5], [5,450,625464,1389.92,3.6,1049,42.9], [6,481,712183,1480.63,3.47,957,50.26], [7,498,767413,1540.99,3.01,1151,43.27], [8,577,764964,1325.76,3.26,1011,57.07], [9,605,841355,1390.67,3.42,1288,46.97], [10,506,851224,1682.26,3.18,1098,46.08], [11,548,823677,1503.06,3.36,1218,44.99], [12,534,904153,1693.17,3.73,1191,44.84], [13,567,692284,1220.96,3.02,1187,47.77], [14,547,801639,1465.52,3.27,1293,42.3], [15,634,921208,1453.01,3.48,1353,46.86], [16,688,796883,1158.26,3.14,1320,52.12], [17,595,867629,1458.2,3.23,1105,53.85], [18,591,736930,1246.92,3.52,1303,45.36], [19,516,659046,1277.22,3.33,1076,47.96], [20,461,566652,1229.18,3.3,1097,42.02], [21,439,519363,1183.06,2.91,1112,39.48], [22,532,778321,1463.01,3.4,1194,44.56], [23,616,820734,1332.36,3.5,1411,43.66], [24,507,821102,1619.53,3.27,1185,42.78], [25,605,738880,1221.29,2.99,1351,44.78], [26,553,900831,1628.99,3.11,1324,41.77], [27,537,692048,1288.73,2.79,1346,39.9], [28,592,710968,1200.96,2.97,1428,41.46], [29,560,585637,1045.78,2.87,1471,38.07], [30,480,590352,1229.9,2.89,997,48.14]],
+  3: [[1,422,489938,1160.99,3.11,967,43.64], [2,509,623184,1224.33,2.94,1097,46.4], [3,423,641661,1516.93,3.25,1233,34.31], [4,621,820912,1321.92,3.23,1295,47.95], [5,627,794183,1266.64,3.27,1408,44.53], [6,644,1046977,1625.74,3.28,1357,47.46], [7,552,579147,1049.18,3.02,1260,43.81], [8,540,763317,1413.55,3.1,1236,43.69], [9,537,775090,1443.37,3.48,1208,44.45], [10,526,790667,1503.17,3.46,1203,43.72], [11,502,700576,1395.57,3.43,1208,41.56], [12,601,770825,1282.57,3.14,1317,45.63], [13,684,1085084,1586.38,3.29,1462,46.79], [14,566,690288,1219.59,3.22,1292,43.81], [15,441,613634,1391.46,3.16,1015,43.45], [16,517,776033,1501.03,3.22,1182,43.74], [17,535,708597,1324.48,3.15,1191,44.92], [18,574,754196,1313.93,3.04,1349,42.55], [19,618,937840,1517.54,3.18,1258,49.13], [20,614,896207,1459.62,3.59,1338,45.89], [21,515,670144,1301.25,3.12,1154,44.63], [22,553,689121,1246.15,3.3,1402,39.44], [23,615,703966,1144.66,3.03,1330,46.24], [24,587,948968,1616.64,3.8,1265,46.4], [25,524,673235,1284.8,3.34,1232,42.53], [26,628,834260,1328.44,3.43,1339,46.9], [27,686,980383,1429.13,2.88,1512,45.37], [28,552,820636,1486.66,3.25,1256,43.95], [29,568,975114,1716.75,3.43,1410,40.28], [30,542,668416,1233.24,2.98,1441,37.61]],
+  4: [[1,667,974280,1460.69,3.81,1526,43.71], [2,610,897566,1471.42,3.08,1414,43.14], [3,619,814195,1315.34,3.18,1366,45.31], [4,680,927132,1363.43,3.15,1435,47.39], [5,583,688640,1181.2,2.97,1156,50.43], [6,580,761082,1312.21,3.41,1219,47.58], [7,621,974709,1569.58,3.51,1480,41.96], [8,659,902718,1369.83,3.35,1585,41.58], [9,640,794323,1241.13,3.27,1390,46.04], [10,611,767410,1255.99,3.3,1302,46.93], [11,624,747795,1198.39,3.63,1369,45.58], [12,581,777988,1339.05,3.18,1373,42.32], [13,546,672601,1231.87,3.29,1273,42.89], [14,538,729555,1356.05,3.21,1276,42.16], [15,562,703613,1251.98,3.37,1284,43.77], [16,570,673016,1180.73,3.41,1239,46], [17,620,797890,1286.92,3.43,1408,44.03], [18,647,812871,1256.37,3.32,1343,48.18], [19,547,923599,1688.48,3.46,1221,44.8], [20,621,855372,1377.41,3.67,1377,45.1], [21,568,863479,1520.21,3.52,1220,46.56], [22,640,837536,1308.65,3.21,1284,49.84], [23,600,860184,1433.64,3.51,1296,46.3], [24,579,1056160,1824.11,3.53,1235,46.88], [25,662,731272,1104.64,3.21,1469,45.06], [26,649,975129,1502.51,3.24,1328,48.87], [27,618,854385,1382.5,3.17,1313,47.07], [28,555,868214,1564.35,3.47,1249,44.44], [29,574,993875,1731.49,3.38,1311,43.78], [30,580,789241,1360.76,3.61,1399,41.46], [31,630,815409,1294.3,3.27,1411,44.65]],
+  5: [[1,711,914097,1285.65,3.27,1508,47.15], [2,574,622434,1084.38,3.1,1227,46.78], [3,610,818803,1342.3,3.25,1367,44.62], [4,676,1421297,2102.51,3.48,1538,43.95], [5,539,652783,1211.1,3.12,1393,38.69], [6,651,755349,1160.29,3.16,1432,45.46], [7,633,1093881,1728.09,3.25,1359,46.58], [8,656,924783,1409.73,3.62,1439,45.59], [9,598,869085,1453.32,3.15,1337,44.73], [10,675,961585,1424.57,3.39,1518,44.47], [11,624,814582,1305.42,3.71,1401,44.54], [12,680,953306,1401.92,3.4,1541,44.13], [13,662,892091,1347.57,3.25,1384,47.83], [14,702,1029448,1466.45,3.39,1530,45.88], [15,622,859063,1381.13,3.1,1325,46.94], [16,533,628247,1178.7,3.21,1123,47.46], [17,566,831035,1468.26,3.22,1261,44.89], [18,611,801779,1312.24,3.57,1359,44.96], [19,580,794240,1369.38,3.66,1330,43.61], [20,581,1058390,1821.67,3.28,1323,43.92], [21,674,894465,1327.1,3.56,1522,44.28], [22,705,960217,1362.01,3.32,1487,47.41], [23,584,791460,1355.24,3.95,1307,44.68], [24,636,780499,1227.2,3.19,1397,45.53], [25,545,715024,1311.97,3.44,1226,44.45], [26,586,862938,1472.59,3.33,1242,47.18], [27,557,835155,1499.38,3.36,1279,43.55], [28,696,1020552,1466.31,3.6,1429,48.71], [29,670,883261,1318.3,3.09,1427,46.95], [30,590,903243,1530.92,3.73,1230,47.97]],
+  6: [[1,603,848228,1406.68,3.12,1377,43.79], [2,600,967038,1611.73,3.69,1377,43.57], [3,516,668829,1296.18,3.3,1221,42.26], [4,630,700226,1111.47,3.1,1498,42.06], [5,600,816594,1360.99,3.52,1416,42.37], [6,716,888105,1240.37,3.37,1565,45.75], [7,674,932796,1383.97,3.43,1385,48.66], [8,623,879994,1412.51,3.18,1386,44.95], [9,628,1000894,1593.78,3.28,1394,45.05], [10,615,909388,1478.68,3.52,1311,46.91], [11,631,873298,1383.99,3.12,1420,44.44], [12,647,791210,1222.89,3.33,1385,46.71], [13,711,1099789,1546.82,3.39,1461,48.67], [14,655,1041751,1590.46,3.65,1340,48.88], [15,700,1202866,1718.38,3.19,1509,46.39], [16,703,1079703,1535.85,3.08,1465,47.99], [17,636,870010,1367.94,3.23,1409,45.14], [18,627,1267944,2022.24,3.03,1437,43.63], [19,716,1108354,1547.98,3.27,1516,47.23], [20,782,1120410,1432.75,3.1,1635,47.83], [21,649,899975,1386.71,3.31,1325,48.98], [22,642,1276444,1988.23,3.34,1514,42.4], [23,629,1112141,1768.11,3.45,1385,45.42], [24,627,1373092,2189.94,2.77,1626,38.56], [25,633,1062155,1677.97,3.1,1440,43.96], [26,658,1283245,1950.22,3.2,1496,43.98], [27,680,1202022,1767.68,3.14,1425,47.72], [28,620,930967,1501.56,3.17,1263,49.09], [29,598,847743,1417.63,3.25,1178,50.76], [30,575,975884,1697.19,3.4,1046,54.97], [31,633,733204,1158.3,3.05,1081,58.56]],
+  7: [[1,609,811444,1332.42,3.27,1257,48.45], [2,652,849954,1303.61,3.19,1324,49.24], [3,689,1124172,1631.6,3.53,1304,52.84], [4,558,818636,1467.09,3.43,1166,47.86], [5,623,835898,1341.73,2.82,1242,50.16], [6,612,804364,1314.32,3.42,1134,53.97], [7,632,1149564,1818.93,3.11,1227,51.51], [8,586,1147242,1957.75,2.67,1204,48.67], [9,631,839848,1330.98,2.73,1381,45.69], [10,603,885861,1469.09,2.9,1020,59.12], [11,630,1027272,1630.59,2.74,1256,50.16], [12,662,873085,1318.86,2.52,1256,52.71], [13,596,844532,1417,2.89,1148,51.92], [14,558,1291084,2313.77,3.09,1126,49.56], [15,573,851157,1485.44,2.95,1278,44.84], [16,638,827537,1297.08,2.79,1365,46.74], [17,634,826837,1304.16,2.73,1401,45.25], [18,574,621085,1082.03,2.67,1192,48.15], [19,599,931715,1555.45,2.87,1173,51.07], [20,532,1008608,1895.88,2.78,1125,47.29], [21,573,919843,1605.31,2.69,1167,49.1], [22,566,764440,1350.6,2.63,1218,46.47], [23,587,778239,1325.79,2.8,1257,46.7], [24,644,750608,1165.54,2.64,1293,49.81], [25,591,737651,1248.14,2.61,1253,47.17], [26,616,791683,1285.2,2.71,1239,49.72], [27,582,705489,1212.18,2.58,1230,47.32], [28,620,976401,1574.84,2.97,1270,48.82], [29,561,663489,1182.69,2.61,1237,45.35], [30,622,935071,1503.33,2.8,1291,48.18], [31,706,1104332,1564.21,2.76,1461,48.32]],
+  8: [[1,565,705900,1249.38,2.64,1163,48.58], [2,670,969758,1447.4,2.75,1308,51.22], [3,595,768901,1292.27,2.78,1273,46.74], [4,637,764311,1199.86,2.52,1338,47.61], [5,623,733016,1176.59,2.67,1314,47.41], [6,652,1021130,1566.15,2.89,1361,47.91], [7,714,818380,1146.19,2.78,1438,49.65], [8,538,738227,1372.17,2.75,1158,46.46], [9,713,1012367,1419.87,3.01,1498,47.6], [10,576,594363,1031.88,2.52,1204,47.84], [11,518,679108,1311.02,2.8,1185,43.71], [12,569,787052,1383.22,2.8,1276,44.59], [13,625,977769,1564.43,2.79,1389,45], [14,696,956986,1374.98,2.78,1370,50.8], [15,694,1182160,1703.4,2.99,1464,47.4], [16,650,967564,1488.56,2.63,1349,48.18], [17,586,976505,1666.39,2.99,1142,51.31], [18,616,758789,1231.8,2.67,956,64.44], [19,509,771990,1516.68,2.9,669,76.08], [20,784,2243510,2861.62,2.72,1215,64.53], [21,759,1219569,1606.81,2.69,1385,54.8], [22,580,698755,1204.75,2.87,776,74.74], [23,667,828254,1241.76,2.72,1057,63.1], [24,689,1169612,1697.55,2.79,1092,63.1], [25,638,1051507,1648.13,2.69,1101,57.95], [26,634,835878,1318.42,2.76,1028,61.67], [27,648,1260004,1944.45,2.88,1128,57.45], [28,675,1010185,1496.57,2.88,1061,63.62], [29,650,818838,1259.75,2.75,1033,62.92], [30,586,800453,1365.96,2.56,1060,55.28]],
+  9: [[1,662,1355339,2047.34,2.75,1389,47.66], [2,618,1199359,1940.71,2.74,1076,57.43], [3,654,1009122,1543,2.83,1200,54.5], [4,783,1681915,2148.04,2.91,1451,53.96], [5,735,1255431,1708.07,2.88,1313,55.98], [6,603,793958,1316.68,2.88,1052,57.32], [7,708,1024724,1447.35,2.82,1100,64.36], [8,668,993243,1486.89,2.79,1171,57.05], [9,653,888962,1361.35,2.76,1100,59.36], [10,686,1058189,1542.55,2.72,1110,61.8], [11,704,1005537,1428.32,2.82,1187,59.31], [12,708,874132,1234.65,2.87,915,77.38], [13,650,932698,1434.92,2.84,911,71.35], [14,645,1092591,1693.94,2.81,1289,50.04], [15,658,1167575,1774.43,2.69,1187,55.43], [16,663,941599,1420.21,2.71,1044,63.51], [17,634,772275,1218.1,2.53,966,65.63], [18,676,899377,1330.44,2.76,1148,58.89], [19,761,1181133,1552.08,2.76,1195,63.68], [20,656,1033554,1575.54,2.82,960,68.33], [21,655,1006715,1536.97,2.84,1031,63.53], [22,601,824644,1372.12,2.76,1051,57.18], [23,649,1034071,1593.33,2.88,1165,55.71], [24,625,745250,1192.4,2.7,1146,54.54], [25,732,884117,1207.81,2.7,1236,59.22], [26,720,1094047,1519.51,2.77,1209,59.55], [27,667,992022,1487.29,3.03,1126,59.24], [28,633,785357,1240.69,2.89,1056,59.94], [29,665,1227218,1845.44,2.76,1121,59.32], [30,680,1032906,1518.98,2.81,1092,62.27], [31,646,1039382,1608.95,2.89,1097,58.89]],
+  10: [[1,705,847452,1202.06,2.95,1350,52.22], [2,747,1165686,1560.49,2.89,1367,54.65], [3,676,844723,1249.59,2.8,1205,56.1], [4,702,1041129,1483.09,2.91,1324,53.02], [5,632,1046516,1655.88,2.79,1214,52.06], [6,576,712356,1236.73,2.76,1092,52.75], [7,638,801960,1256.99,2.79,1217,52.42], [8,745,978125,1312.92,2.96,1476,50.47], [9,631,765264,1212.78,2.76,1357,46.5], [10,617,858815,1391.92,2.75,1299,47.5], [11,675,793058,1174.9,2.67,1355,49.82], [12,662,745948,1126.81,2.87,1388,47.69], [13,687,943828,1373.84,2.97,1309,52.48], [14,633,734938,1161.04,2.63,1326,47.74], [15,758,1356775,1789.94,2.81,1662,45.61], [16,760,936221,1231.87,2.79,1473,51.6], [17,630,833106,1322.39,2.75,1221,51.6], [18,608,836651,1376.07,3,1175,51.74], [19,667,926190,1388.59,2.62,1318,50.61], [20,632,801882,1268.8,2.85,1286,49.14], [21,609,807388,1325.76,2.79,1246,48.88], [22,691,960801,1390.45,2.84,1326,52.11], [23,731,926140,1266.95,2.67,1400,52.21], [24,597,926365,1551.7,2.63,1257,47.49], [25,679,858521,1264.39,2.8,1239,54.8], [26,589,759003,1288.63,2.62,1087,54.19], [27,608,1017999,1674.34,2.77,1114,54.58], [28,608,918530,1510.74,2.75,1110,54.77], [29,650,709202,1091.08,2.69,1121,57.98], [30,632,932674,1475.75,2.74,1143,55.29]],
+  11: [[1,570,818606,1436.15,2.71,1031,55.29], [2,595,858133,1442.24,2.79,1172,50.77], [3,576,805634,1398.67,2.85,1120,51.43], [4,628,1115133,1775.69,2.95,1147,54.75], [5,623,924426,1483.83,2.69,1144,54.46], [6,646,1052825,1629.76,2.86,1192,54.19], [7,642,854207,1330.54,2.74,1152,55.73], [8,533,707653,1327.68,2.68,1064,50.09], [9,595,949816,1596.33,2.93,1077,55.25], [10,632,888143,1405.29,2.74,1132,55.83], [11,610,945244,1549.58,2.9,1044,58.43], [12,609,681033,1118.28,2.63,1164,52.32], [13,725,936352,1291.52,2.49,1270,57.09], [14,895,1639524,1831.87,2.54,1558,57.45], [15,659,1335806,2027.02,2.74,1335,49.36], [16,690,937248,1358.33,2.75,1343,51.38], [17,684,1125385,1645.3,2.51,1348,50.74], [18,626,875060,1397.86,2.71,1258,49.76], [19,598,734661,1228.53,2.75,1336,44.76], [20,689,954320,1385.08,2.92,1463,47.1], [21,695,690913,994.12,2.58,1398,49.71], [22,658,878219,1334.68,2.85,1300,50.62], [23,632,724512,1146.38,2.72,1181,53.51], [24,613,804005,1311.59,2.71,1259,48.69], [25,632,842134,1332.49,2.39,1312,48.17], [26,545,858043,1574.39,2.61,1329,41.01], [27,653,1031844,1580.16,2.78,1396,46.78], [28,680,1008814,1483.55,2.61,1404,48.43], [29,607,781063,1286.76,2.58,1286,47.2], [30,636,1091147,1715.64,2.68,1526,41.68], [31,639,967452,1514.01,2.52,1351,47.3]],
+};
+
 const AN_LEADS_CHANNELS = [
   { key:'instagram', label:'Instagram', color:'#E1306C' },
   { key:'avito',     label:'Авито',     color:'#00A046' },
@@ -2991,6 +3058,8 @@ const AN_LEADS_CHANNELS = [
   { key:'calls',     label:'Звонки',    color:'#4DA8FF' }
 ];
 // Заполнится, когда появится выгрузка заявок из Bitrix — пока данных нет.
+// Ожидаемый формат после загрузки: AN_LEADS['2025'] = 12 элементов (янв…дек), каждый —
+// null (месяц не выгружен) или { instagram, avito, whatsapp, telegram, calls }.
 const AN_LEADS = { '2025': null, '2026': null };
 
 function anYearStats(year){
@@ -3055,24 +3124,115 @@ function anRenderInsight(year){
   el.innerHTML = chips.join('');
 }
 
-function anRenderLeads(year){
-  const el = document.getElementById('anLeads'+year);
+// ---------- Заявки: отдельный раздел (не входит в KPI продаж), готов к автоматическому
+// пересчёту, как только AN_LEADS['2025']/['2026'] заполнятся выгрузкой из Bitrix ----------
+function anLeadsYearTotals(year){
+  const months = AN_LEADS[year];
+  if(!months) return null;
+  const totals = {}; AN_LEADS_CHANNELS.forEach(c=> totals[c.key]=0);
+  let any = false;
+  months.forEach(m=>{ if(!m) return; any = true; AN_LEADS_CHANNELS.forEach(c=> totals[c.key] += (m[c.key]||0)); });
+  if(!any) return null;
+  const grand = AN_LEADS_CHANNELS.reduce((s,c)=> s+totals[c.key], 0);
+  return { totals, grand };
+}
+
+function anLeadsChannelMonthly(year, key){
+  const months = AN_LEADS[year];
+  if(!months) return null;
+  return months.map(m=> m ? (m[key]||0) : null);
+}
+
+function anRenderLeadsKpi(){
+  const el = document.getElementById('anLeadsKpi');
   if(!el) return;
-  const data = AN_LEADS[year];
-  if(!data){
-    el.innerHTML = `<div class="an-leads-empty">
+  const t25 = anLeadsYearTotals('2025'), t26 = anLeadsYearTotals('2026');
+  const hasAny = !!(t25 || t26);
+  const grand = (t25?t25.grand:0) + (t26?t26.grand:0);
+  let topChannel = '—', topShare = '';
+  if(hasAny){
+    const combined = {};
+    AN_LEADS_CHANNELS.forEach(c=> combined[c.key] = (t25?t25.totals[c.key]:0)+(t26?t26.totals[c.key]:0));
+    const top = AN_LEADS_CHANNELS.slice().sort((a,b)=> combined[b.key]-combined[a.key])[0];
+    if(combined[top.key]>0){ topChannel = top.label; topShare = grand>0 ? (combined[top.key]/grand*100).toFixed(1)+'% всех заявок' : ''; }
+  }
+  const dYoY = t25 && t26 && t25.grand>0 ? ((t26.grand-t25.grand)/t25.grand*100) : null;
+  el.innerHTML = [
+    anKpiTile('var(--amber)', 'Всего заявок', hasAny?grand:0, 0, '', hasAny?'2025 + 2026':'нет данных — ждём Bitrix'),
+    anKpiTile('var(--blue)', 'Заявок за 2025', t25?t25.grand:0, 0, '', t25?'':'нет данных'),
+    anKpiTile('var(--green)', 'Заявок за 2026', t26?t26.grand:0, 0, '', t26?'':'нет данных'),
+    `<div class="kpi reveal" style="--kpi-accent:var(--amber)"><div class="kpi-label">Лучший источник</div><div class="kpi-value" style="font-family:'Rubik'; font-size:19px;">${topChannel}</div><div class="kpi-sub">${topShare||'—'}</div></div>`,
+    `<div class="kpi reveal" style="--kpi-accent:var(--blue)"><div class="kpi-label">Динамика 2026 к 2025</div><div class="kpi-value" style="font-family:'Rubik'; font-size:19px; color:${dYoY==null?'var(--ink)':(dYoY>=0?'var(--green)':'var(--red)')}">${dYoY==null?'—':(dYoY>=0?'+':'')+dYoY.toFixed(1)+'%'}</div><div class="kpi-sub">${dYoY==null?'нужны оба года':'по сумме заявок'}</div></div>`,
+    anKpiTile('var(--green)', 'Источников отслеживается', AN_LEADS_CHANNELS.length, 0, '', 'Instagram, Авито, WhatsApp, Telegram, звонки')
+  ].join('');
+}
+
+function anRenderLeadsChannels(){
+  const el = document.getElementById('anLeadsChannels');
+  if(!el) return;
+  const t25 = anLeadsYearTotals('2025'), t26 = anLeadsYearTotals('2026');
+  const hasAny = !!(t25 || t26);
+  const grand = (t25?t25.grand:0) + (t26?t26.grand:0);
+  el.innerHTML = AN_LEADS_CHANNELS.map(c=>{
+    const total = (t25?t25.totals[c.key]:0) + (t26?t26.totals[c.key]:0);
+    const pct = hasAny && grand>0 ? (total/grand*100).toFixed(1)+'%' : '—';
+    return `<div class="an-lead-card reveal" id="anLeadCard_${c.key}" style="--lead-accent:${c.color}" onclick="anSelectLeadsChannel('${c.key}')">
+      <div class="an-lead-icon" style="background:${c.color}22; color:${c.color};">${c.label.slice(0,2)}</div>
+      <div class="an-lead-name">${c.label}</div>
+      <div class="an-lead-count">${hasAny?fmt(total):'—'}</div>
+      <div class="an-lead-pct">${pct}</div>
+    </div>`;
+  }).join('');
+}
+
+window.anSelectLeadsChannel = function(key){
+  document.querySelectorAll('.an-lead-card').forEach(c=> c.classList.toggle('active', c.id==='anLeadCard_'+key));
+  const el = document.getElementById('anLeadsChannelDetail');
+  if(!el) return;
+  const channel = AN_LEADS_CHANNELS.find(c=> c.key===key);
+  const monthly25 = anLeadsChannelMonthly('2025', key);
+  const monthly26 = anLeadsChannelMonthly('2026', key);
+  if(!monthly25 && !monthly26){
+    el.innerHTML = `<div class="an-leads-empty" style="padding:32px 20px;">
       <div class="n">—</div>
-      <div>Нет данных по заявкам за ${year} год.<br>Загрузите выгрузку из Bitrix, чтобы увидеть распределение по каналам (Instagram, Авито, WhatsApp, Telegram, звонки).</div>
+      <div>Нет данных по каналу «${channel.label}». Как только появится выгрузка из Bitrix с разбивкой по источникам — здесь будет динамика по месяцам, доля, лучший и худший месяц и сравнение 2025/2026.</div>
     </div>`;
     return;
   }
-  const total = AN_LEADS_CHANNELS.reduce((s,c)=> s + (data[c.key]||0), 0);
-  const rows = AN_LEADS_CHANNELS.slice().sort((a,b)=> (data[b.key]||0)-(data[a.key]||0)).map(c=>{
-    const v = data[c.key]||0;
-    const pct = total>0 ? (v/total*100).toFixed(1) : '0.0';
-    return `<div class="an-channel-row"><span><i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${c.color};margin-right:8px;"></i>${c.label}</span><span class="amt">${v} · ${pct}%</span></div>`;
-  }).join('');
-  el.innerHTML = `<div class="an-channel-list">${rows}</div>`;
+  const summarize = arr=>{
+    if(!arr) return null;
+    let total=0, best=null, worst=null;
+    arr.forEach((v,i)=>{ if(v==null) return; total+=v; if(best===null||v>arr[best]) best=i; if(worst===null||v<arr[worst]) worst=i; });
+    return { total, best, worst };
+  };
+  const s25 = summarize(monthly25), s26 = summarize(monthly26);
+  el.innerHTML = `
+    <div class="card-title">${channel.label} — детально</div>
+    <div class="an-md-kpis">
+      <div class="an-md-tile"><div class="an-md-label">Заявок 2025</div><div class="an-md-value">${s25?fmt(s25.total):'—'}</div></div>
+      <div class="an-md-tile"><div class="an-md-label">Заявок 2026</div><div class="an-md-value">${s26?fmt(s26.total):'—'}</div></div>
+      <div class="an-md-tile"><div class="an-md-label">Лучший месяц 2025</div><div class="an-md-value">${s25&&s25.best!=null?AN_MONTHS[s25.best]:'—'}</div></div>
+      <div class="an-md-tile"><div class="an-md-label">Лучший месяц 2026</div><div class="an-md-value">${s26&&s26.best!=null?AN_MONTHS[s26.best]:'—'}</div></div>
+    </div>
+    <div class="line-chart-wrap" id="anLeadsChannelChart"></div>
+  `;
+  renderLineChart('anLeadsChannelChart', [
+    { label:'2025', color:'#9AA4B2', values: monthly25 || Array(12).fill(null) },
+    { label:'2026', color: channel.color, values: monthly26 || Array(12).fill(null) }
+  ], {});
+  if(typeof growLineCharts === 'function') growLineCharts();
+};
+
+function renderLeadsSection(){
+  anRenderLeadsKpi();
+  anRenderLeadsChannels();
+  const el = document.getElementById('anLeadsChannelDetail');
+  if(el){
+    el.innerHTML = `<div class="an-leads-empty" style="padding:32px 20px;">
+      <div class="n">—</div>
+      <div>Выберите источник выше, чтобы увидеть подробную аналитику. Пока не загружена выгрузка из Bitrix — карточки и графики заполнятся автоматически, как только появятся данные.</div>
+    </div>`;
+  }
 }
 
 function anRenderSummary(year){
@@ -3101,13 +3261,16 @@ function renderLineChart(wrapId, series, opts){
   opts = opts || {};
   const wrap = document.getElementById(wrapId);
   if(!wrap) return;
-  const W = 640, H = 180, padX = 8, padY = 14;
+  const labels = opts.labels || AN_MONTHS;
+  const labelsShort = opts.labelsShort || AN_MONTHS_SHORT;
+  const n = labels.length;
+  const W = 640, H = opts.height || 180, padX = 8, padY = 14;
   const allVals = [];
   series.forEach(s=> s.values.forEach(v=>{ if(v!=null) allVals.push(v); }));
   const max = allVals.length ? Math.max(...allVals) : 1;
   const min = allVals.length ? Math.min(0, Math.min(...allVals)) : 0;
   const range = (max-min) || 1;
-  const xStep = (W - padX*2)/11;
+  const xStep = (W - padX*2)/Math.max(n-1,1);
   function xOf(i){ return padX + xStep*i; }
   function yOf(v){ return H - padY - ((v-min)/range)*(H-padY*2); }
 
@@ -3128,16 +3291,18 @@ function renderLineChart(wrapId, series, opts){
       if(current===null){ current = 'M'+pt; segments.push(current); }
       else { segments[segments.length-1] += ' L'+pt; }
       current = segments[segments.length-1];
-      dotsSvg += `<circle class="line-chart-dot" cx="${xOf(i).toFixed(1)}" cy="${yOf(v).toFixed(1)}" r="3.5" fill="${s.color}"><title>${AN_MONTHS[i]}: ${fmt(v)}${opts.suffix||''}</title></circle>`;
+      dotsSvg += `<circle class="line-chart-dot" cx="${xOf(i).toFixed(1)}" cy="${yOf(v).toFixed(1)}" r="3.5" fill="${s.color}"><title>${labels[i]}: ${fmt(v)}${opts.suffix||''}</title></circle>`;
     });
     segments.forEach(d=>{
       pathsSvg += `<path class="line-chart-path" d="${d}" pathLength="1000" stroke="${s.color}"></path>`;
     });
   });
 
-  const labelsSvg = AN_MONTHS_SHORT.map((m,i)=>{
+  const skip = opts.labelSkip || (n > 16 ? Math.ceil(n/12) : 1);
+  const labelsSvg = labelsShort.map((m,i)=>{
     const hasAny = series.some(s=> s.values[i]!=null);
-    return `<span class="${hasAny?'':'is-empty'}">${m}</span>`;
+    const visible = (i % skip === 0) || i===n-1;
+    return `<span class="${hasAny?'':'is-empty'}"${visible?'':' style="visibility:hidden;"'}>${m}</span>`;
   }).join('');
 
   const legendSvg = series.length>1 ? `<div class="an-legend">${series.map(s=>`<div class="an-legend-item"><i style="background:${s.color}"></i>${s.label}</div>`).join('')}</div>` : '';
@@ -3235,6 +3400,81 @@ function anRenderDonut(year){
 }
 
 // ---------- Monthly breakdown table with best/worst highlighting ----------
+// Ежедневная детализация есть только там, где загружена дневная выгрузка (пока — 2025 год).
+function anDailyForMonth(year, mi){
+  if(year==='2025' && AN_DAILY_2025[mi]) return AN_DAILY_2025[mi];
+  return null;
+}
+
+function anMomDelta(year, mi, field){
+  const cur = AN_SALES[year][mi];
+  if(!cur) return null;
+  let prevIdx = mi-1;
+  while(prevIdx>=0 && !AN_SALES[year][prevIdx]) prevIdx--;
+  if(prevIdx<0) return null;
+  const prev = AN_SALES[year][prevIdx];
+  let curVal, prevVal;
+  if(field==='conversion'){
+    if(cur.visitors==null || prev.visitors==null) return null;
+    curVal = cur.receipts/cur.visitors*100; prevVal = prev.receipts/prev.visitors*100;
+  } else {
+    curVal = cur[field]; prevVal = prev[field];
+  }
+  if(curVal==null || prevVal==null || prevVal===0) return null;
+  return (curVal-prevVal)/prevVal*100;
+}
+
+function anRenderMonthDetail(year, mi){
+  const bodyEl = document.getElementById('anMonthDetailBody_'+year+'_'+mi);
+  if(!bodyEl || bodyEl.dataset.rendered==='1') return;
+  bodyEl.dataset.rendered = '1';
+  const m = AN_SALES[year][mi];
+  const conv = m.visitors!=null ? m.receipts/m.visitors*100 : null;
+  const fields = [
+    ['revenue','Выручка',' ₽',0], ['receipts','Чеков','',0], ['avgCheck','Ср. чек',' ₽',0],
+    ['avgDepth','Глубина чека','',2], ['visitors','Посетители','',0], ['conversion','Конверсия','%',1]
+  ];
+  const valuesByField = { revenue:m.revenue, receipts:m.receipts, avgCheck:m.avgCheck, avgDepth:m.avgDepth, visitors:m.visitors, conversion:conv };
+  const kpiHtml = fields.map(([key,label,suffix,dec])=>{
+    const val = valuesByField[key];
+    const delta = anMomDelta(year, mi, key);
+    const deltaHtml = delta==null ? '<span class="an-mom flat">нет пред. месяца</span>' : `<span class="an-mom ${delta>=0?'up':'down'}">${delta>=0?'+':''}${delta.toFixed(1)}% к пред. мес.</span>`;
+    const valText = val==null ? '—' : (dec>0 ? val.toFixed(dec) : fmt(Math.round(val))) + suffix;
+    return `<div class="an-md-tile"><div class="an-md-label">${label}</div><div class="an-md-value">${valText}</div>${deltaHtml}</div>`;
+  }).join('');
+
+  const daily = anDailyForMonth(year, mi);
+  let chartHtml, tableHtml = '';
+  if(daily && daily.length){
+    const labels = daily.map(d=> String(d[0]));
+    chartHtml = `<div class="line-chart-wrap" id="anMonthChart_${year}_${mi}"></div>`;
+    const rows = daily.map(d=>{
+      const day=d[0], rc=d[1], rev=d[2], ac=d[3], ad=d[4], vis=d[5], cv=d[6];
+      return `<tr><td>${String(day).padStart(2,'0')}.${String(mi+1).padStart(2,'0')}</td><td class="num">${fmt(rc)}</td><td class="num">${fmt(rev)} ₽</td><td class="num">${fmt(Math.round(ac))} ₽</td><td class="num">${ad.toFixed(2)}</td><td class="num">${fmt(vis)}</td><td class="num">${cv.toFixed(1)}%</td></tr>`;
+    }).join('');
+    tableHtml = `<div class="an-daily-table-wrap"><table class="avg-table an-month-table"><thead><tr><th>Дата</th><th class="num">Чеков</th><th class="num">Выручка</th><th class="num">Ср. чек</th><th class="num">Глубина</th><th class="num">Посетители</th><th class="num">Конверсия</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  } else {
+    chartHtml = `<div class="an-leads-empty" style="padding:20px 12px;">Ежедневная детализация для этого месяца пока не загружена.</div>`;
+  }
+
+  bodyEl.innerHTML = `<div class="an-month-detail"><div class="an-md-kpis">${kpiHtml}</div>${chartHtml}${tableHtml}</div>`;
+  if(daily && daily.length){
+    renderLineChart('anMonthChart_'+year+'_'+mi, [{ label:'Выручка по дням', color:'var(--amber)', values: daily.map(d=> d[2]) }],
+      { labels: daily.map(d=>String(d[0])), labelsShort: daily.map(d=>String(d[0])), suffix:' ₽', height:140 });
+    if(typeof growLineCharts === 'function') growLineCharts();
+  }
+}
+
+window.anToggleMonthDetail = function(year, mi){
+  const row = document.getElementById('anMonthDetail_'+year+'_'+mi);
+  const header = document.getElementById('anMonthHeader_'+year+'_'+mi);
+  if(!row) return;
+  const willOpen = row.style.display === 'none' || !row.style.display;
+  row.style.display = willOpen ? 'table-row' : 'none';
+  if(header) header.classList.toggle('is-expanded', willOpen);
+  if(willOpen) anRenderMonthDetail(year, mi);
+};
+
 function anRenderMonthTable(year){
   const el = document.getElementById('anMonthTable'+year);
   if(!el) return;
@@ -3250,14 +3490,17 @@ function anRenderMonthTable(year){
     const badge = i===s.bestIdx ? ' <span class="month-badge best">пик</span>' : (i===s.worstIdx ? ' <span class="month-badge worst">мин</span>' : '');
     const conv = m.visitors!=null ? (m.receipts/m.visitors*100).toFixed(1)+'%' : '—';
     const visitorsText = m.visitors!=null ? fmt(m.visitors) : '—';
-    rows += `<tr class="${cls}">
-      <td>${AN_MONTHS[i]}${badge}</td>
+    rows += `<tr class="an-month-row ${cls}" id="anMonthHeader_${year}_${i}" onclick="anToggleMonthDetail('${year}',${i})">
+      <td>${AN_MONTHS[i]}${badge}<span class="an-expand-hint">▾</span></td>
       <td class="num">${fmt(m.revenue)} ₽</td>
       <td class="num">${fmt(m.receipts)}</td>
       <td class="num">${fmt(Math.round(m.avgCheck))} ₽</td>
       <td class="num">${m.avgDepth.toFixed(2)}</td>
       <td class="num">${visitorsText}</td>
       <td class="num">${conv}</td>
+    </tr>
+    <tr class="an-month-detail-row" id="anMonthDetail_${year}_${i}" style="display:none;">
+      <td colspan="7"><div id="anMonthDetailBody_${year}_${i}"></div></td>
     </tr>`;
   }
   el.innerHTML = rows;
@@ -3267,7 +3510,6 @@ function anRenderYear(year){
   anRenderKpi(year);
   anRenderInsight(year);
   renderLineChart('anLine'+year, [{ label:'Выручка', color:'var(--amber)', values: AN_SALES[year].map(m=> m ? m.revenue : null) }], { suffix:' ₽' });
-  anRenderLeads(year);
   renderSalesBarChart('anBars'+year, AN_SALES[year].map(m=> m ? m.receipts : null));
   anRenderDonut(year);
   anRenderMonthTable(year);
@@ -3285,42 +3527,51 @@ function anRenderCompare(){
       : 'Нет ни одного месяца, загруженного одновременно за оба года.';
   }
 
+  const dCls = v => v>1 ? 'up' : (v<-1 ? 'down' : 'flat');
+  const dTxt = v => v==null ? '—' : `<span class="delta ${dCls(v)}">${v>=0?'+':''}${v.toFixed(1)}%</span>`;
+  const pct = (b,a) => (a==null||b==null||a===0) ? null : (b-a)/a*100;
+
   const tableEl = document.getElementById('anCompareTable');
   if(tableEl){
-    let rows = `<tr><th>Месяц</th><th>Выручка 2025</th><th>Выручка 2026</th><th>Δ выручка</th><th>Чеков 2025</th><th>Чеков 2026</th><th>Δ чеков</th><th>Ср. чек 2025</th><th>Ср. чек 2026</th></tr>`;
-    let sum25rev=0, sum26rev=0, sum25rc=0, sum26rc=0;
+    let rows = `<tr>
+      <th>Месяц</th>
+      <th>Выручка 2025</th><th>Выручка 2026</th><th>Δ</th>
+      <th>Чеков 2025</th><th>Чеков 2026</th><th>Δ</th>
+      <th>Ср. чек 2025</th><th>Ср. чек 2026</th><th>Δ</th>
+      <th>Глубина 2025</th><th>Глубина 2026</th><th>Δ</th>
+      <th>Посет. 2025</th><th>Посет. 2026</th><th>Δ</th>
+      <th>Конв. 2025</th><th>Конв. 2026</th><th>Δ</th>
+    </tr>`;
+    let sum25rev=0, sum26rev=0, sum25rc=0, sum26rc=0, sum25vis=0, sum26vis=0, vis25ok=true, vis26ok=true;
     commonIdx.forEach(i=>{
       const a = AN_SALES['2025'][i], b = AN_SALES['2026'][i];
+      const acA = a.revenue/a.receipts, acB = b.revenue/b.receipts;
+      const cvA = a.visitors!=null ? a.receipts/a.visitors*100 : null;
+      const cvB = b.visitors!=null ? b.receipts/b.visitors*100 : null;
       sum25rev+=a.revenue; sum26rev+=b.revenue; sum25rc+=a.receipts; sum26rc+=b.receipts;
-      const dRev = (b.revenue-a.revenue)/a.revenue*100;
-      const dRc = (b.receipts-a.receipts)/a.receipts*100;
-      const dCls = v => v>1 ? 'up' : (v<-1 ? 'down' : 'flat');
+      if(a.visitors!=null) sum25vis+=a.visitors; else vis25ok=false;
+      if(b.visitors!=null) sum26vis+=b.visitors; else vis26ok=false;
       rows += `<tr>
         <td>${AN_MONTHS[i]}</td>
-        <td class="num">${fmt(a.revenue)} ₽</td>
-        <td class="num">${fmt(b.revenue)} ₽</td>
-        <td class="delta ${dCls(dRev)}">${dRev>=0?'+':''}${dRev.toFixed(1)}%</td>
-        <td class="num">${fmt(a.receipts)}</td>
-        <td class="num">${fmt(b.receipts)}</td>
-        <td class="delta ${dCls(dRc)}">${dRc>=0?'+':''}${dRc.toFixed(1)}%</td>
-        <td class="num">${fmt(Math.round(a.revenue/a.receipts))} ₽</td>
-        <td class="num">${fmt(Math.round(b.revenue/b.receipts))} ₽</td>
+        <td class="num">${fmt(a.revenue)} ₽</td><td class="num">${fmt(b.revenue)} ₽</td><td class="num">${dTxt(pct(b.revenue,a.revenue))}</td>
+        <td class="num">${fmt(a.receipts)}</td><td class="num">${fmt(b.receipts)}</td><td class="num">${dTxt(pct(b.receipts,a.receipts))}</td>
+        <td class="num">${fmt(Math.round(acA))} ₽</td><td class="num">${fmt(Math.round(acB))} ₽</td><td class="num">${dTxt(pct(acB,acA))}</td>
+        <td class="num">${a.avgDepth.toFixed(2)}</td><td class="num">${b.avgDepth.toFixed(2)}</td><td class="num">${dTxt(pct(b.avgDepth,a.avgDepth))}</td>
+        <td class="num">${a.visitors!=null?fmt(a.visitors):'—'}</td><td class="num">${b.visitors!=null?fmt(b.visitors):'—'}</td><td class="num">${dTxt(pct(b.visitors,a.visitors))}</td>
+        <td class="num">${cvA!=null?cvA.toFixed(1)+'%':'—'}</td><td class="num">${cvB!=null?cvB.toFixed(1)+'%':'—'}</td><td class="num">${dTxt(pct(cvB,cvA))}</td>
       </tr>`;
     });
     if(commonIdx.length){
-      const dRevTot = (sum26rev-sum25rev)/sum25rev*100;
-      const dRcTot = (sum26rc-sum25rc)/sum25rc*100;
-      const dCls = v => v>1 ? 'up' : (v<-1 ? 'down' : 'flat');
+      const acA = sum25rev/sum25rc, acB = sum26rev/sum26rc;
+      const cvA = vis25ok ? sum25rc/sum25vis*100 : null, cvB = vis26ok ? sum26rc/sum26vis*100 : null;
       rows += `<tr style="font-weight:600;">
         <td>Итого по общим месяцам</td>
-        <td class="num">${fmt(sum25rev)} ₽</td>
-        <td class="num">${fmt(sum26rev)} ₽</td>
-        <td class="delta ${dCls(dRevTot)}">${dRevTot>=0?'+':''}${dRevTot.toFixed(1)}%</td>
-        <td class="num">${fmt(sum25rc)}</td>
-        <td class="num">${fmt(sum26rc)}</td>
-        <td class="delta ${dCls(dRcTot)}">${dRcTot>=0?'+':''}${dRcTot.toFixed(1)}%</td>
-        <td class="num">${fmt(Math.round(sum25rev/sum25rc))} ₽</td>
-        <td class="num">${fmt(Math.round(sum26rev/sum26rc))} ₽</td>
+        <td class="num">${fmt(sum25rev)} ₽</td><td class="num">${fmt(sum26rev)} ₽</td><td class="num">${dTxt(pct(sum26rev,sum25rev))}</td>
+        <td class="num">${fmt(sum25rc)}</td><td class="num">${fmt(sum26rc)}</td><td class="num">${dTxt(pct(sum26rc,sum25rc))}</td>
+        <td class="num">${fmt(Math.round(acA))} ₽</td><td class="num">${fmt(Math.round(acB))} ₽</td><td class="num">${dTxt(pct(acB,acA))}</td>
+        <td class="num">—</td><td class="num">—</td><td class="num">—</td>
+        <td class="num">${vis25ok?fmt(sum25vis):'—'}</td><td class="num">${vis26ok?fmt(sum26vis):'—'}</td><td class="num">${dTxt(pct(vis26ok?sum26vis:null, vis25ok?sum25vis:null))}</td>
+        <td class="num">${cvA!=null?cvA.toFixed(1)+'%':'—'}</td><td class="num">${cvB!=null?cvB.toFixed(1)+'%':'—'}</td><td class="num">${dTxt(pct(cvB,cvA))}</td>
       </tr>`;
     }
     tableEl.innerHTML = rows;
@@ -3329,6 +3580,11 @@ function anRenderCompare(){
   renderLineChart('anCompareLine', [
     { label:'2025', color:'#9AA4B2', values: AN_SALES['2025'].map(m=> m ? m.revenue : null) },
     { label:'2026', color:'var(--amber)', values: AN_SALES['2026'].map(m=> m ? m.revenue : null) }
+  ], { suffix:' ₽' });
+
+  renderLineChart('anCompareLineCheck', [
+    { label:'2025', color:'#9AA4B2', values: AN_SALES['2025'].map(m=> m ? Math.round(m.revenue/m.receipts) : null) },
+    { label:'2026', color:'var(--blue)', values: AN_SALES['2026'].map(m=> m ? Math.round(m.revenue/m.receipts) : null) }
   ], { suffix:' ₽' });
 
   const concEl = document.getElementById('anCompareConclusions');
@@ -3343,7 +3599,7 @@ function anRenderCompare(){
     concEl.innerHTML = `
       <div class="card-title">Выводы по сравнению периодов</div>
       ${growthBlock}
-      <div class="callout"><b>Важно:</b> поля «Средний чек» и «Средняя глубина чека» в выгрузках 2025 и 2026 годов посчитаны по разным методикам источника (масштаб отличается в десятки раз) и напрямую не сопоставимы. В таблице выше и во всех расчётах сравнения используется единая производная величина — выручка ÷ количество чеков ККМ, которая корректно сопоставима между годами. Рекомендуем уточнить у источника данных (1С/ККМ-отчёт), почему методика расчёта среднего чека отличается между годами.</div>
+      <div class="callout"><b>Про сопоставимость:</b> 2025 год пересчитан из полной ежедневной выгрузки, средний чек и глубина чека теперь на одной методике с 2026 годом (ранее показатели за 2025 год были рассчитаны неверно и не совпадали по масштабу — это исправлено). Для 2026 года пока нет данных о посетителях в исходном файле, поэтому конверсия за 2026 не считается — колонки «Конв. 2026»/Δ останутся пустыми, пока не появится выгрузка с посетителями.</div>
     `;
   }
 }
@@ -3352,6 +3608,7 @@ function renderAnalyticsPage(){
   anRenderYear('2025');
   anRenderYear('2026');
   anRenderCompare();
+  renderLeadsSection();
 }
 
 window.switchAnalyticsYear = function(year){
