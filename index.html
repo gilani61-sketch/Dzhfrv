@@ -682,6 +682,27 @@
   .an-lead-count{ font-family:'JetBrains Mono'; font-size:18px; color:var(--ink); }
   .an-lead-pct{ font-size:11px; color:var(--ink-mute); margin-top:2px; }
 
+  .an-insight-list{ list-style:none; margin:12px 0 0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .an-insight-list li{
+    position:relative; padding-left:20px; font-size:13.5px; color:var(--ink-dim); line-height:1.5;
+  }
+  .an-insight-list li::before{ content:'→'; position:absolute; left:0; color:var(--amber); font-weight:700; }
+  .an-insight-list b{ color:var(--ink); }
+
+  .an-rank-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:12px; }
+  @media (max-width:820px){ .an-rank-grid{ grid-template-columns:1fr; } }
+  .an-rank-col .an-channel-row{ margin-bottom:6px; }
+
+  /* -- funnel (Avito engagement funnel, generic enough for other sources later) -- */
+  .an-funnel{ display:flex; flex-direction:column; gap:14px; margin-top:12px; }
+  .an-funnel-stage{ display:grid; grid-template-columns:150px 1fr 90px 140px; align-items:center; gap:12px; }
+  @media (max-width:760px){ .an-funnel-stage{ grid-template-columns:110px 1fr 70px; } .an-funnel-sub{ display:none; } }
+  .an-funnel-label{ font-size:12.5px; color:var(--ink-dim); }
+  .an-funnel-track{ height:10px; border-radius:6px; background:rgba(255,255,255,0.05); overflow:hidden; }
+  .an-funnel-bar{ height:100%; border-radius:6px; transition:width 1s cubic-bezier(.2,.8,.2,1); }
+  .an-funnel-value{ font-family:'JetBrains Mono'; font-size:13px; color:var(--ink); text-align:right; }
+  .an-funnel-sub{ font-size:11px; color:var(--ink-mute); }
+
   /* -- compare tab -- */
   .an-compare-table{ width:100%; border-collapse:collapse; }
   .an-compare-table th{
@@ -1920,9 +1941,37 @@
     <div class="an-year-pane" id="analytics-leads">
       <div class="card reveal">
         <div class="card-title">Заявки по источникам</div>
-        <div class="card-desc">Instagram, Авито, WhatsApp, Telegram, звонки — данные загружаются отдельной выгрузкой из Bitrix. Пока выгрузки нет, разделы ниже пустые и заполнятся автоматически, как только она появится.</div>
+        <div class="card-desc">Instagram, Telegram, WhatsApp, Авито, звонки, сайт, Яндекс Карты, 2ГИС — статистика подгружается по мере поступления выгрузок из Bitrix24 и рекламных площадок. Новый источник добавляется в код одной строкой и сразу попадает во все расчёты ниже.</div>
       </div>
       <div class="kpi-grid cols-6" id="anLeadsKpi" style="margin-top:16px;"></div>
+      <div class="card reveal" style="margin-top:16px;" id="anLeadsInsights"></div>
+      <div class="card reveal" style="margin-top:16px;">
+        <div class="card-title">Рейтинги каналов</div>
+        <div class="an-rank-grid" id="anLeadsRankings"></div>
+      </div>
+      <div class="an-charts-grid" style="margin-top:16px;">
+        <div class="card reveal">
+          <div class="card-title">Распределение заявок по источникам</div>
+          <div class="card-desc">Круговая диаграмма по сумме за 2025 и 2026.</div>
+          <div class="donut-wrap">
+            <div class="donut-center">
+              <svg viewBox="0 0 100 100" class="donut-svg" id="anLeadsDonut"></svg>
+              <div class="donut-center-label" id="anLeadsDonutCenter"></div>
+            </div>
+            <div class="rank-list" id="anLeadsDonutRank"></div>
+          </div>
+        </div>
+        <div class="card reveal">
+          <div class="card-title">Сравнение источников по заявкам</div>
+          <div class="card-desc">Столбчатая диаграмма, отсортировано по убыванию.</div>
+          <div class="bars-chart" id="anLeadsBar"></div>
+        </div>
+      </div>
+      <div class="card reveal" style="margin-top:16px;">
+        <div class="card-title">Тепловая карта активности</div>
+        <div class="card-desc" id="anLeadsHeatmapNote">По дням недели и часам — нужна выгрузка заявок с точным временем создания (пока в присланных отчётах есть только месячные итоги).</div>
+        <div class="an-leads-empty" style="padding:28px 12px;">Появится автоматически, как только в данных будут метки времени по каждой заявке.</div>
+      </div>
       <div class="card reveal" style="margin-top:16px;">
         <div class="card-title">Источники</div>
         <div class="card-desc">Нажмите на карточку, чтобы открыть подробную аналитику по источнику.</div>
@@ -3056,17 +3105,46 @@ const AN_DAILY_2025 = {
   11: [[1,570,818606,1436.15,2.71,1031,55.29], [2,595,858133,1442.24,2.79,1172,50.77], [3,576,805634,1398.67,2.85,1120,51.43], [4,628,1115133,1775.69,2.95,1147,54.75], [5,623,924426,1483.83,2.69,1144,54.46], [6,646,1052825,1629.76,2.86,1192,54.19], [7,642,854207,1330.54,2.74,1152,55.73], [8,533,707653,1327.68,2.68,1064,50.09], [9,595,949816,1596.33,2.93,1077,55.25], [10,632,888143,1405.29,2.74,1132,55.83], [11,610,945244,1549.58,2.9,1044,58.43], [12,609,681033,1118.28,2.63,1164,52.32], [13,725,936352,1291.52,2.49,1270,57.09], [14,895,1639524,1831.87,2.54,1558,57.45], [15,659,1335806,2027.02,2.74,1335,49.36], [16,690,937248,1358.33,2.75,1343,51.38], [17,684,1125385,1645.3,2.51,1348,50.74], [18,626,875060,1397.86,2.71,1258,49.76], [19,598,734661,1228.53,2.75,1336,44.76], [20,689,954320,1385.08,2.92,1463,47.1], [21,695,690913,994.12,2.58,1398,49.71], [22,658,878219,1334.68,2.85,1300,50.62], [23,632,724512,1146.38,2.72,1181,53.51], [24,613,804005,1311.59,2.71,1259,48.69], [25,632,842134,1332.49,2.39,1312,48.17], [26,545,858043,1574.39,2.61,1329,41.01], [27,653,1031844,1580.16,2.78,1396,46.78], [28,680,1008814,1483.55,2.61,1404,48.43], [29,607,781063,1286.76,2.58,1286,47.2], [30,636,1091147,1715.64,2.68,1526,41.68], [31,639,967452,1514.01,2.52,1351,47.3]],
 };
 
+// Список источников заявок. Чтобы добавить новый канал позже — достаточно дописать
+// сюда одну строку с ключом/цветом, весь расчётный слой ниже подхватит его сам.
 const AN_LEADS_CHANNELS = [
-  { key:'instagram', label:'Instagram', color:'#E1306C' },
-  { key:'avito',     label:'Авито',     color:'#00A046' },
-  { key:'whatsapp',  label:'WhatsApp',  color:'#25D366' },
-  { key:'telegram',  label:'Telegram',  color:'#2AABEE' },
-  { key:'calls',     label:'Звонки',    color:'#4DA8FF' }
+  { key:'instagram',  label:'Instagram',     color:'#E1306C' },
+  { key:'telegram',   label:'Telegram',      color:'#2AABEE' },
+  { key:'whatsapp',   label:'WhatsApp',      color:'#25D366' },
+  { key:'avito',      label:'Авито',         color:'#00A046' },
+  { key:'calls',      label:'Звонки',        color:'#4DA8FF' },
+  { key:'website',    label:'Сайт',          color:'#FFB020' },
+  { key:'yandexmaps', label:'Яндекс Карты',  color:'#FF4433' },
+  { key:'dubgis',     label:'2ГИС',          color:'#00C1D4' }
 ];
-// Заполнится, когда появится выгрузка заявок из Bitrix — пока данных нет.
-// Ожидаемый формат после загрузки: AN_LEADS['2025'] = 12 элементов (янв…дек), каждый —
-// null (месяц не выгружен) или { instagram, avito, whatsapp, telegram, calls }.
-const AN_LEADS = { '2025': null, '2026': null };
+
+// AN_LEADS[year] — 12 элементов (янв…дек). Каждый — null (месяц не выгружен) или
+// объект { <channelKey>: { leads, sales } | undefined }. leads = число заявок за месяц,
+// sales = число успешных продаж (null/undefined, пока источник не даёт эти данные).
+// Заполнится по каналам Instagram/Telegram/WhatsApp/Звонки/Сайт/Яндекс Карты/2ГИС —
+// как появится выгрузка из Bitrix24. Авито уже частично заполнено ниже вручную из
+// присланных отчётов (там нет данных о продажах, только заявки = контакты).
+const AN_LEADS = {
+  '2025': (() => {
+    const m = Array(12).fill(null);
+    m[4] = { avito:{ leads:134, sales:null } }; // май
+    m[5] = { avito:{ leads:110, sales:null } }; // июнь
+    return m;
+  })(),
+  '2026': null
+};
+
+// Расширенная статистика рекламного кабинета Авито — есть только там, где загружен
+// подробный отчёт с площадки (просмотры/контакты/бюджет), а не просто число заявок.
+// budget = тариф + оплата за просмотры. Для мая эти два числа в присланном отчёте
+// частично совпадали (похоже на опечатку) — бюджет посчитан как их сумма и это
+// отмечено в интерфейсе; для июня сумма сошлась с указанным бюджетом ровно.
+const AN_AVITO_EXT = {
+  '2025': {
+    4: { views:4967, viewCost:3.8, contacts:134, calls:41, messages:93, favorites:333, tariff:3000, viewsPayment:17710, budget:20710, avgContactCost:140, budgetApprox:true },
+    5: { views:3845, viewCost:4,   contacts:110, calls:31, messages:79, favorites:274, tariff:3000, viewsPayment:13199, budget:16199, avgContactCost:147, budgetApprox:false }
+  }
+};
 
 function anYearStats(year){
   const months = AN_SALES[year];
@@ -3130,88 +3208,299 @@ function anRenderInsight(year){
   el.innerHTML = chips.join('');
 }
 
-// ---------- Заявки: отдельный раздел (не входит в KPI продаж), готов к автоматическому
-// пересчёту, как только AN_LEADS['2025']/['2026'] заполнятся выгрузкой из Bitrix ----------
+// ---------- Заявки: отдельный BI-раздел (не входит в KPI продаж), готов к автоматическому
+// пересчёту, как только AN_LEADS['2025']/['2026'] заполнятся выгрузкой из Bitrix24/Авито ----------
+let anLeadsSelectedChannel = null;
+
 function anLeadsYearTotals(year){
   const months = AN_LEADS[year];
   if(!months) return null;
-  const totals = {}; AN_LEADS_CHANNELS.forEach(c=> totals[c.key]=0);
+  const totals = {}; AN_LEADS_CHANNELS.forEach(c=> totals[c.key] = { leads:0, sales:0, hasSales:false });
   let any = false;
-  months.forEach(m=>{ if(!m) return; any = true; AN_LEADS_CHANNELS.forEach(c=> totals[c.key] += (m[c.key]||0)); });
+  months.forEach(m=>{
+    if(!m) return;
+    AN_LEADS_CHANNELS.forEach(c=>{
+      const d = m[c.key];
+      if(!d) return;
+      any = true;
+      totals[c.key].leads += (d.leads||0);
+      if(d.sales!=null){ totals[c.key].sales += d.sales; totals[c.key].hasSales = true; }
+    });
+  });
   if(!any) return null;
-  const grand = AN_LEADS_CHANNELS.reduce((s,c)=> s+totals[c.key], 0);
+  const grand = AN_LEADS_CHANNELS.reduce((s,c)=> s+totals[c.key].leads, 0);
   return { totals, grand };
 }
 
-function anLeadsChannelMonthly(year, key){
+function anLeadsCombinedTotals(){
+  const t25 = anLeadsYearTotals('2025'), t26 = anLeadsYearTotals('2026');
+  if(!t25 && !t26) return null;
+  const totals = {};
+  AN_LEADS_CHANNELS.forEach(c=>{
+    const a = t25?t25.totals[c.key]:{leads:0,sales:0,hasSales:false};
+    const b = t26?t26.totals[c.key]:{leads:0,sales:0,hasSales:false};
+    totals[c.key] = { leads:a.leads+b.leads, sales:a.sales+b.sales, hasSales:a.hasSales||b.hasSales };
+  });
+  const grand = AN_LEADS_CHANNELS.reduce((s,c)=> s+totals[c.key].leads, 0);
+  return { totals, grand, t25, t26 };
+}
+
+function anLeadsChannelMonthlySeries(year, key, field){
   const months = AN_LEADS[year];
   if(!months) return null;
-  return months.map(m=> m ? (m[key]||0) : null);
+  return months.map(m=> (m && m[key]) ? (m[key][field] ?? null) : null);
 }
 
 function anRenderLeadsKpi(){
   const el = document.getElementById('anLeadsKpi');
   if(!el) return;
-  const t25 = anLeadsYearTotals('2025'), t26 = anLeadsYearTotals('2026');
-  const hasAny = !!(t25 || t26);
-  const grand = (t25?t25.grand:0) + (t26?t26.grand:0);
+  const combo = anLeadsCombinedTotals();
+  const hasAny = !!combo;
+  const grand = combo ? combo.grand : 0;
   let topChannel = '—', topShare = '';
+  let bestConvChannel = '—', bestConvVal = '';
   if(hasAny){
-    const combined = {};
-    AN_LEADS_CHANNELS.forEach(c=> combined[c.key] = (t25?t25.totals[c.key]:0)+(t26?t26.totals[c.key]:0));
-    const top = AN_LEADS_CHANNELS.slice().sort((a,b)=> combined[b.key]-combined[a.key])[0];
-    if(combined[top.key]>0){ topChannel = top.label; topShare = grand>0 ? (combined[top.key]/grand*100).toFixed(1)+'% всех заявок' : ''; }
+    const ranked = AN_LEADS_CHANNELS.slice().sort((a,b)=> combo.totals[b.key].leads - combo.totals[a.key].leads);
+    if(ranked[0] && combo.totals[ranked[0].key].leads>0){
+      topChannel = ranked[0].label;
+      topShare = grand>0 ? (combo.totals[ranked[0].key].leads/grand*100).toFixed(1)+'% всех заявок' : '';
+    }
+    const withConv = AN_LEADS_CHANNELS.filter(c=> combo.totals[c.key].hasSales && combo.totals[c.key].leads>0)
+      .map(c=> ({ c, conv: combo.totals[c.key].sales/combo.totals[c.key].leads*100 }))
+      .sort((a,b)=> b.conv-a.conv);
+    if(withConv.length){ bestConvChannel = withConv[0].c.label; bestConvVal = withConv[0].conv.toFixed(1)+'% в продажу'; }
   }
-  const dYoY = t25 && t26 && t25.grand>0 ? ((t26.grand-t25.grand)/t25.grand*100) : null;
   el.innerHTML = [
-    anKpiTile('var(--amber)', 'Всего заявок', hasAny?grand:0, 0, '', hasAny?'2025 + 2026':'нет данных — ждём Bitrix'),
-    anKpiTile('var(--blue)', 'Заявок за 2025', t25?t25.grand:0, 0, '', t25?'':'нет данных'),
-    anKpiTile('var(--green)', 'Заявок за 2026', t26?t26.grand:0, 0, '', t26?'':'нет данных'),
-    `<div class="kpi reveal" style="--kpi-accent:var(--amber)"><div class="kpi-label">Лучший источник</div><div class="kpi-value" style="font-family:'Rubik'; font-size:19px;">${topChannel}</div><div class="kpi-sub">${topShare||'—'}</div></div>`,
-    `<div class="kpi reveal" style="--kpi-accent:var(--blue)"><div class="kpi-label">Динамика 2026 к 2025</div><div class="kpi-value" style="font-family:'Rubik'; font-size:19px; color:${dYoY==null?'var(--ink)':(dYoY>=0?'var(--green)':'var(--red)')}">${dYoY==null?'—':(dYoY>=0?'+':'')+dYoY.toFixed(1)+'%'}</div><div class="kpi-sub">${dYoY==null?'нужны оба года':'по сумме заявок'}</div></div>`,
-    anKpiTile('var(--green)', 'Источников отслеживается', AN_LEADS_CHANNELS.length, 0, '', 'Instagram, Авито, WhatsApp, Telegram, звонки')
+    anKpiTile('var(--amber)', 'Всего заявок', hasAny?grand:0, 0, '', hasAny?'2025 + 2026, все источники':'нет данных — ждём Bitrix/Авито'),
+    anKpiTile('var(--blue)', 'Заявок за 2025', combo&&combo.t25?combo.t25.grand:0, 0, '', combo&&combo.t25?'':'нет данных'),
+    anKpiTile('var(--green)', 'Заявок за 2026', combo&&combo.t26?combo.t26.grand:0, 0, '', combo&&combo.t26?'':'нет данных'),
+    `<div class="kpi reveal" style="--kpi-accent:var(--amber)"><div class="kpi-label">Лучший источник</div><div class="kpi-value" style="font-family:'Rubik'; font-size:18px;">${topChannel}</div><div class="kpi-sub">${topShare||'—'}</div></div>`,
+    `<div class="kpi reveal" style="--kpi-accent:var(--green)"><div class="kpi-label">Лучшая конверсия в продажу</div><div class="kpi-value" style="font-family:'Rubik'; font-size:18px;">${bestConvChannel}</div><div class="kpi-sub">${bestConvVal||'нет данных о продажах'}</div></div>`,
+    anKpiTile('var(--blue)', 'Источников отслеживается', AN_LEADS_CHANNELS.length, 0, '', AN_LEADS_CHANNELS.map(c=>c.label).join(', '))
   ].join('');
+}
+
+function anRenderLeadsInsights(){
+  const el = document.getElementById('anLeadsInsights');
+  if(!el) return;
+  const combo = anLeadsCombinedTotals();
+  const bullets = [];
+  if(combo && combo.grand>0){
+    const byLeads = AN_LEADS_CHANNELS.slice().sort((a,b)=> combo.totals[b.key].leads - combo.totals[a.key].leads).filter(c=> combo.totals[c.key].leads>0);
+    if(byLeads.length) bullets.push(`Больше всего заявок приносит <b>${byLeads[0].label}</b> (${fmt(combo.totals[byLeads[0].key].leads)} из ${fmt(combo.grand)}).`);
+    const withConv = AN_LEADS_CHANNELS.filter(c=> combo.totals[c.key].hasSales && combo.totals[c.key].leads>0)
+      .map(c=> ({ c, conv: combo.totals[c.key].sales/combo.totals[c.key].leads*100, sales: combo.totals[c.key].sales }))
+      .sort((a,b)=> b.conv-a.conv);
+    if(withConv.length){
+      bullets.push(`Лучшая конверсия в продажу — у <b>${withConv[0].c.label}</b> (${withConv[0].conv.toFixed(1)}%).`);
+      const bySales = withConv.slice().sort((a,b)=> b.sales-a.sales);
+      bullets.push(`Больше всего продаж закрывает <b>${bySales[0].c.label}</b> (${fmt(bySales[0].sales)}).`);
+    } else {
+      bullets.push('Данных о продажах по источникам пока нет — как только Bitrix24 начнёт передавать статус сделки, здесь появится конверсия и рейтинг по продажам.');
+    }
+  } else {
+    bullets.push('Пока загружена только часть статистики по Авито (май–июнь 2025) — сравнение источников, лучшие/худшие каналы и рекомендации по масштабированию появятся, как только подключится Bitrix24 и другие площадки.');
+  }
+  const avitoJun = AN_AVITO_EXT['2025'] && AN_AVITO_EXT['2025'][5];
+  const avitoMay = AN_AVITO_EXT['2025'] && AN_AVITO_EXT['2025'][4];
+  if(avitoJun && avitoMay){
+    const dContacts = (avitoJun.contacts-avitoMay.contacts)/avitoMay.contacts*100;
+    const dConv = (avitoJun.contacts/avitoJun.views) - (avitoMay.contacts/avitoMay.views);
+    bullets.push(`Авито: контактов в июне ${dContacts>=0?'больше':'меньше'} на <b>${dContacts>=0?'+':''}${dContacts.toFixed(1)}%</b> относительно мая (${avitoMay.contacts} → ${avitoJun.contacts}), при этом конверсия просмотр→контакт ${dConv>=0?'выросла':'снизилась'} на ${Math.abs(dConv*100).toFixed(1)} п.п.`);
+    bullets.push(`Стоимость контакта на Авито: ${avitoMay.avgContactCost} ₽ в мае → ${avitoJun.avgContactCost} ₽ в июне. Продаж и стоимости продажи по Авито пока нет — нужна выгрузка сделок из Bitrix24, связанная с источником «Авито».`);
+  }
+  el.innerHTML = `<div class="card-title">Инсайты</div><ul class="an-insight-list">${bullets.map(b=>`<li>${b}</li>`).join('')}</ul>`;
+}
+
+function anRenderLeadsRankings(){
+  const el = document.getElementById('anLeadsRankings');
+  if(!el) return;
+  const combo = anLeadsCombinedTotals();
+  const withLeads = combo ? AN_LEADS_CHANNELS.filter(c=> combo.totals[c.key].leads>0) : [];
+  const byLeads = withLeads.slice().sort((a,b)=> combo.totals[b.key].leads - combo.totals[a.key].leads);
+  const byConv = combo ? AN_LEADS_CHANNELS.filter(c=> combo.totals[c.key].hasSales && combo.totals[c.key].leads>0)
+    .sort((a,b)=> (combo.totals[b.key].sales/combo.totals[b.key].leads) - (combo.totals[a.key].sales/combo.totals[a.key].leads)) : [];
+  const bySales = combo ? AN_LEADS_CHANNELS.filter(c=> combo.totals[c.key].hasSales && combo.totals[c.key].sales>0)
+    .sort((a,b)=> combo.totals[b.key].sales - combo.totals[a.key].sales) : [];
+
+  const list = (items, render, emptyText) => items.length
+    ? items.map((c,i)=> `<div class="an-channel-row"><span><span style="color:var(--ink-mute); font-family:'JetBrains Mono'; font-size:11px; margin-right:8px;">${String(i+1).padStart(2,'0')}</span><i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${c.color};margin-right:8px;"></i>${c.label}</span><span class="amt">${render(c)}</span></div>`).join('')
+    : `<div class="an-leads-empty" style="padding:20px 12px;">${emptyText}</div>`;
+
+  el.innerHTML = `
+    <div class="an-rank-col">
+      <div class="card-title" style="font-size:14px;">По заявкам</div>
+      ${list(byLeads, c=> fmt(combo.totals[c.key].leads), 'нет данных')}
+    </div>
+    <div class="an-rank-col">
+      <div class="card-title" style="font-size:14px;">По конверсии в продажу</div>
+      ${list(byConv, c=> (combo.totals[c.key].sales/combo.totals[c.key].leads*100).toFixed(1)+'%', 'нет данных о продажах')}
+    </div>
+    <div class="an-rank-col">
+      <div class="card-title" style="font-size:14px;">По продажам</div>
+      ${list(bySales, c=> fmt(combo.totals[c.key].sales), 'нет данных о продажах')}
+    </div>
+  `;
+}
+
+function anRenderLeadsDonut(){
+  const svg = document.getElementById('anLeadsDonut');
+  const centerEl = document.getElementById('anLeadsDonutCenter');
+  const rankEl = document.getElementById('anLeadsDonutRank');
+  if(!svg || !rankEl) return;
+  svg.innerHTML = ''; rankEl.innerHTML = '';
+  const combo = anLeadsCombinedTotals();
+  const withLeads = combo ? AN_LEADS_CHANNELS.filter(c=> combo.totals[c.key].leads>0) : [];
+  if(!combo || !withLeads.length){
+    if(centerEl) centerEl.innerHTML = `<div class="n mono">—</div><div class="t">нет данных</div>`;
+    return;
+  }
+  const sorted = withLeads.slice().sort((a,b)=> combo.totals[b.key].leads - combo.totals[a.key].leads);
+  const labels = sorted.map(c=>c.label), values = sorted.map(c=> combo.totals[c.key].leads), colors = sorted.map(c=>c.color);
+  const circles = [];
+  renderDonut('anLeadsDonut', labels, values, colors, combo.grand, circles, i=> setDonutHover(circles, 'anLeadsDonutRank', i));
+  if(centerEl) centerEl.innerHTML = `<div class="n mono">${fmt(combo.grand)}</div><div class="t">заявок<br>всего</div>`;
+  sorted.forEach((c,idx)=>{
+    const v = values[idx]; const pct = (v/combo.grand*100).toFixed(1);
+    const row = document.createElement('div');
+    row.className = 'rank-row';
+    row.innerHTML = `<span class="idx">${String(idx+1).padStart(2,'0')}</span><span class="name"><span class="swatch" style="background:${c.color}"></span>${c.label}</span><span class="pct">${pct}%</span><span class="amt">${fmt(v)}</span>`;
+    row.addEventListener('mouseenter', ()=> setDonutHover(circles,'anLeadsDonutRank', idx));
+    row.addEventListener('mouseleave', ()=> setDonutHover(circles,'anLeadsDonutRank', -1));
+    rankEl.appendChild(row);
+  });
+}
+
+function anRenderLeadsBar(){
+  const el = document.getElementById('anLeadsBar');
+  if(!el) return;
+  el.innerHTML = '';
+  const wrap = el.parentElement;
+  const oldLabels = wrap.querySelector('.bar-labels'); if(oldLabels) oldLabels.remove();
+  const combo = anLeadsCombinedTotals();
+  const withLeads = combo ? AN_LEADS_CHANNELS.filter(c=> combo.totals[c.key].leads>0) : [];
+  if(!combo || !withLeads.length){
+    el.innerHTML = `<div class="an-leads-empty" style="padding:24px 12px;">Пока сравнивать нечего — заполнен только один источник (или ни одного).</div>`;
+    return;
+  }
+  const sorted = withLeads.slice().sort((a,b)=> combo.totals[b.key].leads - combo.totals[a.key].leads);
+  const max = combo.totals[sorted[0].key].leads;
+  sorted.forEach(c=>{
+    const val = combo.totals[c.key].leads;
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    const heightPct = Math.max((val/max*100), 2).toFixed(2);
+    col.title = c.label + ': ' + fmt(val);
+    col.innerHTML = `<span class="bar-value">${fmt(val)}</span><div class="bar-fill" data-target-height="${heightPct}" style="height:0%; background:${c.color};"></div>`;
+    el.appendChild(col);
+  });
+  const labels = document.createElement('div');
+  labels.className = 'bar-labels';
+  labels.innerHTML = sorted.map(c=>`<span>${c.label}</span>`).join('');
+  el.parentElement.insertBefore(labels, el.nextSibling);
+  if(typeof growBars === 'function') growBars();
 }
 
 function anRenderLeadsChannels(){
   const el = document.getElementById('anLeadsChannels');
   if(!el) return;
-  const t25 = anLeadsYearTotals('2025'), t26 = anLeadsYearTotals('2026');
-  const hasAny = !!(t25 || t26);
-  const grand = (t25?t25.grand:0) + (t26?t26.grand:0);
+  const combo = anLeadsCombinedTotals();
   el.innerHTML = AN_LEADS_CHANNELS.map(c=>{
-    const total = (t25?t25.totals[c.key]:0) + (t26?t26.totals[c.key]:0);
-    const pct = hasAny && grand>0 ? (total/grand*100).toFixed(1)+'%' : '—';
+    const t = combo ? combo.totals[c.key] : null;
+    const hasData = !!(t && t.leads>0);
+    const pct = hasData && combo.grand>0 ? (t.leads/combo.grand*100).toFixed(1)+'%' : '—';
     return `<div class="an-lead-card reveal" id="anLeadCard_${c.key}" style="--lead-accent:${c.color}" onclick="anSelectLeadsChannel('${c.key}')">
-      <div class="an-lead-icon" style="background:${c.color}22; color:${c.color};">${c.label.slice(0,2)}</div>
+      <div class="an-lead-icon" style="background:${c.color}22; color:${c.color};">${c.label.slice(0,2).toUpperCase()}</div>
       <div class="an-lead-name">${c.label}</div>
-      <div class="an-lead-count">${hasAny?fmt(total):'—'}</div>
+      <div class="an-lead-count">${hasData?fmt(t.leads):'—'}</div>
       <div class="an-lead-pct">${pct}</div>
     </div>`;
   }).join('');
 }
 
+function anRenderFunnel(elId, stages){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  const max = Math.max(...stages.map(s=>s.value||0), 1);
+  el.innerHTML = stages.map((s,i)=>{
+    const pct = Math.max((s.value||0)/max*100, s.value>0?3:0).toFixed(1);
+    const convFromPrev = (i>0 && stages[i-1].value>0 && s.value!=null) ? (s.value/stages[i-1].value*100).toFixed(1)+'% от пред. этапа' : '';
+    return `<div class="an-funnel-stage">
+      <div class="an-funnel-label">${s.label}</div>
+      <div class="an-funnel-track"><div class="an-funnel-bar" data-target-width="${pct}" style="width:0%; background:${s.color||'var(--amber)'};"></div></div>
+      <div class="an-funnel-value">${s.value==null?'нет данных':fmt(s.value)}</div>
+      <div class="an-funnel-sub">${s.sub || convFromPrev}</div>
+    </div>`;
+  }).join('');
+  requestAnimationFrame(()=> requestAnimationFrame(()=>{
+    el.querySelectorAll('.an-funnel-bar').forEach(b=>{ b.style.width = (b.dataset.targetWidth||0)+'%'; });
+  }));
+}
+
 window.anSelectLeadsChannel = function(key){
+  anLeadsSelectedChannel = key;
   document.querySelectorAll('.an-lead-card').forEach(c=> c.classList.toggle('active', c.id==='anLeadCard_'+key));
   const el = document.getElementById('anLeadsChannelDetail');
   if(!el) return;
   const channel = AN_LEADS_CHANNELS.find(c=> c.key===key);
-  const monthly25 = anLeadsChannelMonthly('2025', key);
-  const monthly26 = anLeadsChannelMonthly('2026', key);
-  if(!monthly25 && !monthly26){
+
+  if(key==='avito' && AN_AVITO_EXT['2025']){
+    const months = AN_AVITO_EXT['2025'];
+    const idxs = Object.keys(months).map(Number).sort((a,b)=>a-b);
+    const lastIdx = idxs[idxs.length-1], prevIdx = idxs.length>1 ? idxs[idxs.length-2] : null;
+    const last = months[lastIdx], prev = prevIdx!=null ? months[prevIdx] : null;
+    const delta = (cur, before) => (before && before>0) ? ((cur-before)/before*100) : null;
+    const dTxt = v => v==null ? '<span class="an-mom flat">нет пред. месяца</span>' : `<span class="an-mom ${v>=0?'up':'down'}">${v>=0?'+':''}${v.toFixed(1)}% к пред. мес.</span>`;
+    const conv = last.contacts/last.views*100;
+    el.innerHTML = `
+      <div class="card-title">Авито — расширенная статистика площадки (${AN_MONTHS[lastIdx]} 2025)</div>
+      <div class="an-md-kpis">
+        <div class="an-md-tile"><div class="an-md-label">Просмотры</div><div class="an-md-value">${fmt(last.views)}</div>${dTxt(delta(last.views, prev&&prev.views))}</div>
+        <div class="an-md-tile"><div class="an-md-label">Контакты (заявки)</div><div class="an-md-value">${fmt(last.contacts)}</div>${dTxt(delta(last.contacts, prev&&prev.contacts))}</div>
+        <div class="an-md-tile"><div class="an-md-label">Конверсия в контакт</div><div class="an-md-value">${conv.toFixed(1)}%</div>${prev?dTxt(delta(conv, prev.contacts/prev.views*100)):'<span class="an-mom flat">—</span>'}</div>
+        <div class="an-md-tile"><div class="an-md-label">В избранном</div><div class="an-md-value">${fmt(last.favorites)}</div>${dTxt(delta(last.favorites, prev&&prev.favorites))}</div>
+        <div class="an-md-tile"><div class="an-md-label">Бюджет за месяц</div><div class="an-md-value">${fmt(last.budget)} ₽${last.budgetApprox?' *':''}</div>${dTxt(delta(last.budget, prev&&prev.budget))}</div>
+        <div class="an-md-tile"><div class="an-md-label">Ср. стоимость контакта</div><div class="an-md-value">${last.avgContactCost} ₽</div>${dTxt(delta(last.avgContactCost, prev&&prev.avgContactCost))}</div>
+      </div>
+      <div class="card-title" style="font-size:14px; margin-top:18px;">Воронка обращений (${AN_MONTHS[lastIdx]})</div>
+      <div class="an-funnel" id="anAvitoFunnel"></div>
+      <div class="card-desc" style="margin-top:10px;">Из ${fmt(last.contacts)} контактов: ${last.calls} звонков и ${last.messages} сообщений. Данных о продажах и стоимости продажи по Авито пока нет — нужна выгрузка сделок из Bitrix24 с привязкой к источнику «Авито».</div>
+      ${idxs.length>1 ? `<div class="cc-table-wrap" style="margin-top:16px;"><table class="avg-table an-month-table"><thead><tr>
+        <th>Месяц</th><th class="num">Просмотры</th><th class="num">Контакты</th><th class="num">Конв.</th><th class="num">Избранное</th><th class="num">Бюджет</th><th class="num">Ст-ть контакта</th>
+      </tr></thead><tbody>${idxs.map(i=>{
+        const d = months[i];
+        return `<tr><td>${AN_MONTHS[i]}</td><td class="num">${fmt(d.views)}</td><td class="num">${fmt(d.contacts)}</td><td class="num">${(d.contacts/d.views*100).toFixed(1)}%</td><td class="num">${fmt(d.favorites)}</td><td class="num">${fmt(d.budget)} ₽${d.budgetApprox?' *':''}</td><td class="num">${d.avgContactCost} ₽</td></tr>`;
+      }).join('')}</tbody></table></div>` : ''}
+      ${months[idxs.find(i=>months[i].budgetApprox)] ? `<div class="callout">* Бюджет за этот месяц в присланном отчёте указан с нестыковкой (итоговая сумма и «оплата за просмотры» совпадали в тексте) — показана сумма тарифа и оплаты за просмотры, уточните точную цифру у площадки при возможности.</div>` : ''}
+    `;
+    anRenderFunnel('anAvitoFunnel', [
+      { label:'Просмотры объявления', value:last.views, color:'#9AA4B2' },
+      { label:'Контакты', value:last.contacts, color:'var(--amber)' },
+      { label:'из них звонки', value:last.calls, color:'var(--blue)', sub: (last.calls/last.contacts*100).toFixed(1)+'% от контактов' },
+      { label:'из них сообщения', value:last.messages, color:'var(--green)', sub: (last.messages/last.contacts*100).toFixed(1)+'% от контактов' },
+      { label:'Продажи', value:null, color:'var(--red)', sub:'ждём данные из Bitrix24' }
+    ]);
+    return;
+  }
+
+  const monthly25leads = anLeadsChannelMonthlySeries('2025', key, 'leads');
+  const monthly26leads = anLeadsChannelMonthlySeries('2026', key, 'leads');
+  const has25 = monthly25leads && monthly25leads.some(v=>v!=null);
+  const has26 = monthly26leads && monthly26leads.some(v=>v!=null);
+  if(!has25 && !has26){
     el.innerHTML = `<div class="an-leads-empty" style="padding:32px 20px;">
       <div class="n">—</div>
-      <div>Нет данных по каналу «${channel.label}». Как только появится выгрузка из Bitrix с разбивкой по источникам — здесь будет динамика по месяцам, доля, лучший и худший месяц и сравнение 2025/2026.</div>
+      <div>Нет данных по каналу «${channel.label}». Как только появится выгрузка из Bitrix24 с разбивкой по источникам — здесь будет динамика по месяцам, доля, конверсия в продажу, лучший и худший месяц и сравнение 2025/2026.</div>
     </div>`;
     return;
   }
   const summarize = arr=>{
     if(!arr) return null;
-    let total=0, best=null, worst=null;
-    arr.forEach((v,i)=>{ if(v==null) return; total+=v; if(best===null||v>arr[best]) best=i; if(worst===null||v<arr[worst]) worst=i; });
-    return { total, best, worst };
+    let total=0, best=null, worst=null, any=false;
+    arr.forEach((v,i)=>{ if(v==null) return; any=true; total+=v; if(best===null||v>arr[best]) best=i; if(worst===null||v<arr[worst]) worst=i; });
+    return any ? { total, best, worst } : null;
   };
-  const s25 = summarize(monthly25), s26 = summarize(monthly26);
+  const s25 = summarize(monthly25leads), s26 = summarize(monthly26leads);
   el.innerHTML = `
     <div class="card-title">${channel.label} — детально</div>
     <div class="an-md-kpis">
@@ -3223,21 +3512,29 @@ window.anSelectLeadsChannel = function(key){
     <div class="line-chart-wrap" id="anLeadsChannelChart"></div>
   `;
   renderLineChart('anLeadsChannelChart', [
-    { label:'2025', color:'#9AA4B2', values: monthly25 || Array(12).fill(null) },
-    { label:'2026', color: channel.color, values: monthly26 || Array(12).fill(null) }
+    { label:'2025', color:'#9AA4B2', values: monthly25leads || Array(12).fill(null) },
+    { label:'2026', color: channel.color, values: monthly26leads || Array(12).fill(null) }
   ], {});
   if(typeof growLineCharts === 'function') growLineCharts();
 };
 
 function renderLeadsSection(){
   anRenderLeadsKpi();
+  anRenderLeadsInsights();
+  anRenderLeadsRankings();
+  anRenderLeadsDonut();
+  anRenderLeadsBar();
   anRenderLeadsChannels();
-  const el = document.getElementById('anLeadsChannelDetail');
-  if(el){
-    el.innerHTML = `<div class="an-leads-empty" style="padding:32px 20px;">
-      <div class="n">—</div>
-      <div>Выберите источник выше, чтобы увидеть подробную аналитику. Пока не загружена выгрузка из Bitrix — карточки и графики заполнятся автоматически, как только появятся данные.</div>
-    </div>`;
+  if(anLeadsSelectedChannel){
+    anSelectLeadsChannel(anLeadsSelectedChannel);
+  } else {
+    const el = document.getElementById('anLeadsChannelDetail');
+    if(el){
+      el.innerHTML = `<div class="an-leads-empty" style="padding:32px 20px;">
+        <div class="n">—</div>
+        <div>Выберите источник выше, чтобы увидеть подробную аналитику. Пока не загружена полная выгрузка из Bitrix24 — карточки и графики заполнятся автоматически, как только появятся данные.</div>
+      </div>`;
+    }
   }
 }
 
