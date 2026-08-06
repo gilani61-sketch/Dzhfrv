@@ -1839,7 +1839,6 @@
       <button class="page-tab-btn an-year-tab-btn" data-ayear="2026" onclick="switchAnalyticsYear('2026')">2026</button>
       <button class="page-tab-btn an-year-tab-btn" data-ayear="compare" onclick="switchAnalyticsYear('compare')">Сравнение</button>
       <button class="page-tab-btn an-year-tab-btn" data-ayear="leads" onclick="switchAnalyticsYear('leads')">Заявки</button>
-      <button class="page-tab-btn an-year-tab-btn" data-ayear="2gis" onclick="switchAnalyticsYear('2gis')">2ГИС</button>
     </div>
 
     <div class="an-year-pane active" id="analytics-2025">
@@ -1979,66 +1978,6 @@
         <div class="an-lead-cards" id="anLeadsChannels"></div>
       </div>
       <div class="card reveal" style="margin-top:16px;" id="anLeadsChannelDetail"></div>
-    </div>
-
-    <div class="an-year-pane" id="analytics-2gis">
-      <div class="card reveal">
-        <div class="card-title">Аналитика 2ГИС</div>
-        <div class="card-desc">Полная статистика размещения карточки «Обер Мастер» в 2ГИС — весь загруженный период, органика и контекстная реклама вместе (как в отчёте площадки). Пересчитывается автоматически при добавлении новых месяцев.</div>
-      </div>
-      <div class="kpi-grid cols-6" id="anGisKpi1" style="margin-top:16px;"></div>
-      <div class="kpi-grid cols-6" id="anGisKpi2" style="margin-top:12px;"></div>
-      <div class="an-insight-row" id="anGisInsightChips"></div>
-      <div class="an-charts-grid" style="margin-top:16px;">
-        <div class="card reveal">
-          <div class="card-title">Динамика показов</div>
-          <div class="card-desc">По месяцам, весь загруженный период.</div>
-          <div class="line-chart-wrap" id="anGisLineImp"></div>
-        </div>
-        <div class="card reveal">
-          <div class="card-title">Динамика заявок</div>
-          <div class="card-desc">Звонки и клики в мессенджер по месяцам.</div>
-          <div class="line-chart-wrap" id="anGisLineLeads"></div>
-        </div>
-      </div>
-      <div class="card reveal" style="margin-top:16px;">
-        <div class="card-title">Заявки по месяцам</div>
-        <div class="card-desc">Столбчатая диаграмма, оранжевый — пиковый месяц.</div>
-        <div class="bars-chart" id="anGisBars"></div>
-      </div>
-      <div class="card reveal" style="margin-top:16px;">
-        <div class="card-title">Структура взаимодействий</div>
-        <div class="card-desc">Доли типов действий пользователей за весь период.</div>
-        <div class="donut-wrap">
-          <div class="donut-center">
-            <svg viewBox="0 0 100 100" class="donut-svg" id="anGisDonut"></svg>
-            <div class="donut-center-label" id="anGisDonutCenter"></div>
-          </div>
-          <div class="rank-list" id="anGisDonutRank"></div>
-        </div>
-      </div>
-      <div class="card reveal" style="margin-top:16px;">
-        <div class="card-title">2025 vs 2026 — по общим месяцам</div>
-        <div class="card-desc" id="anGisCompareNote"></div>
-        <div class="cc-table-wrap"><table class="an-compare-table" id="anGisCompareTable"></table></div>
-      </div>
-      <div class="card reveal" style="margin-top:16px;">
-        <div class="card-title">Тепловая карта активности</div>
-        <div class="card-desc">По дням недели и часам — нужна выгрузка с точным временем каждого обращения (в отчёте 2ГИС есть только месячные итоги).</div>
-        <div class="an-leads-empty" style="padding:28px 12px;">Появится автоматически, как только 2ГИС даст данные с разбивкой по дням/часам.</div>
-      </div>
-      <div class="card reveal" style="margin-top:16px;">
-        <div class="card-title">Помесячная таблица</div>
-        <div class="card-desc">Зелёным — лучший месяц по заявкам, красным — худший.</div>
-        <div class="cc-table-wrap"><table class="avg-table an-month-table">
-          <thead><tr>
-            <th>Месяц</th><th class="num">Показы</th><th class="num">Клики</th><th class="num">CTR</th><th class="num">На сайт</th>
-            <th class="num">Звонки</th><th class="num">Мессенджер</th><th class="num">Заявки</th><th class="num">Действие</th><th class="num">Маршрут</th>
-          </tr></thead>
-          <tbody id="anGisMonthTable"></tbody>
-        </table></div>
-      </div>
-      <div class="card reveal" style="margin-top:16px;" id="anGisInsights"></div>
     </div>
   </div>
 </section>
@@ -3647,42 +3586,12 @@ window.anSelectLeadsChannel = function(key){
     const contextShare = d => d.context ? (d.context.impressions/d.impressions*100) : null;
     const l = last.d, p = prev && prev.d;
 
-    let bestF = flat[0], worstF = flat[0];
-    flat.forEach(f=>{ if(leads(f.d)>leads(bestF.d)) bestF=f; if(leads(f.d)<leads(worstF.d)) worstF=f; });
-
-    // Общие месяцы за 2025 и 2026 — прямое год-к-году сравнение по 2ГИС.
-    const commonMonths = [];
-    if(AN_2GIS_EXT['2025'] && AN_2GIS_EXT['2026']){
-      Object.keys(AN_2GIS_EXT['2025']).map(Number).forEach(i=>{ if(AN_2GIS_EXT['2026'][i]!=null) commonMonths.push(i); });
-      commonMonths.sort((a,b)=>a-b);
-    }
-    let yoyBlock = '', yoyCallout = '';
-    if(commonMonths.length){
-      let sum25=0, sum26=0, imp25=0, imp26=0;
-      const rows = commonMonths.map(i=>{
-        const a = AN_2GIS_EXT['2025'][i], b = AN_2GIS_EXT['2026'][i];
-        const la = leads(a), lb = leads(b);
-        sum25+=la; sum26+=lb; imp25+=a.impressions; imp26+=b.impressions;
-        const d = (lb-la)/la*100;
-        const dCls = d>1?'up':(d<-1?'down':'flat');
-        return `<tr><td>${AN_MONTHS[i]}</td><td class="num">${fmt(a.impressions)}</td><td class="num">${fmt(b.impressions)}</td><td class="num">${fmt(la)}</td><td class="num">${fmt(lb)}</td><td class="num"><span class="delta ${dCls}">${d>=0?'+':''}${d.toFixed(1)}%</span></td></tr>`;
-      }).join('');
-      const totalD = (sum26-sum25)/sum25*100;
-      const impD = (imp26-imp25)/imp25*100;
-      const totalCls = totalD>1?'up':(totalD<-1?'down':'flat');
-      yoyBlock = `
-        <div class="card-title" style="font-size:14px; margin-top:18px;">2025 vs 2026 — 2ГИС, по общим месяцам (${AN_MONTHS[commonMonths[0]]}–${AN_MONTHS[commonMonths[commonMonths.length-1]]})</div>
-        <div class="cc-table-wrap"><table class="an-compare-table"><thead><tr>
-          <th>Месяц</th><th>Показы 2025</th><th>Показы 2026</th><th>Заявки 2025</th><th>Заявки 2026</th><th>Δ заявки</th>
-        </tr></thead><tbody>${rows}<tr class="an-total-row" style="font-weight:600;"><td>Итого</td><td class="num">${fmt(imp25)}</td><td class="num">${fmt(imp26)}</td><td class="num">${fmt(sum25)}</td><td class="num">${fmt(sum26)}</td><td class="num"><span class="delta ${totalCls}">${totalD>=0?'+':''}${totalD.toFixed(1)}%</span></td></tr></tbody></table></div>
-      `;
-      yoyCallout = `<div class="callout"><b>Важно:</b> по ${commonMonths.length} общим месяцам заявки с 2ГИС в 2026 году ${totalD>=0?'выросли':'просели'} на <b style="color:${totalD>=0?'var(--green)':'var(--red)'}">${totalD>=0?'+':''}${totalD.toFixed(1)}%</b> год к году (${fmt(sum25)} → ${fmt(sum26)}), при этом показы за тот же период изменились на ${impD>=0?'+':''}${impD.toFixed(1)}% (${fmt(imp25)} → ${fmt(imp26)}). ${totalD<-1 ? 'То есть карточка показывается примерно так же (или чаще), а до звонка/сообщения доходит заметно меньше людей — стоит проверить содержимое карточки (фото, цены, часы работы, ответы на отзывы) и/или качество обработки контекстной рекламы 2ГИС.' : ''}</div>`;
-    }
-
+    // Полноценный BI-раздел по 2ГИС прямо внутри подкатегории «Заявки → 2ГИС» —
+    // те же карточки/графики/таблицы, что и общая аналитика заявок, специализированные под площадку.
     el.innerHTML = `
-      <div class="card-title">2ГИС — расширенная статистика площадки (${AN_MONTHS[last.mi]} ${last.year})</div>
-      <div class="card-desc">Цифры включают органическую выдачу и контекстную рекламу вместе — как в отчёте площадки; доля контекстной рекламы показана отдельно. Данные: ${AN_MONTHS[flat[0].mi]} ${flat[0].year} – ${AN_MONTHS[last.mi]} ${last.year} (${flat.length} мес.).</div>
-      <div class="an-md-kpis">
+      <div class="card-title">2ГИС — полная аналитика площадки (${AN_MONTHS[last.mi]} ${last.year})</div>
+      <div class="card-desc">Показы, клики и обращения включают органику и контекстную рекламу вместе — как в отчёте площадки. Данные: ${AN_MONTHS[flat[0].mi]} ${flat[0].year} – ${AN_MONTHS[last.mi]} ${last.year} (${flat.length} мес.), пересчитывается автоматически при добавлении новых месяцев.</div>
+      <div class="an-md-kpis" style="margin-top:14px;">
         <div class="an-md-tile"><div class="an-md-label">Показы</div><div class="an-md-value">${fmt(l.impressions)}</div>${dTxt(delta(l.impressions, p&&p.impressions))}</div>
         <div class="an-md-tile"><div class="an-md-label">Клики (CTR)</div><div class="an-md-value">${fmt(l.clicks)} · ${ctr(l).toFixed(1)}%</div>${dTxt(delta(l.clicks, p&&p.clicks))}</div>
         <div class="an-md-tile"><div class="an-md-label">Звонки</div><div class="an-md-value">${fmt(l.calls)}</div>${dTxt(delta(l.calls, p&&p.calls))}</div>
@@ -3690,25 +3599,50 @@ window.anSelectLeadsChannel = function(key){
         <div class="an-md-tile"><div class="an-md-label">Заявки (звонки+мессенджер)</div><div class="an-md-value">${fmt(leads(l))}</div>${dTxt(delta(leads(l), p&&leads(p)))}</div>
         <div class="an-md-tile"><div class="an-md-label">Доля контекстной рекламы</div><div class="an-md-value">${contextShare(l)!=null?contextShare(l).toFixed(1)+'%':'—'}</div><span class="an-mom flat">от показов</span></div>
       </div>
-      <div class="an-insight-row">
-        <div class="an-insight-chip up">Пиковый месяц: <b>${AN_MONTHS[bestF.mi]} ${bestF.year} · ${fmt(leads(bestF.d))} заявок</b></div>
-        <div class="an-insight-chip down">Минимальный месяц: <b>${AN_MONTHS[worstF.mi]} ${worstF.year} · ${fmt(leads(worstF.d))} заявок</b></div>
-      </div>
+      <div class="an-insight-row" id="anGisInsightChips" style="margin-top:14px;"></div>
+
       <div class="card-title" style="font-size:14px; margin-top:18px;">Воронка обращений (${AN_MONTHS[last.mi]} ${last.year})</div>
       <div class="an-funnel" id="an2gisFunnel"></div>
       <div class="card-desc" style="margin-top:10px;">Из ${fmt(leads(l))} заявок: ${l.calls} звонков и ${l.messengerClicks} кликов в мессенджер. Также было ${l.actionButton} нажатий «кнопка-действие» и ${l.routeBuilds} построений маршрута — не считаются заявкой напрямую, но показывают интерес. Продаж и стоимости обращения по 2ГИС пока нет — нужна выгрузка сделок из Bitrix24 с привязкой к источнику «2ГИС».</div>
-      ${yoyBlock}
-      ${yoyCallout}
+
+      <div class="an-charts-grid" style="margin-top:18px;">
+        <div>
+          <div class="card-title" style="font-size:14px;">Динамика показов</div>
+          <div class="line-chart-wrap" id="anGisLineImp"></div>
+        </div>
+        <div>
+          <div class="card-title" style="font-size:14px;">Динамика заявок</div>
+          <div class="line-chart-wrap" id="anGisLineLeads"></div>
+        </div>
+      </div>
+
+      <div class="card-title" style="font-size:14px; margin-top:18px;">Заявки по месяцам</div>
+      <div class="bars-chart" id="anGisBars"></div>
+
+      <div class="card-title" style="font-size:14px; margin-top:18px;">Структура взаимодействий за весь период</div>
+      <div class="donut-wrap">
+        <div class="donut-center">
+          <svg viewBox="0 0 100 100" class="donut-svg" id="anGisDonut"></svg>
+          <div class="donut-center-label" id="anGisDonutCenter"></div>
+        </div>
+        <div class="rank-list" id="anGisDonutRank"></div>
+      </div>
+
+      <div class="card-title" style="font-size:14px; margin-top:18px;">2025 vs 2026 — по общим месяцам</div>
+      <div class="card-desc" id="anGisCompareNote"></div>
+      <div class="cc-table-wrap"><table class="an-compare-table" id="anGisCompareTable"></table></div>
+
+      <div class="card-title" style="font-size:14px; margin-top:18px;">Тепловая карта активности</div>
+      <div class="card-desc">По дням недели и часам — нужна выгрузка с точным временем каждого обращения (в отчёте 2ГИС есть только месячные итоги).</div>
+      <div class="an-leads-empty" style="padding:24px 12px;">Появится автоматически, как только 2ГИС даст данные с разбивкой по дням/часам.</div>
+
       <div class="card-title" style="font-size:14px; margin-top:18px;">Помесячная таблица (${flat.length} мес.)</div>
       <div class="cc-table-wrap"><table class="avg-table an-month-table"><thead><tr>
-        <th>Месяц</th><th class="num">Показы</th><th class="num">Клики</th><th class="num">CTR</th><th class="num">Звонки</th><th class="num">Мессенджер</th><th class="num">Заявки</th>
-      </tr></thead><tbody>${flat.map(f=>{
-        const d = f.d;
-        const isBest = f===bestF, isWorst = f===worstF;
-        const cls = isBest ? 'is-best-month' : (isWorst ? 'is-worst-month' : '');
-        const badge = isBest ? ' <span class="month-badge best">пик</span>' : (isWorst ? ' <span class="month-badge worst">мин</span>' : '');
-        return `<tr class="${cls}"><td>${AN_MONTHS[f.mi]} ${f.year}${badge}</td><td class="num">${fmt(d.impressions)}</td><td class="num">${fmt(d.clicks)}</td><td class="num">${ctr(d).toFixed(1)}%</td><td class="num">${fmt(d.calls)}</td><td class="num">${fmt(d.messengerClicks)}</td><td class="num">${fmt(leads(d))}</td></tr>`;
-      }).join('')}</tbody></table></div>
+        <th>Месяц</th><th class="num">Показы</th><th class="num">Клики</th><th class="num">CTR</th><th class="num">На сайт</th>
+        <th class="num">Звонки</th><th class="num">Мессенджер</th><th class="num">Заявки</th><th class="num">Действие</th><th class="num">Маршрут</th>
+      </tr></thead><tbody id="anGisMonthTable"></tbody></table></div>
+
+      <div style="margin-top:18px;" id="anGisInsights"></div>
     `;
     anRenderFunnel('an2gisFunnel', [
       { label:'Показы', value:l.impressions, color:'#9AA4B2' },
@@ -3718,6 +3652,14 @@ window.anSelectLeadsChannel = function(key){
       { label:'из них мессенджер', value:l.messengerClicks, color:'var(--green)', sub:(l.messengerClicks/leads(l)*100).toFixed(1)+'% от заявок' },
       { label:'Продажи', value:null, color:'var(--red)', sub:'ждём данные из Bitrix24' }
     ]);
+    anRenderGisInsightChips();
+    anRenderGisLineCharts();
+    renderGisBarsChart('anGisBars', flat);
+    anRenderGisDonut();
+    anRenderGisCompare();
+    anRenderGisMonthTable();
+    anRenderGisInsights();
+    if(typeof growLineCharts === 'function') growLineCharts();
     return;
   }
 
@@ -3776,37 +3718,8 @@ function renderLeadsSection(){
   }
 }
 
-// ---------- Отдельный BI-раздел «Аналитика 2ГИС»: полная статистика площадки,
-// весь загруженный период, полностью пересчитывается по AN_2GIS_EXT ----------
-function anRenderGisKpi(){
-  const el1 = document.getElementById('anGisKpi1'), el2 = document.getElementById('anGisKpi2');
-  if(!el1 || !el2) return;
-  const flat = an2gisFlat();
-  if(!flat.length){ el1.innerHTML = ''; el2.innerHTML = ''; return; }
-  const n = flat.length;
-  const sum = key => flat.reduce((s,f)=> s+(f.d[key]||0), 0);
-  const impressions = sum('impressions'), clicks = sum('clicks'), calls = sum('calls'), messenger = sum('messengerClicks');
-  const leadsTotal = calls + messenger;
-  const ctrAvg = clicks/impressions*100;
-  const period = `${AN_MONTHS[flat[0].mi]} ${flat[0].year} – ${AN_MONTHS[flat[n-1].mi]} ${flat[n-1].year}`;
-  el1.innerHTML = [
-    anKpiTile('var(--amber)', 'Показы', impressions, 0, '', `за ${n} мес. (${period})`),
-    anKpiTile('var(--blue)', 'Клики', clicks, 0, '', `средний CTR ${ctrAvg.toFixed(1)}%`),
-    anKpiTile('var(--green)', 'Заявки (звонки+мессенджер)', leadsTotal, 0, '', `в среднем ${fmt(Math.round(leadsTotal/n))}/мес.`),
-    anKpiTile('var(--amber)', 'Переходы на сайт', sum('siteClicks'), 0, '', 'за весь период'),
-    anKpiTile('var(--blue)', 'Построение маршрута', sum('routeBuilds'), 0, '', 'за весь период'),
-    anKpiTile('var(--green)', 'Открытия фотогалереи', sum('photoGallery'), 0, '', 'за весь период')
-  ].join('');
-  el2.innerHTML = [
-    anKpiTile('var(--blue)', 'Звонки', calls, 0, '', `в среднем ${fmt(Math.round(calls/n))}/мес.`),
-    anKpiTile('var(--green)', 'Клики в мессенджер', messenger, 0, '', `в среднем ${fmt(Math.round(messenger/n))}/мес.`),
-    anKpiTile('var(--amber)', 'Клики в адрес', sum('addressClicks'), 0, '', 'за весь период'),
-    anKpiTile('var(--blue)', 'Кнопка-действие', sum('actionButton'), 0, '', 'за весь период'),
-    anKpiTile('var(--green)', 'Прочие активности', sum('otherActivities'), 0, '', 'за весь период'),
-    anKpiTile('var(--amber)', 'Заявок в среднем / мес.', Math.round(leadsTotal/n), 0, '', `по ${n} месяцам`)
-  ].join('');
-}
-
+// ---------- «2ГИС» как подкатегория «Заявок»: рендерится внутри anLeadsChannelDetail,
+// когда выбрана карточка источника «2ГИС» — весь период, пересчитывается по AN_2GIS_EXT ----------
 function anRenderGisInsightChips(){
   const el = document.getElementById('anGisInsightChips');
   if(!el) return;
@@ -3986,17 +3899,6 @@ function anRenderGisInsights(){
     }
   }
   el.innerHTML = `<div class="card-title">Инсайты</div><ul class="an-insight-list">${bullets.map(b=>`<li>${b}</li>`).join('')}</ul>`;
-}
-
-function renderGis2Section(){
-  anRenderGisKpi();
-  anRenderGisInsightChips();
-  anRenderGisLineCharts();
-  renderGisBarsChart('anGisBars', an2gisFlat());
-  anRenderGisDonut();
-  anRenderGisCompare();
-  anRenderGisMonthTable();
-  anRenderGisInsights();
 }
 
 function anRenderSummary(year){
@@ -4373,7 +4275,6 @@ function renderAnalyticsPage(){
   anRenderYear('2026');
   anRenderCompare();
   renderLeadsSection();
-  renderGis2Section();
 }
 
 window.switchAnalyticsYear = function(year){
