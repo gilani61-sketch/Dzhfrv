@@ -609,6 +609,13 @@
   .goal-progress-track i{ display:block; height:100%; border-radius:4px; background:linear-gradient(90deg, var(--blue), #8fc7ff); }
   .goal-progress-label{ flex-shrink:0; font-size:10.5px; color:var(--ink-mute); white-space:nowrap; }
 
+  .forecast-line{ display:flex; align-items:baseline; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .forecast-value{ font-family:'JetBrains Mono'; font-weight:700; font-size:15px; }
+  .forecast-value.up{ color:var(--green); }
+  .forecast-value.down{ color:var(--red); }
+  .forecast-value.flat{ color:var(--ink-mute); }
+  .forecast-note{ font-size:11.5px; color:var(--ink-mute); }
+
   /* ===== ANALYTICS DASHBOARD (sales) ===== */
   .an-year-pane{ display:none; }
   .an-year-pane.active{ display:block; }
@@ -1727,6 +1734,128 @@
                   <div class="proposal-title">Эффективность каналов</div>
                   <p>Постоянно увеличивать эффективность маркетинговых каналов и распределения рекламного бюджета.</p>
                   <div class="goal-progress"><div class="goal-progress-track"><i style="width:0%"></i></div><span class="goal-progress-label">Прогресс появится позже</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-head" style="margin-top:56px;">
+      <div>
+        <div class="sec-eyebrow">На что влияет маркетолог</div>
+        <div class="sec-title">Прогноз показателей до конца 2026 года</div>
+      </div>
+      <div class="sec-note">Год к году — этот же месяц 2025 vs 2026. Зелёный тег — показатель полностью в зоне маркетинга, оранжевый — влияние частичное (делит с закупками/продавцами), синий — показатель производный, считается из остальных.</div>
+    </div>
+
+    <div class="rm-premium" id="influencePremium">
+      <div class="rm-bg-fx" aria-hidden="true">
+        <div class="rm-fx-blob rm-fx-1"></div>
+        <div class="rm-fx-blob rm-fx-2"></div>
+        <div class="rm-fx-blob rm-fx-3"></div>
+      </div>
+      <div class="rm-timeline">
+        <div class="rm-timeline-track">
+          <div class="rm-timeline-fill" id="influenceTimelineFill"></div>
+        </div>
+        <div class="rm-phases" id="influencePhases">
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">🚶</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Посетители <span class="change-tag tag-added">прямое влияние</span></div>
+                  <p>Реклама (2ГИС, Авито, блогеры, Instagram) и качество карточки в 2ГИС/Яндекс Картах.</p>
+                  <div class="forecast-line"><span class="forecast-value up">+2–3%</span><span class="forecast-note">к прошлому году, с поправкой на сезонный спад</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">📩</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Заявки <span class="change-tag tag-added">прямое влияние</span></div>
+                  <p>Бюджет, таргетинг и креативы по каналам — звонки, мессенджер, Instagram, Avito.</p>
+                  <div class="forecast-line"><span class="forecast-value flat">план уточняется</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">💰</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Средний чек <span class="change-tag tag-increased">частичное влияние</span></div>
+                  <p>Промо на дорогие позиции, реклама премиум-товаров у блогеров; цену и ассортимент задают закупки.</p>
+                  <div class="forecast-line"><span class="forecast-value up">+7–8%</span><span class="forecast-note">к прошлому году</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">📦</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Глубина чека <span class="change-tag tag-increased">частичное влияние</span></div>
+                  <p>Реклама товарных связок; реализует это продавец в зале.</p>
+                  <div class="forecast-line"><span class="forecast-value down">−10–15%</span><span class="forecast-note">к прошлому году, но должна удержаться в районе ~3 позиций</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">🎯</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Конверсия <span class="change-tag tag-increased">частичное влияние</span></div>
+                  <p>Целевой трафик от рекламы поднимает конверсию; продажу закрывает персонал и наличие товара.</p>
+                  <div class="forecast-line"><span class="forecast-value up">+15%</span><span class="forecast-note">к прошлому году</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">💵</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Выручка <span class="change-tag tag-consider">производный показатель</span></div>
+                  <p>= чеков × средний чек — растёт как следствие роста посетителей, конверсии и среднего чека.</p>
+                  <div class="forecast-line"><span class="forecast-value up">+20%</span><span class="forecast-note">к прошлому году</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rm-phase">
+            <div class="rm-phase-marker"></div>
+            <div class="rm-phase-card">
+              <div class="change-row">
+                <div class="proposal-icon">🧾</div>
+                <div class="proposal-body">
+                  <div class="proposal-title">Чеков (количество) <span class="change-tag tag-consider">производный показатель</span></div>
+                  <p>= посетители × конверсия.</p>
+                  <div class="forecast-line"><span class="forecast-value up">+12–15%</span><span class="forecast-note">к прошлому году</span></div>
                 </div>
               </div>
             </div>
@@ -3067,6 +3196,7 @@ renderCustomCategories();
 initTimelineSection('changesPhases', 'changesTimelineFill', 'changesFillTrigger');
 initTimelineSection('proposalsPhases', 'proposalsTimelineFill', 'proposalsFillTrigger');
 initTimelineSection('goalsPhases', 'goalsTimelineFill', 'goalsFillTrigger');
+initTimelineSection('influencePhases', 'influenceTimelineFill', 'influenceFillTrigger');
 updateActiveRmPhase();
 
 
