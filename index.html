@@ -1935,6 +1935,23 @@
           <div class="line-chart-wrap" id="anCompareLineCheck"></div>
         </div>
       </div>
+
+      <div class="kpi-grid cols-6" id="anVisKpi" style="margin-top:16px;"></div>
+      <div class="card reveal" style="margin-top:16px;">
+        <div class="card-title">Посетители — 2025 и 2026</div>
+        <div class="card-desc">Обе линии на одном графике, только по месяцам, загруженным в обоих годах.</div>
+        <div class="line-chart-wrap" id="anCompareLineVisitors"></div>
+      </div>
+      <div class="card reveal" style="margin-top:16px;">
+        <div class="card-title">Тепловая карта посетителей по месяцам</div>
+        <div class="card-desc">Ярче — больше посетителей за месяц. Отдельно для 2025 и для 2026, для прямого визуального сравнения.</div>
+        <div class="card-desc mono" style="margin:14px 0 6px; color:var(--ink-mute); font-size:11px; text-transform:uppercase; letter-spacing:0.04em;">2025</div>
+        <div class="heatstrip" id="anVisHeat25"></div>
+        <div class="card-desc mono" style="margin:18px 0 6px; color:var(--ink-mute); font-size:11px; text-transform:uppercase; letter-spacing:0.04em;">2026</div>
+        <div class="heatstrip" id="anVisHeat26"></div>
+      </div>
+      <div class="card reveal" style="margin-top:16px;" id="anVisInsights"></div>
+
       <div class="card reveal" style="margin-top:16px;" id="anCompareConclusions"></div>
     </div>
 
@@ -3077,13 +3094,17 @@ const AN_SALES = {
     { revenue:26787245, receipts:19775, avgCheck:1354.60, avgDepth:2.79, visitors:38457 },
     { revenue:28817356, receipts:19815, avgCheck:1454.32, avgDepth:2.70, visitors:39092 }
   ],
+  // Посетители за 2026 (январь–июнь) — со скриншота переписки, доложены отдельно от
+  // остальной статистики продаж. За июль 2026 цифра пришла тоже (36 748), но привязать
+  // её пока некуда — нет остальной статистики продаж за июль 2026 (выручка/чеки), поэтому
+  // месяц остаётся null целиком, пока не появится полная выгрузка.
   '2026': [
-    { revenue:27173253.10, receipts:17221, avgCheck:1389.14, avgDepth:2.74, visitors:null },
-    { revenue:22793379.54, receipts:15289, avgCheck:1376.18, avgDepth:2.71, visitors:null },
-    { revenue:22222793.88, receipts:17671, avgCheck:1357.00, avgDepth:2.19, visitors:null },
-    { revenue:28457184.54, receipts:18931, avgCheck:1498.88, avgDepth:2.80, visitors:null },
-    { revenue:29861192.69, receipts:20849, avgCheck:1382.99, avgDepth:2.78, visitors:null },
-    { revenue:31686808.82, receipts:20676, avgCheck:1318.53, avgDepth:2.84, visitors:null },
+    { revenue:27173253.10, receipts:17221, avgCheck:1389.14, avgDepth:2.74, visitors:34645 },
+    { revenue:22793379.54, receipts:15289, avgCheck:1376.18, avgDepth:2.71, visitors:31687 },
+    { revenue:22222793.88, receipts:17671, avgCheck:1357.00, avgDepth:2.19, visitors:39260 },
+    { revenue:28457184.54, receipts:18931, avgCheck:1498.88, avgDepth:2.80, visitors:39682 },
+    { revenue:29861192.69, receipts:20849, avgCheck:1382.99, avgDepth:2.78, visitors:37349 },
+    { revenue:31686808.82, receipts:20676, avgCheck:1318.53, avgDepth:2.84, visitors:38760 },
     null, null, null, null, null, null
   ]
 };
@@ -4230,6 +4251,84 @@ function anRenderYear(year){
   anRenderSummary(year);
 }
 
+// Посетители 2025 vs 2026 — отдельный блок внутри «Сравнения»: KPI с акцентом на
+// рост/падение, линейный график, тепловые карты по месяцам за каждый год и инсайты.
+function anRenderVisitorsCompare(){
+  const kpiEl = document.getElementById('anVisKpi');
+  const chartWrap = document.getElementById('anCompareLineVisitors');
+  const heat25 = document.getElementById('anVisHeat25');
+  const heat26 = document.getElementById('anVisHeat26');
+  const insightsEl = document.getElementById('anVisInsights');
+
+  const commonIdx = [];
+  for(let i=0;i<12;i++){
+    if(AN_SALES['2025'][i] && AN_SALES['2026'][i] && AN_SALES['2025'][i].visitors!=null && AN_SALES['2026'][i].visitors!=null) commonIdx.push(i);
+  }
+
+  let sum25=0, sum26=0, bestJump=null, worstDrop=null;
+  commonIdx.forEach(i=>{
+    const a = AN_SALES['2025'][i].visitors, b = AN_SALES['2026'][i].visitors;
+    sum25 += a; sum26 += b;
+    const d = (b-a)/a*100;
+    if(bestJump===null || d>bestJump.d) bestJump = { i, d, a, b };
+    if(worstDrop===null || d<worstDrop.d) worstDrop = { i, d, a, b };
+  });
+  const totalD = commonIdx.length ? (sum26-sum25)/sum25*100 : null;
+
+  if(kpiEl){
+    kpiEl.innerHTML = commonIdx.length ? [
+      anKpiTile('var(--amber)', 'Посетители 2025 (общие мес.)', sum25, 0, '', `${commonIdx.length} ${rmWordForm(commonIdx.length,'месяц','месяца','месяцев')}`),
+      anKpiTile('var(--blue)', 'Посетители 2026 (общие мес.)', sum26, 0, '', `${commonIdx.length} ${rmWordForm(commonIdx.length,'месяц','месяца','месяцев')}`),
+      `<div class="kpi reveal" style="--kpi-accent:${totalD>=0?'var(--green)':'var(--red)'}"><div class="kpi-label">Динамика 2026 к 2025</div><div class="kpi-value" style="font-family:'Rubik'; font-size:19px; color:${totalD>=0?'var(--green)':'var(--red)'}">${totalD>=0?'+':''}${totalD.toFixed(1)}%</div><div class="kpi-sub">по общим месяцам</div></div>`,
+      `<div class="kpi reveal" style="--kpi-accent:var(--green)"><div class="kpi-label">Сильнейший рост</div><div class="kpi-value" style="font-family:'Rubik'; font-size:17px; color:var(--green)">${AN_MONTHS[bestJump.i]} · +${bestJump.d.toFixed(1)}%</div><div class="kpi-sub">2026 к 2025</div></div>`,
+      `<div class="kpi reveal" style="--kpi-accent:var(--red)"><div class="kpi-label">Сильнейшее падение</div><div class="kpi-value" style="font-family:'Rubik'; font-size:17px; color:var(--red)">${AN_MONTHS[worstDrop.i]} · ${worstDrop.d.toFixed(1)}%</div><div class="kpi-sub">2026 к 2025</div></div>`,
+      anKpiTile('var(--amber)', 'Среднее посетителей / мес. 2026', Math.round(sum26/commonIdx.length), 0, '', 'по общим месяцам')
+    ].join('') : '';
+  }
+
+  if(chartWrap){
+    renderLineChart('anCompareLineVisitors', [
+      { label:'2025', color:'#9AA4B2', values: AN_SALES['2025'].map(m=> m && m.visitors!=null ? m.visitors : null) },
+      { label:'2026', color:'var(--green)', values: AN_SALES['2026'].map(m=> m && m.visitors!=null ? m.visitors : null) }
+    ], {});
+    if(typeof growLineCharts === 'function') growLineCharts();
+  }
+
+  if(heat25){
+    heat25.innerHTML = '';
+    const idxs25 = []; AN_SALES['2025'].forEach((m,i)=>{ if(m && m.visitors!=null) idxs25.push(i); });
+    if(idxs25.length){
+      heat25.style.gridTemplateColumns = `repeat(${idxs25.length},1fr)`;
+      renderHeatstrip('anVisHeat25', idxs25.map(i=>AN_MONTHS[i]), idxs25.map(i=>AN_MONTHS_SHORT[i]), idxs25.map(i=>AN_SALES['2025'][i].visitors), ()=>{});
+    }
+  }
+  if(heat26){
+    heat26.innerHTML = '';
+    const idxs26 = []; AN_SALES['2026'].forEach((m,i)=>{ if(m && m.visitors!=null) idxs26.push(i); });
+    if(idxs26.length){
+      heat26.style.gridTemplateColumns = `repeat(${idxs26.length},1fr)`;
+      renderHeatstrip('anVisHeat26', idxs26.map(i=>AN_MONTHS[i]), idxs26.map(i=>AN_MONTHS_SHORT[i]), idxs26.map(i=>AN_SALES['2026'][i].visitors), ()=>{});
+    }
+  }
+
+  if(insightsEl){
+    if(!commonIdx.length){
+      insightsEl.innerHTML = '';
+    } else {
+      const risingMonths = commonIdx.filter(i=> AN_SALES['2026'][i].visitors > AN_SALES['2025'][i].visitors);
+      const fallingMonths = commonIdx.filter(i=> AN_SALES['2026'][i].visitors < AN_SALES['2025'][i].visitors);
+      const bullets = [
+        `По ${commonIdx.length} общим ${rmWordForm(commonIdx.length,'месяцу','месяцам','месяцам')} посетителей в 2026 году ${totalD>=0?'больше':'меньше'} на <b style="color:${totalD>=0?'var(--green)':'var(--red)'}">${totalD>=0?'+':''}${totalD.toFixed(1)}%</b> (${fmt(sum25)} → ${fmt(sum26)}).`,
+        `Сильнее всего трафик вырос в <b>${AN_MONTHS[bestJump.i]}</b> (${fmt(bestJump.a)} → ${fmt(bestJump.b)}, <b style="color:var(--green)">+${bestJump.d.toFixed(1)}%</b>).`,
+        `Сильнее всего просел в <b>${AN_MONTHS[worstDrop.i]}</b> (${fmt(worstDrop.a)} → ${fmt(worstDrop.b)}, <b style="color:var(--red)">${worstDrop.d.toFixed(1)}%</b>).`,
+        `2026 обогнал 2025 по посетителям в ${risingMonths.length} из ${commonIdx.length} ${rmWordForm(commonIdx.length,'месяце','месяцах','месяцах')} (${risingMonths.length?risingMonths.map(i=>AN_MONTHS[i]).join(', ').toLowerCase():'—'}), просел в ${fallingMonths.length} (${fallingMonths.length?fallingMonths.map(i=>AN_MONTHS[i]).join(', ').toLowerCase():'—'}).`,
+        `Цифра за июль 2026 (36 748 посетителей) пока не включена в сравнение — нет остальной статистики продаж за этот месяц (выручка, чеки), не с чем сопоставлять. Добавится автоматически, как только появится полная выгрузка за июль.`
+      ];
+      insightsEl.innerHTML = `<div class="card-title">Инсайты — посетители 2025 vs 2026</div><ul class="an-insight-list">${bullets.map(b=>`<li>${b}</li>`).join('')}</ul>`;
+    }
+  }
+}
+
 function anRenderCompare(){
   const commonIdx = [];
   for(let i=0;i<12;i++){ if(AN_SALES['2025'][i] && AN_SALES['2026'][i]) commonIdx.push(i); }
@@ -4313,9 +4412,10 @@ function anRenderCompare(){
     concEl.innerHTML = `
       <div class="card-title">Выводы по сравнению периодов</div>
       ${growthBlock}
-      <div class="callout"><b>Про сопоставимость:</b> 2025 год пересчитан из полной ежедневной выгрузки, средний чек и глубина чека теперь на одной методике с 2026 годом (ранее показатели за 2025 год были рассчитаны неверно и не совпадали по масштабу — это исправлено). Для 2026 года пока нет данных о посетителях в исходном файле, поэтому конверсия за 2026 не считается — колонки «Конв. 2026»/Δ останутся пустыми, пока не появится выгрузка с посетителями.</div>
+      <div class="callout"><b>Про сопоставимость:</b> 2025 год пересчитан из полной ежедневной выгрузки, средний чек и глубина чека теперь на одной методике с 2026 годом (ранее показатели за 2025 год были рассчитаны неверно и не совпадали по масштабу — это исправлено). Посетители за 2026 (январь–июнь) добавлены отдельно и уже участвуют в колонках «Посет. 2026» и «Конв. 2026» — за июль 2026 данные пришли, но без остальной статистики продаж месяц пока не входит в сравнение.</div>
     `;
   }
+  anRenderVisitorsCompare();
 }
 
 function renderAnalyticsPage(){
