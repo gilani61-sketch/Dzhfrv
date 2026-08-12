@@ -3779,7 +3779,7 @@ window.anSelectLeadsChannel = function(key){
         <div class="rank-list" id="anGisDonutRank"></div>
       </div>
 
-      <div class="card-title" style="font-size:14px; margin-top:18px;">2025 vs 2026 — помесячное сравнение по ключевым показателям</div>
+      <div class="card-title" style="font-size:14px; margin-top:18px;">2025 vs 2026 — сравнение по всем показателям, помесячно</div>
       <div class="card-desc" id="anGisCompareMonthlyNote"></div>
       <div class="cc-table-wrap"><table class="an-compare-table" id="anGisCompareMonthlyTable"></table></div>
 
@@ -3983,30 +3983,62 @@ function anRenderGisCompareMonthly(){
     tableEl.innerHTML = '';
     return;
   }
-  if(noteEl) noteEl.textContent = `Ключевые показатели по месяцам, где есть данные за оба года: ${common.map(i=>AN_MONTHS[i]).join(', ').toLowerCase()}.`;
+  if(noteEl) noteEl.textContent = `Каждая ячейка — разница 2026 к 2025 за тот же месяц (зелёный — рост, красный — падение). Наведите на ячейку, чтобы увидеть точные значения. Месяцы с данными за оба года: ${common.map(i=>AN_MONTHS[i]).join(', ').toLowerCase()}. Заявки (звонки + мессенджер) — ключевой показатель, строка выделена.`;
   const dCls = v => v>1 ? 'up' : (v<-1 ? 'down' : 'flat');
   const kh = 'background:rgba(255,122,69,0.07);'; // подсветка ключевого показателя — заявки
-  let rows = `<tr><th>Месяц</th><th>Показы 2025</th><th>Показы 2026</th><th>Δ</th><th>Клики 2025</th><th>Клики 2026</th><th>Δ</th><th style="${kh}">Заявки 2025 ★</th><th style="${kh}">Заявки 2026 ★</th><th style="${kh}">Δ</th></tr>`;
-  let sImp25=0,sImp26=0,sClk25=0,sClk26=0,sL25=0,sL26=0;
-  common.forEach(i=>{
-    const a = AN_2GIS_EXT['2025'][i], b = AN_2GIS_EXT['2026'][i];
-    const la = an2gisLeads(a), lb = an2gisLeads(b);
-    sImp25+=a.impressions; sImp26+=b.impressions; sClk25+=a.clicks; sClk26+=b.clicks; sL25+=la; sL26+=lb;
-    const dImp=(b.impressions-a.impressions)/a.impressions*100, dClk=(b.clicks-a.clicks)/a.clicks*100, dL=(lb-la)/la*100;
-    rows += `<tr>
-      <td>${AN_MONTHS[i]}</td>
-      <td class="num">${fmt(a.impressions)}</td><td class="num">${fmt(b.impressions)}</td><td class="num"><span class="delta ${dCls(dImp)}">${dImp>=0?'+':''}${dImp.toFixed(1)}%</span></td>
-      <td class="num">${fmt(a.clicks)}</td><td class="num">${fmt(b.clicks)}</td><td class="num"><span class="delta ${dCls(dClk)}">${dClk>=0?'+':''}${dClk.toFixed(1)}%</span></td>
-      <td class="num" style="${kh}">${fmt(la)}</td><td class="num" style="${kh}">${fmt(lb)}</td><td class="num" style="${kh}"><span class="delta ${dCls(dL)}">${dL>=0?'+':''}${dL.toFixed(1)}%</span></td>
-    </tr>`;
+
+  const metrics = [
+    { key:'impressions', label:'Показы' },
+    { key:'clicks', label:'Клики' },
+    { key:'ctr', label:'CTR', isCtr:true },
+    { key:'siteClicks', label:'На сайт' },
+    { key:'calls', label:'Звонки' },
+    { key:'messengerClicks', label:'Мессенджер' },
+    { key:'leads', label:'Заявки', isLeads:true, highlight:true },
+    { key:'actionButton', label:'Действие' },
+    { key:'routeBuilds', label:'Маршрут' },
+    { key:'addressClicks', label:'Адрес' },
+    { key:'photoGallery', label:'Фотогалерея' },
+    { key:'otherActivities', label:'Прочее' }
+  ];
+  const getVal = (m, d) => m.isLeads ? an2gisLeads(d) : (m.isCtr ? an2gisCtr(d) : (d[m.key]||0));
+
+  let rows = `<tr><th>Показатель</th>${common.map(i=>`<th>${AN_MONTHS_SHORT[i]}</th>`).join('')}<th>Итого</th></tr>`;
+  metrics.forEach(m=>{
+    const hs = m.highlight ? kh : '';
+    let cells = '';
+    let sum25=0, sum26=0;
+    common.forEach(i=>{
+      const a = AN_2GIS_EXT['2025'][i], b = AN_2GIS_EXT['2026'][i];
+      const va = getVal(m,a), vb = getVal(m,b);
+      if(!m.isCtr){ sum25+=va; sum26+=vb; }
+      let dTxt, dv;
+      if(m.isCtr){
+        dv = vb - va;
+        dTxt = `${dv>=0?'+':''}${dv.toFixed(1)}п.п.`;
+      } else {
+        dv = va ? (vb-va)/va*100 : (vb ? 100 : 0);
+        dTxt = `${dv>=0?'+':''}${dv.toFixed(0)}%`;
+      }
+      const title = m.isCtr ? `2025: ${va.toFixed(1)}% → 2026: ${vb.toFixed(1)}%` : `2025: ${fmt(va)} → 2026: ${fmt(vb)}`;
+      cells += `<td class="num" style="${hs}" title="${title}"><span class="delta ${dCls(dv)}">${dTxt}</span></td>`;
+    });
+    let totV, totTxt;
+    if(m.isCtr){
+      let impSum25=0, impSum26=0, clkSum25=0, clkSum26=0;
+      common.forEach(i=>{
+        impSum25 += AN_2GIS_EXT['2025'][i].impressions; impSum26 += AN_2GIS_EXT['2026'][i].impressions;
+        clkSum25 += AN_2GIS_EXT['2025'][i].clicks; clkSum26 += AN_2GIS_EXT['2026'][i].clicks;
+      });
+      const ctr25 = clkSum25/impSum25*100, ctr26 = clkSum26/impSum26*100;
+      totV = ctr26 - ctr25;
+      totTxt = `${totV>=0?'+':''}${totV.toFixed(1)}п.п.`;
+    } else {
+      totV = sum25 ? (sum26-sum25)/sum25*100 : (sum26 ? 100 : 0);
+      totTxt = `${totV>=0?'+':''}${totV.toFixed(0)}%`;
+    }
+    rows += `<tr><td>${m.label}${m.highlight?' <span style="color:var(--amber);">★</span>':''}</td>${cells}<td class="num" style="${hs}font-weight:600;"><span class="delta ${dCls(totV)}">${totTxt}</span></td></tr>`;
   });
-  const dImpTot=(sImp26-sImp25)/sImp25*100, dClkTot=(sClk26-sClk25)/sClk25*100, dLTot=(sL26-sL25)/sL25*100;
-  rows += `<tr class="an-total-row" style="font-weight:600;">
-    <td>Итого</td>
-    <td class="num">${fmt(sImp25)}</td><td class="num">${fmt(sImp26)}</td><td class="num"><span class="delta ${dCls(dImpTot)}">${dImpTot>=0?'+':''}${dImpTot.toFixed(1)}%</span></td>
-    <td class="num">${fmt(sClk25)}</td><td class="num">${fmt(sClk26)}</td><td class="num"><span class="delta ${dCls(dClkTot)}">${dClkTot>=0?'+':''}${dClkTot.toFixed(1)}%</span></td>
-    <td class="num" style="${kh}">${fmt(sL25)}</td><td class="num" style="${kh}">${fmt(sL26)}</td><td class="num" style="${kh}"><span class="delta ${dCls(dLTot)}">${dLTot>=0?'+':''}${dLTot.toFixed(1)}%</span></td>
-  </tr>`;
   tableEl.innerHTML = rows;
 }
 
