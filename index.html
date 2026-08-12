@@ -3983,7 +3983,7 @@ function anRenderGisCompareMonthly(){
     tableEl.innerHTML = '';
     return;
   }
-  if(noteEl) noteEl.textContent = `Каждая ячейка — разница 2026 к 2025 за тот же месяц (зелёный — рост, красный — падение). Наведите на ячейку, чтобы увидеть точные значения. Месяцы с данными за оба года: ${common.map(i=>AN_MONTHS[i]).join(', ').toLowerCase()}. Заявки (звонки + мессенджер) — ключевой показатель, строка выделена.`;
+  if(noteEl) noteEl.textContent = `2025, 2026 и разница (Δ) по каждому показателю и каждому месяцу, где есть данные за оба года: ${common.map(i=>AN_MONTHS[i]).join(', ').toLowerCase()}. Заявки (звонки + мессенджер) — ключевой показатель, строка выделена.`;
   const dCls = v => v>1 ? 'up' : (v<-1 ? 'down' : 'flat');
   const kh = 'background:rgba(255,122,69,0.07);'; // подсветка ключевого показателя — заявки
 
@@ -4002,8 +4002,16 @@ function anRenderGisCompareMonthly(){
     { key:'otherActivities', label:'Прочее' }
   ];
   const getVal = (m, d) => m.isLeads ? an2gisLeads(d) : (m.isCtr ? an2gisCtr(d) : (d[m.key]||0));
+  const fv = (m,v) => m.isCtr ? v.toFixed(1)+'%' : fmt(v);
 
-  let rows = `<tr><th>Показатель</th>${common.map(i=>`<th>${AN_MONTHS_SHORT[i]}</th>`).join('')}<th>Итого</th></tr>`;
+  let head1 = `<th rowspan="2">Показатель</th>`;
+  common.forEach(i=>{ head1 += `<th colspan="3">${AN_MONTHS_SHORT[i]}</th>`; });
+  head1 += `<th colspan="3">Итого</th>`;
+  let head2 = '';
+  common.forEach(()=>{ head2 += `<th>2025</th><th>2026</th><th>Δ</th>`; });
+  head2 += `<th>2025</th><th>2026</th><th>Δ</th>`;
+  let rows = `<tr>${head1}</tr><tr>${head2}</tr>`;
+
   metrics.forEach(m=>{
     const hs = m.highlight ? kh : '';
     let cells = '';
@@ -4020,10 +4028,9 @@ function anRenderGisCompareMonthly(){
         dv = va ? (vb-va)/va*100 : (vb ? 100 : 0);
         dTxt = `${dv>=0?'+':''}${dv.toFixed(0)}%`;
       }
-      const title = m.isCtr ? `2025: ${va.toFixed(1)}% → 2026: ${vb.toFixed(1)}%` : `2025: ${fmt(va)} → 2026: ${fmt(vb)}`;
-      cells += `<td class="num" style="${hs}" title="${title}"><span class="delta ${dCls(dv)}">${dTxt}</span></td>`;
+      cells += `<td class="num" style="${hs}">${fv(m,va)}</td><td class="num" style="${hs}">${fv(m,vb)}</td><td class="num" style="${hs}"><span class="delta ${dCls(dv)}">${dTxt}</span></td>`;
     });
-    let totV, totTxt;
+    let totV, totTxt, totFa, totFb;
     if(m.isCtr){
       let impSum25=0, impSum26=0, clkSum25=0, clkSum26=0;
       common.forEach(i=>{
@@ -4033,11 +4040,13 @@ function anRenderGisCompareMonthly(){
       const ctr25 = clkSum25/impSum25*100, ctr26 = clkSum26/impSum26*100;
       totV = ctr26 - ctr25;
       totTxt = `${totV>=0?'+':''}${totV.toFixed(1)}п.п.`;
+      totFa = ctr25.toFixed(1)+'%'; totFb = ctr26.toFixed(1)+'%';
     } else {
       totV = sum25 ? (sum26-sum25)/sum25*100 : (sum26 ? 100 : 0);
       totTxt = `${totV>=0?'+':''}${totV.toFixed(0)}%`;
+      totFa = fmt(sum25); totFb = fmt(sum26);
     }
-    rows += `<tr><td>${m.label}${m.highlight?' <span style="color:var(--amber);">★</span>':''}</td>${cells}<td class="num" style="${hs}font-weight:600;"><span class="delta ${dCls(totV)}">${totTxt}</span></td></tr>`;
+    rows += `<tr><td>${m.label}${m.highlight?' <span style="color:var(--amber);">★</span>':''}</td>${cells}<td class="num" style="${hs}font-weight:600;">${totFa}</td><td class="num" style="${hs}font-weight:600;">${totFb}</td><td class="num" style="${hs}font-weight:600;"><span class="delta ${dCls(totV)}">${totTxt}</span></td></tr>`;
   });
   tableEl.innerHTML = rows;
 }
