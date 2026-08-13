@@ -623,6 +623,8 @@
   .kpi-grid.cols-6{ grid-template-columns:repeat(6,1fr); }
   @media (max-width:1100px){ .kpi-grid.cols-6{ grid-template-columns:repeat(3,1fr); } }
   @media (max-width:640px){ .kpi-grid.cols-6{ grid-template-columns:repeat(2,1fr); } }
+  .kpi-grid.cols-3{ grid-template-columns:repeat(3,1fr); }
+  @media (max-width:640px){ .kpi-grid.cols-3{ grid-template-columns:repeat(1,1fr); } }
 
   .an-insight-row{ display:flex; gap:12px; flex-wrap:wrap; margin:16px 0; }
   .an-insight-chip{
@@ -1932,9 +1934,11 @@
       </div>
 
       <div class="card reveal" style="margin-top:16px;">
-        <div class="card-title">План 2026 vs Факт 2026</div>
+        <div class="card-title">План 2026 vs Факт — по месяцам, весь год</div>
         <div class="card-desc" id="anPlanFactNote"></div>
+        <div class="kpi-grid cols-3" id="anPlanYearKpi" style="margin:14px 0 18px;"></div>
         <div class="cc-table-wrap"><table class="an-compare-table" id="anPlanFactTable"></table></div>
+        <div class="card-desc" style="margin-top:12px;"><span class="change-tag tag-added" style="margin-right:6px;">прямое влияние</span><span class="change-tag tag-increased" style="margin-right:6px;">частичное влияние</span><span class="change-tag tag-consider">производный / ключевой</span></div>
       </div>
 
       <div class="an-charts-grid" style="margin-top:16px;">
@@ -4520,26 +4524,43 @@ const AN_PLAN_GROWTH = {
   conversion: { g:0.15, label:'+15%' }
 };
 
-function anRenderPlanFactTable(commonIdx){
+// Категория влияния — те же теги и цвета, что в блоке «Прогноз показателей до конца
+// 2026 года» (#influencePhases), чтобы визуальный язык был одинаковым везде на странице.
+const AN_METRIC_INFLUENCE = {
+  visitors: { tag:'tag-added', label:'прямое' },
+  avgCheck: { tag:'tag-increased', label:'частичное' },
+  avgDepth: { tag:'tag-increased', label:'частичное' },
+  conversion: { tag:'tag-increased', label:'частичное' },
+  revenue: { tag:'tag-consider', label:'ключевой' },
+  receipts: { tag:'tag-consider', label:'производный' }
+};
+
+function anRenderPlanFactTable(){
   const noteEl = document.getElementById('anPlanFactNote');
   const tableEl = document.getElementById('anPlanFactTable');
+  const kpiEl = document.getElementById('anPlanYearKpi');
   if(!tableEl) return;
-  if(!commonIdx || !commonIdx.length){
-    if(noteEl) noteEl.textContent = 'Нет ни одного месяца, загруженного одновременно за оба года.';
-    tableEl.innerHTML = '';
+  const allIdx = [];
+  for(let i=0;i<12;i++){ if(AN_SALES['2025'][i]) allIdx.push(i); }
+  if(!allIdx.length){
+    if(noteEl) noteEl.textContent = 'Нет данных за 2025 год — не от чего считать план.';
+    tableEl.innerHTML = ''; if(kpiEl) kpiEl.innerHTML = '';
     return;
   }
-  if(noteEl) noteEl.textContent = `План на месяц = факт 2025 за этот же месяц × ожидаемый рост из прогноза (Посетители ${AN_PLAN_GROWTH.visitors.label}, Средний чек ${AN_PLAN_GROWTH.avgCheck.label}, Глубина ${AN_PLAN_GROWTH.avgDepth.label}, Конверсия ${AN_PLAN_GROWTH.conversion.label}, Выручка ${AN_PLAN_GROWTH.revenue.label}, Чеков ${AN_PLAN_GROWTH.receipts.label}). Отклонение — факт 2026 к плану на этот месяц. Месяцы: ${commonIdx.map(i=>AN_MONTHS[i]).join(', ').toLowerCase()}.`;
+  const doneIdx = allIdx.filter(i=>AN_SALES['2026'][i]);
+  const pendingIdx = allIdx.filter(i=>!AN_SALES['2026'][i]);
+  if(noteEl) noteEl.textContent = `План на месяц = факт 2025 за этот же месяц × ожидаемый рост из прогноза (Посетители ${AN_PLAN_GROWTH.visitors.label}, Средний чек ${AN_PLAN_GROWTH.avgCheck.label}, Глубина ${AN_PLAN_GROWTH.avgDepth.label}, Конверсия ${AN_PLAN_GROWTH.conversion.label}, Выручка ${AN_PLAN_GROWTH.revenue.label}, Чеков ${AN_PLAN_GROWTH.receipts.label}). Факт есть за ${doneIdx.map(i=>AN_MONTHS[i]).join(', ').toLowerCase()||'—'}; появится за ${pendingIdx.map(i=>AN_MONTHS[i]).join(', ').toLowerCase()||'остальные месяцы'} по мере поступления отчётности — план уже виден заранее.`;
 
   const dCls = v => v>1 ? 'up' : (v<-1 ? 'down' : 'flat');
-  const dTxt = v => v==null ? '—' : `<span class="delta ${dCls(v)}">${v>=0?'+':''}${v.toFixed(1)}%</span>`;
+  const dTxt = v => v==null ? '<span style="color:var(--ink-mute);">—</span>' : `<span class="delta ${dCls(v)}">${v>=0?'+':''}${v.toFixed(1)}%</span>`;
+  const pendingCell = flagStyle => `<td class="num" style="${flagStyle}color:var(--ink-mute); font-style:italic;">ожид.</td>`;
 
   const metrics = [
-    { key:'revenue', label:'Выручка', fmtv:v=>v!=null?fmt(v)+' ₽':'—' },
+    { key:'revenue', label:'Выручка', flagship:true, fmtv:v=>v!=null?fmt(v)+' ₽':'—' },
+    { key:'visitors', label:'Посетители', fmtv:v=>v!=null?fmt(v):'—' },
     { key:'receipts', label:'Чеков', fmtv:v=>v!=null?fmt(v):'—' },
     { key:'avgCheck', label:'Средний чек', fmtv:v=>v!=null?fmt(Math.round(v))+' ₽':'—' },
     { key:'avgDepth', label:'Глубина чека', fmtv:v=>v!=null?v.toFixed(2):'—' },
-    { key:'visitors', label:'Посетители', fmtv:v=>v!=null?fmt(v):'—' },
     { key:'conversion', label:'Конверсия', fmtv:v=>v!=null?v.toFixed(1)+'%':'—' }
   ];
   const real25 = (m,i)=>{
@@ -4553,6 +4574,7 @@ function anRenderPlanFactTable(commonIdx){
   };
   const fact26 = (m,i)=>{
     const b = AN_SALES['2026'][i];
+    if(!b) return null;
     if(m==='revenue') return b.revenue;
     if(m==='receipts') return b.receipts;
     if(m==='avgCheck') return b.revenue/b.receipts;
@@ -4561,25 +4583,44 @@ function anRenderPlanFactTable(commonIdx){
     if(m==='conversion') return b.visitors!=null ? b.receipts/b.visitors*100 : null;
   };
 
+  // KPI-плашки: план на весь год (сумма/пересчёт по всем 12 месяцам 2025 × рост), плюс сколько
+  // месяцев уже подтверждено фактом — обновляется само по себе, как только появятся новые месяцы.
+  if(kpiEl){
+    const planYearRevenue = allIdx.reduce((s,i)=> s+real25('revenue',i)*(1+AN_PLAN_GROWTH.revenue.g), 0);
+    const planYearVisitors = allIdx.reduce((s,i)=> s+(real25('visitors',i)||0)*(1+AN_PLAN_GROWTH.visitors.g), 0);
+    const planYearReceipts = allIdx.reduce((s,i)=> s+real25('receipts',i)*(1+AN_PLAN_GROWTH.receipts.g), 0);
+    kpiEl.innerHTML = [
+      anKpiTile('var(--amber)', 'План выручки на 2026 год', Math.round(planYearRevenue), 0, ' ₽', `факт подтверждён за ${doneIdx.length} из ${allIdx.length} мес.`),
+      anKpiTile('var(--green)', 'План посетителей на 2026 год', Math.round(planYearVisitors), 0, '', 'при сохранении темпа роста'),
+      anKpiTile('var(--blue)', 'План чеков на 2026 год', Math.round(planYearReceipts), 0, '', `осталось подтвердить ${pendingIdx.length} мес.`)
+    ].join('');
+  }
+
   let head1 = `<th rowspan="2">Показатель</th>`;
-  commonIdx.forEach(i=>{ head1 += `<th colspan="3">${AN_MONTHS_SHORT[i]}</th>`; });
-  head1 += `<th colspan="3">Итого</th>`;
+  allIdx.forEach(i=>{ head1 += `<th colspan="3">${AN_MONTHS_SHORT[i]}</th>`; });
+  head1 += `<th colspan="3">Итого факт</th>`;
   let head2 = '';
-  commonIdx.forEach(()=>{ head2 += `<th>План</th><th>Факт</th><th>Откл.</th>`; });
+  allIdx.forEach(()=>{ head2 += `<th>План</th><th>Факт</th><th>Откл.</th>`; });
   head2 += `<th>План</th><th>Факт</th><th>Откл.</th>`;
   let rows = `<tr>${head1}</tr><tr>${head2}</tr>`;
 
   metrics.forEach(m=>{
     const growth = AN_PLAN_GROWTH[m.key].g;
+    const infl = AN_METRIC_INFLUENCE[m.key];
+    const flagStyle = m.flagship ? 'background:rgba(255,122,69,0.07);' : '';
     let cells = '';
     let sumReal25=0, sumFact26=0, any=false;
-    commonIdx.forEach(i=>{
-      const r25 = real25(m.key,i), f26 = fact26(m.key,i);
-      if(r25==null || f26==null){ cells += `<td class="num">—</td><td class="num">—</td><td class="num">—</td>`; return; }
+    allIdx.forEach(i=>{
+      const r25 = real25(m.key,i);
+      const plan = r25!=null ? r25*(1+growth) : null;
+      const f26 = fact26(m.key,i);
+      if(f26==null){
+        cells += `<td class="num" style="${flagStyle}">${m.fmtv(plan)}</td>${pendingCell(flagStyle)}<td class="num" style="${flagStyle}">${dTxt(null)}</td>`;
+        return;
+      }
       any = true; sumReal25 += r25; sumFact26 += f26;
-      const plan = r25 * (1+growth);
       const dv = plan ? (f26-plan)/plan*100 : null;
-      cells += `<td class="num">${m.fmtv(plan)}</td><td class="num">${m.fmtv(f26)}</td><td class="num">${dTxt(dv)}</td>`;
+      cells += `<td class="num" style="${flagStyle}">${m.fmtv(plan)}</td><td class="num" style="${flagStyle}">${m.fmtv(f26)}</td><td class="num" style="${flagStyle}">${dTxt(dv)}</td>`;
     });
     let totCells;
     if(any && m.key!=='avgDepth'){
@@ -4588,35 +4629,33 @@ function anRenderPlanFactTable(commonIdx){
       let planTot, factTot;
       if(m.key==='avgCheck'){
         let planRev=0, planRc=0, factRev=0, factRc=0;
-        commonIdx.forEach(i=>{
-          const r25rev = real25('revenue',i), r25rc = real25('receipts',i);
-          const f26rev = fact26('revenue',i), f26rc = fact26('receipts',i);
-          if(r25rev==null||r25rc==null||f26rev==null||f26rc==null) return;
-          planRev += r25rev*(1+AN_PLAN_GROWTH.revenue.g); planRc += r25rc*(1+AN_PLAN_GROWTH.receipts.g);
-          factRev += f26rev; factRc += f26rc;
+        doneIdx.forEach(i=>{
+          planRev += real25('revenue',i)*(1+AN_PLAN_GROWTH.revenue.g); planRc += real25('receipts',i)*(1+AN_PLAN_GROWTH.receipts.g);
+          factRev += fact26('revenue',i); factRc += fact26('receipts',i);
         });
         planTot = planRc ? planRev/planRc : null; factTot = factRc ? factRev/factRc : null;
       } else if(m.key==='conversion'){
         let planRc=0, planVis=0, factRc=0, factVis=0;
-        commonIdx.forEach(i=>{
-          const r25rc = real25('receipts',i), r25vis = real25('visitors',i);
-          const f26rc = fact26('receipts',i), f26vis = fact26('visitors',i);
-          if(r25rc==null||r25vis==null||f26rc==null||f26vis==null) return;
-          planRc += r25rc*(1+AN_PLAN_GROWTH.receipts.g); planVis += r25vis*(1+AN_PLAN_GROWTH.visitors.g);
-          factRc += f26rc; factVis += f26vis;
+        doneIdx.forEach(i=>{
+          const r25vis = real25('visitors',i); if(r25vis==null) return;
+          planRc += real25('receipts',i)*(1+AN_PLAN_GROWTH.receipts.g); planVis += r25vis*(1+AN_PLAN_GROWTH.visitors.g);
+          factRc += fact26('receipts',i); factVis += fact26('visitors',i);
         });
         planTot = planVis ? planRc/planVis*100 : null; factTot = factVis ? factRc/factVis*100 : null;
       } else {
         planTot = sumReal25*(1+growth); factTot = sumFact26;
       }
       const dTot = (planTot!=null && factTot!=null && planTot) ? (factTot-planTot)/planTot*100 : null;
-      totCells = `<td class="num" style="font-weight:600;">${m.fmtv(planTot)}</td><td class="num" style="font-weight:600;">${m.fmtv(factTot)}</td><td class="num" style="font-weight:600;">${dTxt(dTot)}</td>`;
+      totCells = `<td class="num" style="${flagStyle}font-weight:600;">${m.fmtv(planTot)}</td><td class="num" style="${flagStyle}font-weight:600;">${m.fmtv(factTot)}</td><td class="num" style="${flagStyle}font-weight:600;">${dTxt(dTot)}</td>`;
     } else {
-      totCells = `<td class="num">—</td><td class="num">—</td><td class="num">—</td>`;
+      totCells = `<td class="num" style="${flagStyle}">—</td><td class="num" style="${flagStyle}">—</td><td class="num" style="${flagStyle}">—</td>`;
     }
-    rows += `<tr><td>${m.label}</td>${cells}${totCells}</tr>`;
+    const tagHtml = `<span class="change-tag ${infl.tag}" style="font-size:9px; padding:2px 7px; margin-left:8px;">${infl.label}</span>`;
+    const star = m.flagship ? '<span style="color:var(--amber); margin-right:4px;">★</span>' : '';
+    rows += `<tr><td style="${flagStyle}">${star}${m.label}${tagHtml}</td>${cells}${totCells}</tr>`;
   });
   tableEl.innerHTML = rows;
+  if(typeof animateCounter === 'function' && kpiEl){ kpiEl.querySelectorAll('[data-count]').forEach(c=>animateCounter(c)); }
 }
 
 function anRenderCompare(){
@@ -4680,7 +4719,7 @@ function anRenderCompare(){
     tableEl.innerHTML = rows;
   }
 
-  anRenderPlanFactTable(commonIdx);
+  anRenderPlanFactTable();
 
   renderLineChart('anCompareLine', [
     { label:'2025', color:'#9AA4B2', values: AN_SALES['2025'].map(m=> m ? m.revenue : null) },
