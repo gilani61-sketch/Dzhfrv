@@ -732,6 +732,44 @@
   .an-compare-table tr.an-total-row td:first-child{ border-radius:8px 0 0 8px; }
   .an-compare-table tr.an-total-row td:last-child{ border-radius:0 8px 8px 0; }
 
+  /* ===== Сравнение по ключевым показателям (сводные строки: 2025/2026/абс. разница/%) ===== */
+  .an-cs-head-row{
+    display:grid; grid-template-columns:180px 1fr 1fr 1fr 108px; gap:16px; align-items:center;
+    padding:0 6px 10px; font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-mute);
+  }
+  .an-cs-head-row > div{ text-align:right; }
+  .an-cs-head-row > div:first-child{ text-align:left; }
+  .an-cs-rows{ display:flex; flex-direction:column; }
+  .an-cs-row{
+    display:grid; grid-template-columns:180px 1fr 1fr 1fr 108px; gap:16px; align-items:center;
+    padding:16px 6px; border-bottom:1px solid var(--line); transition:background .15s ease;
+  }
+  .an-cs-row:last-child{ border-bottom:none; }
+  .an-cs-row:hover{ background:rgba(255,255,255,0.02); }
+  .an-cs-label{ font-family:'Rubik'; font-weight:600; font-size:14px; color:var(--ink); }
+  .an-cs-sub{ font-size:10.5px; color:var(--ink-mute); margin-top:2px; }
+  .an-cs-val{ text-align:right; font-family:'JetBrains Mono'; font-size:14.5px; color:var(--ink); }
+  .an-cs-diff{ text-align:right; font-family:'JetBrains Mono'; font-size:14px; font-weight:600; }
+  .an-cs-diff.up{ color:var(--green); }
+  .an-cs-diff.down{ color:var(--red); }
+  .an-cs-diff.flat{ color:var(--ink-mute); }
+  .an-cs-pct{
+    display:inline-flex; align-items:center; justify-content:center; gap:4px; margin-left:auto;
+    font-family:'JetBrains Mono'; font-weight:700; font-size:13px; padding:6px 12px; border-radius:100px; white-space:nowrap;
+  }
+  .an-cs-pct.up{ color:var(--green); background:rgba(62,207,142,0.12); }
+  .an-cs-pct.down{ color:var(--red); background:rgba(255,107,107,0.1); }
+  .an-cs-pct.flat{ color:var(--ink-mute); background:rgba(255,255,255,0.05); }
+  @media (max-width:860px){
+    .an-cs-head-row{ display:none; }
+    .an-cs-row{ grid-template-columns:1fr; gap:6px; padding:14px 6px; }
+    .an-cs-val{ display:flex; justify-content:space-between; text-align:left; }
+    .an-cs-val::before{ content:attr(data-label); color:var(--ink-mute); font-size:11px; text-transform:uppercase; }
+    .an-cs-diff{ display:flex; justify-content:space-between; text-align:left; }
+    .an-cs-diff::before{ content:'Разница'; color:var(--ink-mute); font-size:11px; text-transform:uppercase; font-weight:400; }
+    .an-cs-pct{ width:fit-content; margin-left:0; }
+  }
+
   .an-month-table thead th{
     background:rgba(255,122,69,0.14); color:var(--amber); padding:12px 10px; border-bottom:2px solid var(--amber); font-weight:700;
   }
@@ -1978,7 +2016,21 @@
     </div>
 
     <div class="an-year-pane" id="analytics-compare">
+      <div class="sec-head" style="margin-bottom:14px;">
+        <div>
+          <div class="sec-eyebrow">2025 vs 2026</div>
+          <div class="sec-title" style="font-size:22px;">Сравнение по ключевым показателям</div>
+        </div>
+        <div class="sec-note" id="anCompareSummaryNote"></div>
+      </div>
       <div class="card reveal">
+        <div class="an-cs-head-row">
+          <div></div><div>2025</div><div>2026</div><div>Разница</div><div>%</div>
+        </div>
+        <div class="an-cs-rows" id="anCompareSummaryRows"></div>
+      </div>
+
+      <div class="card reveal" style="margin-top:16px;">
         <div class="card-title">2025 vs 2026 — по общим месяцам</div>
         <div class="card-desc" id="anCompareNote"></div>
         <div class="cc-table-wrap"><table class="an-compare-table" id="anCompareTable"></table></div>
@@ -4776,6 +4828,59 @@ function anRenderPlanFactTable(){
   if(typeof animateCounter === 'function' && kpiEl){ kpiEl.querySelectorAll('[data-count]').forEach(c=>animateCounter(c)); }
 }
 
+// Сводная карточка «2025 / 2026 / абс. разница / % / индикатор» по каждому ключевому
+// показателю — headline-блок сравнения, отдельно от помесячной таблицы ниже.
+function anRenderCompareSummary(commonIdx, agg){
+  const rowsEl = document.getElementById('anCompareSummaryRows');
+  const noteEl = document.getElementById('anCompareSummaryNote');
+  if(!rowsEl) return;
+
+  // Заявки считаем по тем же commonIdx-месяцам, что и продажи — иначе получилось бы нечестное
+  // сравнение (весь 2025 год против неполного 2026), которое выглядело бы как обвал заявок,
+  // хотя на деле это просто меньше загруженных месяцев.
+  let leadsA=0, leadsB=0, hasLeadsA=false, hasLeadsB=false;
+  commonIdx.forEach(i=>{
+    const ma = AN_LEADS['2025'] && AN_LEADS['2025'][i];
+    const mb = AN_LEADS['2026'] && AN_LEADS['2026'][i];
+    if(ma){ hasLeadsA = true; AN_LEADS_CHANNELS.forEach(c=>{ if(ma[c.key]) leadsA += ma[c.key].leads||0; }); }
+    if(mb){ hasLeadsB = true; AN_LEADS_CHANNELS.forEach(c=>{ if(mb[c.key]) leadsB += mb[c.key].leads||0; }); }
+  });
+
+  if(noteEl){
+    noteEl.textContent = commonIdx.length
+      ? `Все строки — сумма/пересчёт за ${commonIdx.length} общих ${rmWordForm(commonIdx.length,'месяц','месяца','месяцев')}, где есть выгрузка за оба года: ${commonIdx.map(i=>AN_MONTHS[i]).join(', ').toLowerCase()}. Так сравнение честное — не полный год против неполного.`
+      : 'Нет ни одного месяца, загруженного одновременно за оба года.';
+  }
+  const dCls = v => v>1 ? 'up' : (v<-1 ? 'down' : 'flat');
+  const arrow = v => v>1 ? '▲' : (v<-1 ? '▼' : '●');
+  const pct = (b,a) => (a==null||b==null||a===0) ? null : (b-a)/a*100;
+
+  const rows = [
+    { label:'Выручка', sub:'сумма за общие месяцы', a:agg.sum25rev, b:agg.sum26rev, fmtv:v=>v!=null?fmt(v)+' ₽':'—' },
+    { label:'Чеков', sub:'штук', a:agg.sum25rc, b:agg.sum26rc, fmtv:v=>v!=null?fmt(v):'—' },
+    { label:'Средний чек', sub:'выручка ÷ чеков', a:agg.acA, b:agg.acB, fmtv:v=>v!=null?fmt(Math.round(v))+' ₽':'—' },
+    { label:'Глубина чека', sub:'позиций в чеке', a:agg.depthA, b:agg.depthB, fmtv:v=>v!=null?v.toFixed(2):'—' },
+    { label:'Посетители', sub:'штук', a:agg.sum25vis, b:agg.sum26vis, fmtv:v=>v!=null?fmt(v):'—' },
+    { label:'Конверсия', sub:'чеков ÷ посетителей', a:agg.cvA, b:agg.cvB, fmtv:v=>v!=null?v.toFixed(1)+'%':'—' },
+    { label:'Заявки', sub:'по каналам, за общие месяцы', a: hasLeadsA?leadsA:null, b: hasLeadsB?leadsB:null, fmtv:v=>v!=null?fmt(v):'—' }
+  ];
+
+  rowsEl.innerHTML = rows.map(r=>{
+    const diff = (r.a!=null && r.b!=null) ? r.b-r.a : null;
+    const p = pct(r.b, r.a);
+    const cls = p==null ? 'flat' : dCls(p);
+    const diffTxt = diff==null ? '—' : `${diff>0?'+':(diff<0?'−':'')}${r.fmtv(Math.abs(diff))}`;
+    const pctTxt = p==null ? '—' : `${arrow(p)} ${p>=0?'+':''}${p.toFixed(1)}%`;
+    return `<div class="an-cs-row">
+      <div><div class="an-cs-label">${r.label}</div><div class="an-cs-sub">${r.sub}</div></div>
+      <div class="an-cs-val" data-label="2025">${r.fmtv(r.a)}</div>
+      <div class="an-cs-val" data-label="2026">${r.fmtv(r.b)}</div>
+      <div class="an-cs-diff ${cls}">${diffTxt}</div>
+      <div class="an-cs-pct ${cls}">${pctTxt}</div>
+    </div>`;
+  }).join('');
+}
+
 function anRenderCompare(){
   const commonIdx = [];
   for(let i=0;i<12;i++){ if(AN_SALES['2025'][i] && AN_SALES['2026'][i]) commonIdx.push(i); }
@@ -4803,12 +4908,14 @@ function anRenderCompare(){
       <th>Конв. 2025</th><th>Конв. 2026</th><th>Δ</th>
     </tr>`;
     let sum25rev=0, sum26rev=0, sum25rc=0, sum26rc=0, sum25vis=0, sum26vis=0, vis25ok=true, vis26ok=true;
+    let sum25depth=0, sum26depth=0; // взвешено по числу чеков — для сводной карточки
     commonIdx.forEach(i=>{
       const a = AN_SALES['2025'][i], b = AN_SALES['2026'][i];
       const acA = a.revenue/a.receipts, acB = b.revenue/b.receipts;
       const cvA = a.visitors!=null ? a.receipts/a.visitors*100 : null;
       const cvB = b.visitors!=null ? b.receipts/b.visitors*100 : null;
       sum25rev+=a.revenue; sum26rev+=b.revenue; sum25rc+=a.receipts; sum26rc+=b.receipts;
+      sum25depth += a.avgDepth*a.receipts; sum26depth += b.avgDepth*b.receipts;
       if(a.visitors!=null) sum25vis+=a.visitors; else vis25ok=false;
       if(b.visitors!=null) sum26vis+=b.visitors; else vis26ok=false;
       rows += `<tr>
@@ -4821,9 +4928,10 @@ function anRenderCompare(){
         <td class="num">${cvA!=null?cvA.toFixed(1)+'%':'—'}</td><td class="num">${cvB!=null?cvB.toFixed(1)+'%':'—'}</td><td class="num">${dTxt(pct(cvB,cvA))}</td>
       </tr>`;
     });
+    const acA = sum25rc ? sum25rev/sum25rc : null, acB = sum26rc ? sum26rev/sum26rc : null;
+    const cvA = vis25ok && sum25vis ? sum25rc/sum25vis*100 : null, cvB = vis26ok && sum26vis ? sum26rc/sum26vis*100 : null;
+    const depthA = sum25rc ? sum25depth/sum25rc : null, depthB = sum26rc ? sum26depth/sum26rc : null;
     if(commonIdx.length){
-      const acA = sum25rev/sum25rc, acB = sum26rev/sum26rc;
-      const cvA = vis25ok ? sum25rc/sum25vis*100 : null, cvB = vis26ok ? sum26rc/sum26vis*100 : null;
       rows += `<tr class="an-total-row" style="font-weight:600;">
         <td>Итого по общим месяцам</td>
         <td class="num">${fmt(sum25rev)} ₽</td><td class="num">${fmt(sum26rev)} ₽</td><td class="num">${dTxt(pct(sum26rev,sum25rev))}</td>
@@ -4835,6 +4943,8 @@ function anRenderCompare(){
       </tr>`;
     }
     tableEl.innerHTML = rows;
+
+    anRenderCompareSummary(commonIdx, { sum25rev, sum26rev, sum25rc, sum26rc, acA, acB, cvA, cvB, depthA, depthB, sum25vis: vis25ok?sum25vis:null, sum26vis: vis26ok?sum26vis:null });
   }
 
   anRenderPlanFactTable();
