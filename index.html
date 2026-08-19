@@ -767,6 +767,61 @@
   .an-daily-table-wrap{ max-height:320px; overflow-y:auto; margin-top:14px; border:1px solid var(--line); border-radius:10px; }
   .an-daily-table-wrap .an-month-table thead th{ position:sticky; top:0; z-index:1; }
 
+  /* ===== MONTH CARDS (Аналитика — карточки месяцев вместо строк таблицы) ===== */
+  .an-month-quicknav{ display:flex; gap:6px; overflow-x:auto; padding:2px 2px 14px; margin-bottom:2px; -webkit-overflow-scrolling:touch; }
+  .an-month-quicknav-pill{
+    flex-shrink:0; font-family:'JetBrains Mono'; font-size:11.5px; font-weight:600; color:var(--ink-dim);
+    background:rgba(255,255,255,0.04); border:1px solid var(--line); padding:6px 13px; border-radius:100px;
+    cursor:pointer; transition:.15s; white-space:nowrap;
+  }
+  .an-month-quicknav-pill:hover{ color:var(--ink); background:rgba(255,255,255,0.08); }
+  .an-month-quicknav-pill.is-missing{ opacity:0.4; cursor:default; }
+  .an-month-quicknav-pill.is-best{ border-color:rgba(62,207,142,0.4); color:var(--green); }
+  .an-month-quicknav-pill.is-worst{ border-color:rgba(255,107,107,0.35); color:var(--red); }
+
+  .an-month-cards{ display:flex; flex-direction:column; gap:12px; }
+  .an-month-card{
+    background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden;
+    transition:border-color .2s ease, box-shadow .2s ease;
+    scroll-margin-top:84px; /* чтобы быстрый переход не прятал заголовок карточки под липкой навигацией */
+  }
+  .an-month-card:hover{ border-color:#2E3946; }
+  .an-month-card.is-best{ border-color:rgba(62,207,142,0.35); }
+  .an-month-card.is-worst{ border-color:rgba(255,107,107,0.3); }
+  .an-month-card.is-missing{ opacity:0.55; }
+  .an-month-card-head{ display:flex; align-items:center; gap:14px; padding:16px 20px; cursor:pointer; transition:background .15s ease; }
+  .an-month-card.is-missing .an-month-card-head{ cursor:default; }
+  .an-month-card-head:hover{ background:rgba(255,122,69,0.05); }
+  .an-month-card.is-expanded .an-month-card-head{ background:rgba(255,122,69,0.08); }
+  .an-month-card-title{ font-family:'Rubik'; font-size:15.5px; font-weight:600; color:var(--ink); flex-shrink:0; }
+  .an-month-card.is-best .an-month-card-title{ color:var(--green); }
+  .an-month-card.is-worst .an-month-card-title{ color:var(--red); }
+  .an-month-card-summary{ display:flex; gap:18px; flex-wrap:wrap; margin-left:auto; font-family:'JetBrains Mono'; font-size:12.5px; color:var(--ink-dim); }
+  .an-month-card-summary b{ color:var(--ink); font-weight:600; }
+  .an-month-card .an-expand-hint{ float:none; flex-shrink:0; }
+  .an-month-card-body-wrap{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .35s cubic-bezier(.2,.8,.2,1); }
+  .an-month-card.is-expanded .an-month-card-body-wrap{ grid-template-rows:1fr; }
+  .an-month-card-body-inner{ overflow:hidden; min-height:0; }
+  .an-month-card-body{ padding:4px 20px 22px; border-top:1px solid var(--line); margin-top:2px; }
+  @media (max-width:640px){ .an-month-card-summary{ display:none; } }
+
+  .an-month-subhead{ font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-mute); font-family:'JetBrains Mono'; margin:18px 0 8px; }
+  .an-month-subhead:first-child{ margin-top:16px; }
+  .an-month-leads-row, .an-month-dynamics-row{ display:flex; flex-wrap:wrap; }
+  .an-month-lead-chip{
+    display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-dim);
+    background:rgba(255,255,255,0.03); border:1px solid var(--line); border-radius:100px; padding:5px 12px; margin:0 6px 6px 0;
+  }
+  .an-month-lead-chip i{ width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0; }
+  .an-month-lead-chip b{ color:var(--ink); font-family:'JetBrains Mono'; margin-left:2px; }
+  .an-month-leads-total{ font-size:11.5px; color:var(--ink-mute); margin-top:2px; }
+  .an-yoy-chip{
+    display:inline-flex; align-items:center; font-size:11.5px; font-family:'JetBrains Mono'; font-weight:600;
+    padding:4px 10px; border-radius:100px; margin:0 6px 6px 0; background:rgba(255,255,255,0.03); border:1px solid var(--line);
+  }
+  .an-yoy-chip.up{ color:var(--green); border-color:rgba(62,207,142,0.3); }
+  .an-yoy-chip.down{ color:var(--red); border-color:rgba(255,107,107,0.3); }
+
   #page-analytics .callout{
     background:var(--card-2); border:1px solid var(--line); border-left:3px solid var(--amber);
     border-radius:10px; padding:16px 18px; margin:16px 0 0; font-size:13.5px; color:var(--ink-dim);
@@ -1874,17 +1929,15 @@
           <div class="rank-list" id="anRankList2025"></div>
         </div>
       </div>
-      <div class="card reveal" style="margin-top:16px;">
-        <div class="card-title">Помесячная таблица</div>
-        <div class="card-desc">Зелёным — лучший месяц по выручке, красным — худший из загруженных.</div>
-        <div class="cc-table-wrap"><table class="avg-table an-month-table">
-          <thead><tr>
-            <th>Месяц</th><th class="num">Выручка</th><th class="num">Чеков</th>
-            <th class="num">Ср. чек</th><th class="num">Глубина чека</th><th class="num">Посетители</th><th class="num">Конверсия</th>
-          </tr></thead>
-          <tbody id="anMonthTable2025"></tbody>
-        </table></div>
+      <div class="sec-head" style="margin-top:40px; margin-bottom:14px;">
+        <div>
+          <div class="sec-eyebrow">Год → месяц</div>
+          <div class="sec-title" style="font-size:20px;">Месяцы 2025</div>
+        </div>
+        <div class="sec-note">Зелёным — лучший месяц по выручке, красным — худший из загруженных. Клик по карточке или пилюле раскрывает показатели, заявки, динамику и детализацию по дням.</div>
       </div>
+      <div class="an-month-quicknav" id="anMonthNav2025"></div>
+      <div class="an-month-cards" id="anMonthCards2025"></div>
       <div class="card reveal" style="margin-top:16px;" id="anSummary2025"></div>
     </div>
 
@@ -1912,17 +1965,15 @@
           <div class="rank-list" id="anRankList2026"></div>
         </div>
       </div>
-      <div class="card reveal" style="margin-top:16px;">
-        <div class="card-title">Помесячная таблица</div>
-        <div class="card-desc">Зелёным — лучший месяц по выручке, красным — худший из загруженных.</div>
-        <div class="cc-table-wrap"><table class="avg-table an-month-table">
-          <thead><tr>
-            <th>Месяц</th><th class="num">Выручка</th><th class="num">Чеков</th>
-            <th class="num">Ср. чек</th><th class="num">Глубина чека</th><th class="num">Посетители</th><th class="num">Конверсия</th>
-          </tr></thead>
-          <tbody id="anMonthTable2026"></tbody>
-        </table></div>
+      <div class="sec-head" style="margin-top:40px; margin-bottom:14px;">
+        <div>
+          <div class="sec-eyebrow">Год → месяц</div>
+          <div class="sec-title" style="font-size:20px;">Месяцы 2026</div>
+        </div>
+        <div class="sec-note">Зелёным — лучший месяц по выручке, красным — худший из загруженных. Клик по карточке или пилюле раскрывает показатели, заявки, динамику и детализацию по дням.</div>
       </div>
+      <div class="an-month-quicknav" id="anMonthNav2026"></div>
+      <div class="an-month-cards" id="anMonthCards2026"></div>
       <div class="card reveal" style="margin-top:16px;" id="anSummary2026"></div>
     </div>
 
@@ -4341,18 +4392,36 @@ function anMomDelta(year, mi, field){
   return (curVal-prevVal)/prevVal*100;
 }
 
+// Год к году — только на карточках 2026 (единственный год, для которого есть с чем сравнивать:
+// тот же месяц 2025-го). На 2025 сравнивать не с чем (2024 в системе нет).
+function anYoyDelta(year, mi, field){
+  if(year !== '2026') return null;
+  const cur = AN_SALES['2026'][mi], prev = AN_SALES['2025'][mi];
+  if(!cur || !prev) return null;
+  let curVal, prevVal;
+  if(field==='conversion'){
+    if(cur.visitors==null || prev.visitors==null) return null;
+    curVal = cur.receipts/cur.visitors*100; prevVal = prev.receipts/prev.visitors*100;
+  } else {
+    curVal = cur[field]; prevVal = prev[field];
+  }
+  if(curVal==null || prevVal==null || prevVal===0) return null;
+  return (curVal-prevVal)/prevVal*100;
+}
+
+const AN_MD_FIELDS = [
+  ['revenue','Выручка',' ₽',0], ['receipts','Чеков','',0], ['avgCheck','Ср. чек',' ₽',0],
+  ['avgDepth','Глубина чека','',2], ['visitors','Посетители','',0], ['conversion','Конверсия','%',1]
+];
+
 function anRenderMonthDetail(year, mi){
   const bodyEl = document.getElementById('anMonthDetailBody_'+year+'_'+mi);
   if(!bodyEl || bodyEl.dataset.rendered==='1') return;
   bodyEl.dataset.rendered = '1';
   const m = AN_SALES[year][mi];
   const conv = m.visitors!=null ? m.receipts/m.visitors*100 : null;
-  const fields = [
-    ['revenue','Выручка',' ₽',0], ['receipts','Чеков','',0], ['avgCheck','Ср. чек',' ₽',0],
-    ['avgDepth','Глубина чека','',2], ['visitors','Посетители','',0], ['conversion','Конверсия','%',1]
-  ];
   const valuesByField = { revenue:m.revenue, receipts:m.receipts, avgCheck:m.avgCheck, avgDepth:m.avgDepth, visitors:m.visitors, conversion:conv };
-  const kpiHtml = fields.map(([key,label,suffix,dec])=>{
+  const kpiHtml = AN_MD_FIELDS.map(([key,label,suffix,dec])=>{
     const val = valuesByField[key];
     const delta = anMomDelta(year, mi, key);
     const deltaHtml = delta==null ? '<span class="an-mom flat">нет пред. месяца</span>' : `<span class="an-mom ${delta>=0?'up':'down'}">${delta>=0?'+':''}${delta.toFixed(1)}% к пред. мес.</span>`;
@@ -4360,10 +4429,32 @@ function anRenderMonthDetail(year, mi){
     return `<div class="an-md-tile"><div class="an-md-label">${label}</div><div class="an-md-value">${valText}</div>${deltaHtml}</div>`;
   }).join('');
 
+  // Заявки за месяц — по каналам, из той же структуры, что использует раздел «Заявки».
+  const leadsMonth = AN_LEADS[year] && AN_LEADS[year][mi];
+  let leadsHtml;
+  if(leadsMonth){
+    const chips = AN_LEADS_CHANNELS.filter(c=> leadsMonth[c.key]).map(c=>
+      `<span class="an-month-lead-chip"><i style="background:${c.color}"></i>${c.label}<b>${fmt(leadsMonth[c.key].leads)}</b></span>`
+    ).join('');
+    const total = AN_LEADS_CHANNELS.reduce((s,c)=> s + (leadsMonth[c.key] ? leadsMonth[c.key].leads : 0), 0);
+    leadsHtml = chips
+      ? `<div class="an-month-leads-row">${chips}</div><div class="an-month-leads-total">Всего по загруженным каналам: <b>${fmt(total)}</b> заявок за месяц.</div>`
+      : `<div class="an-leads-empty" style="padding:12px;">Заявки по каналам за этот месяц ещё не выгружены.</div>`;
+  } else {
+    leadsHtml = `<div class="an-leads-empty" style="padding:12px;">Заявки по каналам за этот месяц ещё не выгружены.</div>`;
+  }
+
+  // Динамика год к году (только там, где есть с чем сравнить — см. anYoyDelta).
+  const yoyChips = AN_MD_FIELDS.map(([key,label])=>{
+    const yd = anYoyDelta(year, mi, key);
+    if(yd==null) return '';
+    return `<span class="an-yoy-chip ${yd>=0?'up':'down'}">${label}: ${yd>=0?'+':''}${yd.toFixed(1)}%</span>`;
+  }).filter(Boolean).join('');
+  const dynamicsHtml = yoyChips ? `<div class="an-month-subhead">Динамика год к году</div><div class="an-month-dynamics-row">${yoyChips}</div>` : '';
+
   const daily = anDailyForMonth(year, mi);
   let chartHtml, tableHtml = '';
   if(daily && daily.length){
-    const labels = daily.map(d=> String(d[0]));
     chartHtml = `<div class="line-chart-wrap" id="anMonthChart_${year}_${mi}"></div>`;
     const rows = daily.map(d=>{
       const day=d[0], rc=d[1], rev=d[2], ac=d[3], ad=d[4], vis=d[5], cv=d[6];
@@ -4374,7 +4465,15 @@ function anRenderMonthDetail(year, mi){
     chartHtml = `<div class="an-leads-empty" style="padding:20px 12px;">Ежедневная детализация для этого месяца пока не загружена.</div>`;
   }
 
-  bodyEl.innerHTML = `<div class="an-month-detail"><div class="an-md-kpis">${kpiHtml}</div>${chartHtml}${tableHtml}</div>`;
+  bodyEl.innerHTML = `<div class="an-month-detail">
+    <div class="an-month-subhead">Основные показатели</div>
+    <div class="an-md-kpis">${kpiHtml}</div>
+    <div class="an-month-subhead">Заявки за месяц</div>
+    ${leadsHtml}
+    ${dynamicsHtml}
+    <div class="an-month-subhead">Детализация по дням</div>
+    ${chartHtml}${tableHtml}
+  </div>`;
   if(daily && daily.length){
     renderLineChart('anMonthChart_'+year+'_'+mi, [{ label:'Выручка по дням', color:'var(--amber)', values: daily.map(d=> d[2]) }],
       { labels: daily.map(d=>String(d[0])), labelsShort: daily.map(d=>String(d[0])), suffix:' ₽', height:140 });
@@ -4383,45 +4482,64 @@ function anRenderMonthDetail(year, mi){
 }
 
 window.anToggleMonthDetail = function(year, mi){
-  const row = document.getElementById('anMonthDetail_'+year+'_'+mi);
-  const header = document.getElementById('anMonthHeader_'+year+'_'+mi);
-  if(!row) return;
-  const willOpen = row.style.display === 'none' || !row.style.display;
-  row.style.display = willOpen ? 'table-row' : 'none';
-  if(header) header.classList.toggle('is-expanded', willOpen);
+  const card = document.getElementById('anMonthCard_'+year+'_'+mi);
+  if(!card || card.classList.contains('is-missing')) return;
+  const willOpen = !card.classList.contains('is-expanded');
+  card.classList.toggle('is-expanded', willOpen);
   if(willOpen) anRenderMonthDetail(year, mi);
 };
 
-function anRenderMonthTable(year){
-  const el = document.getElementById('anMonthTable'+year);
+function anRenderMonthCards(year){
+  const el = document.getElementById('anMonthCards'+year);
+  const navEl = document.getElementById('anMonthNav'+year);
   if(!el) return;
   const s = anYearStats(year);
-  let rows = '';
+  let cards = '', nav = '';
   for(let i=0;i<12;i++){
     const m = AN_SALES[year][i];
     if(!m){
-      rows += `<tr class="is-missing-month"><td>${AN_MONTHS[i]}</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>`;
+      cards += `<div class="an-month-card is-missing" id="anMonthCard_${year}_${i}">
+        <div class="an-month-card-head">
+          <div class="an-month-card-title">${AN_MONTHS[i]} ${year}</div>
+          <div class="an-month-card-summary">нет выгрузки</div>
+        </div>
+      </div>`;
+      nav += `<span class="an-month-quicknav-pill is-missing">${AN_MONTHS_SHORT[i]}</span>`;
       continue;
     }
-    const cls = i===s.bestIdx ? 'is-best-month' : (i===s.worstIdx ? 'is-worst-month' : '');
-    const badge = i===s.bestIdx ? ' <span class="month-badge best">пик</span>' : (i===s.worstIdx ? ' <span class="month-badge worst">мин</span>' : '');
-    const conv = m.visitors!=null ? (m.receipts/m.visitors*100).toFixed(1)+'%' : '—';
-    const visitorsText = m.visitors!=null ? fmt(m.visitors) : '—';
-    rows += `<tr class="an-month-row ${cls}" id="anMonthHeader_${year}_${i}" onclick="anToggleMonthDetail('${year}',${i})">
-      <td>${AN_MONTHS[i]}${badge}<span class="an-expand-hint">▾</span></td>
-      <td class="num">${fmt(m.revenue)} ₽</td>
-      <td class="num">${fmt(m.receipts)}</td>
-      <td class="num">${fmt(Math.round(m.avgCheck))} ₽</td>
-      <td class="num">${m.avgDepth.toFixed(2)}</td>
-      <td class="num">${visitorsText}</td>
-      <td class="num">${conv}</td>
-    </tr>
-    <tr class="an-month-detail-row" id="anMonthDetail_${year}_${i}" style="display:none;">
-      <td colspan="7"><div id="anMonthDetailBody_${year}_${i}"></div></td>
-    </tr>`;
+    const isBest = i===s.bestIdx, isWorst = i===s.worstIdx;
+    const cls = isBest ? 'is-best' : (isWorst ? 'is-worst' : '');
+    const badge = isBest ? ' <span class="month-badge best">пик</span>' : (isWorst ? ' <span class="month-badge worst">мин</span>' : '');
+    cards += `<div class="an-month-card ${cls}" id="anMonthCard_${year}_${i}">
+      <div class="an-month-card-head" onclick="anToggleMonthDetail('${year}',${i})">
+        <div class="an-month-card-title">${AN_MONTHS[i]} ${year}${badge}</div>
+        <div class="an-month-card-summary">
+          <span><b>${fmt(m.revenue)} ₽</b> выручка</span>
+          <span><b>${fmt(m.receipts)}</b> чеков</span>
+        </div>
+        <span class="an-expand-hint">▾</span>
+      </div>
+      <div class="an-month-card-body-wrap"><div class="an-month-card-body-inner">
+        <div class="an-month-card-body" id="anMonthDetailBody_${year}_${i}"></div>
+      </div></div>
+    </div>`;
+    nav += `<span class="an-month-quicknav-pill ${cls}" onclick="anJumpToMonth('${year}',${i})">${AN_MONTHS_SHORT[i]}</span>`;
   }
-  el.innerHTML = rows;
+  el.innerHTML = cards;
+  if(navEl) navEl.innerHTML = nav;
 }
+
+// Быстрый переход: раскрывает карточку месяца и подскраливает к ней.
+window.anJumpToMonth = function(year, mi){
+  const card = document.getElementById('anMonthCard_'+year+'_'+mi);
+  if(!card) return;
+  // Скроллим, пока карточка ещё свёрнута (её позиция стабильна), и только потом
+  // раскрываем — иначе анимация раскрытия (растущая высота) сбивает плавный скролл в процессе.
+  card.scrollIntoView({ behavior:'smooth', block:'start' });
+  if(!card.classList.contains('is-expanded')){
+    setTimeout(()=> window.anToggleMonthDetail(year, mi), 320);
+  }
+};
 
 function anRenderYear(year){
   anRenderKpi(year);
@@ -4429,7 +4547,7 @@ function anRenderYear(year){
   renderLineChart('anLine'+year, [{ label:'Выручка', color:'var(--amber)', values: AN_SALES[year].map(m=> m ? m.revenue : null) }], { suffix:' ₽' });
   renderSalesBarChart('anBars'+year, AN_SALES[year].map(m=> m ? m.receipts : null));
   anRenderDonut(year);
-  anRenderMonthTable(year);
+  anRenderMonthCards(year);
   anRenderSummary(year);
 }
 
