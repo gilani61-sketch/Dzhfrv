@@ -96,6 +96,11 @@
   }
   .page-tab-btn:hover{ color:var(--ink); background:rgba(255,255,255,0.08); }
   .page-tab-btn.active{ color:#0A0D12; background:var(--amber); border-color:var(--amber); }
+  /* 2025 — закрытый отчётный год: холодный синий акцент, отдельно от «текущего» оранжевого 2026,
+     чтобы годы всегда различались по цвету, даже когда шапка периода уже прокручена мимо. */
+  .year-tab-btn.active[data-year="2025"], .an-year-tab-btn.active[data-ayear="2025"]{
+    background:var(--blue); border-color:var(--blue);
+  }
   @media (max-width:640px){ .page-tab-btn{ padding:8px 11px; font-size:12.5px; } }
 
   /* ===== PAGES (Главная / Финансы / Статистика) ===== */
@@ -148,6 +153,11 @@
   .hero-desc{ color:var(--ink-dim); font-size:16px; max-width:560px; margin-top:18px; }
   @media (max-width:640px){ h1.hero-title{ font-size:32px; } }
 
+  /* Тот же принцип, что и у вкладок годов: 2025 (закрытый отчёт) — синий, 2026 (текущий, с Roadmap) — оранжевый. */
+  #year-2025 .eyebrow{ color:var(--blue); background:rgba(77,168,255,0.08); border-color:rgba(77,168,255,0.25); }
+  #year-2025 .eyebrow .dot{ background:var(--blue); box-shadow:0 0 8px var(--blue); }
+  #year-2025 h1.hero-title span{ color:var(--blue); }
+
   .hero-figure{
     margin-top:44px; display:grid; grid-template-columns: 1.3fr 1fr; gap:1px;
     background:var(--line); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;
@@ -173,6 +183,22 @@
   .sec-title{ font-family:'Rubik'; font-size:28px; font-weight:600; letter-spacing:-0.01em;}
   .sec-note{ color:var(--ink-dim); font-size:13.5px; max-width:340px; text-align:right;}
   @media (max-width:700px){ .sec-note{ text-align:left; } }
+
+  /* Бейдж периода вверху вкладки Аналитики — та же логика цвета, что у вкладок/шапки Финансов:
+     2025 синий (закрытый год), 2026 оранжевый (текущий), сравнение — оба цвета вместе. */
+  .period-badge{
+    display:inline-flex; align-items:center; gap:8px; font-family:'JetBrains Mono'; font-size:12px;
+    letter-spacing:0.06em; text-transform:uppercase; padding:6px 12px; border-radius:100px; margin-bottom:18px;
+  }
+  .period-badge .dot{ width:6px; height:6px; border-radius:50%; animation:pulse 2s infinite; flex-shrink:0; }
+  .period-badge.is-2025{ color:var(--blue); background:rgba(77,168,255,0.08); border:1px solid rgba(77,168,255,0.25); }
+  .period-badge.is-2025 .dot{ background:var(--blue); box-shadow:0 0 8px var(--blue); }
+  .period-badge.is-2026{ color:var(--amber); background:rgba(255,122,69,0.08); border:1px solid rgba(255,122,69,0.25); }
+  .period-badge.is-2026 .dot{ background:var(--amber); box-shadow:0 0 8px var(--amber); }
+  .period-badge.is-compare{ color:var(--ink-dim); background:rgba(255,255,255,0.03); border:1px solid var(--line); }
+  .period-badge .dot2025, .period-badge .dot2026{ width:6px; height:6px; border-radius:50%; flex-shrink:0; display:inline-block; }
+  .period-badge .dot2025{ background:var(--blue); box-shadow:0 0 8px var(--blue); }
+  .period-badge .dot2026{ background:var(--amber); box-shadow:0 0 8px var(--amber); margin-left:-2px; }
 
   /* ===== KPI GRID ===== */
   .kpi-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
@@ -334,6 +360,14 @@
   .cc-table.matrix-table{ min-width:1500px; }
   .cc-table.roadmap-table{ min-width:1000px; }
   .cc-table.matrix-table td:first-child, .cc-table.matrix-table th:first-child{ position:sticky; left:0; background:var(--card); }
+  /* Зебра для широких матриц категория×месяц — так глазу легче удержать строку при горизонтальном
+     скролле. Замороженный первый столбец красим отдельно тем же тоном, иначе на нём зебра не видна. */
+  .cc-table.matrix-table tbody tr:nth-child(even) td, .cc-table.roadmap-table tbody tr:nth-child(even) td{
+    background:rgba(255,255,255,0.018);
+  }
+  .cc-table.matrix-table tbody tr:nth-child(even) td:first-child{ background:#161616; }
+  .cc-table.matrix-table tbody tr:hover td, .cc-table.roadmap-table tbody tr:hover td{ background:rgba(255,122,69,0.045); }
+  .cc-table.matrix-table tbody tr:hover td:first-child{ background:#1C1712; }
   .cc-table th{
     text-align:right; font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-mute);
     padding:0 8px 10px; font-weight:500; border-bottom:1px solid var(--line); white-space:nowrap;
@@ -1944,6 +1978,7 @@
     </div>
 
     <div class="an-year-pane active" id="analytics-2025">
+      <div class="period-badge is-2025"><span class="dot"></span>2025 · Закрытый год, полная выгрузка</div>
       <div class="kpi-grid cols-6" id="anKpi2025"></div>
       <div class="an-insight-row" id="anInsight2025"></div>
       <div class="card reveal">
@@ -1980,6 +2015,7 @@
     </div>
 
     <div class="an-year-pane" id="analytics-2026">
+      <div class="period-badge is-2026"><span class="dot"></span>2026 · Текущий год, факт + план</div>
       <div class="kpi-grid cols-6" id="anKpi2026"></div>
       <div class="an-insight-row" id="anInsight2026"></div>
       <div class="card reveal">
@@ -2016,6 +2052,7 @@
     </div>
 
     <div class="an-year-pane" id="analytics-compare">
+      <div class="period-badge is-compare"><span class="dot2025"></span><span class="dot2026"></span>2025 + 2026 · Оба периода рядом</div>
       <div class="sec-head" style="margin-bottom:14px;">
         <div>
           <div class="sec-eyebrow">2025 vs 2026</div>
