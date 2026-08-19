@@ -854,10 +854,13 @@
   .an-month-cards{ display:flex; flex-direction:column; gap:12px; }
   .an-month-card{
     background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden;
-    transition:border-color .2s ease, box-shadow .2s ease;
+    transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease;
     scroll-margin-top:84px; /* чтобы быстрый переход не прятал заголовок карточки под липкой навигацией */
   }
   .an-month-card:hover{ border-color:#2E3946; }
+  /* Специфичность выше, чем у .reveal.revealed (тоже трогает transform) — иначе hover-подъём
+     не побеждал бы завершённое появление карточки. */
+  .an-month-card.revealed:hover{ transform:translateY(-2px); box-shadow:0 14px 28px -18px rgba(0,0,0,0.6); }
   .an-month-card.is-best{ border-color:rgba(62,207,142,0.35); }
   .an-month-card.is-worst{ border-color:rgba(255,107,107,0.3); }
   .an-month-card.is-missing{ opacity:0.55; }
@@ -936,6 +939,40 @@
   .avg-table tr, .rank-row{ scroll-margin-top:80px; }
   .highlight-flash{ animation:highlightFlash 1.1s ease; }
   @keyframes highlightFlash{ 0%{ background:rgba(255,122,69,0.18);} 100%{ background:transparent;} }
+
+  /* Стаггер появления в сетках/списках карточек. Наблюдатель пересечения (IntersectionObserver)
+     реагирует почти одновременно на соседние элементы одной сетки — без явной задержки все
+     карточки проявлялись бы разом, одним блоком. Задаём нарастающую transition-delay по порядку
+     в DOM (только сама задержка — .transition-property/duration уже заданы правилами выше и не
+     переопределяются), чтобы карточки шли волной друг за другом. */
+  .kpi-grid .kpi.reveal:nth-child(1){ transition-delay:0ms; }
+  .kpi-grid .kpi.reveal:nth-child(2){ transition-delay:40ms; }
+  .kpi-grid .kpi.reveal:nth-child(3){ transition-delay:80ms; }
+  .kpi-grid .kpi.reveal:nth-child(4){ transition-delay:120ms; }
+  .kpi-grid .kpi.reveal:nth-child(5){ transition-delay:160ms; }
+  .kpi-grid .kpi.reveal:nth-child(6){ transition-delay:200ms; }
+
+  .an-lead-cards .an-lead-card.reveal:nth-child(1){ transition-delay:0ms; }
+  .an-lead-cards .an-lead-card.reveal:nth-child(2){ transition-delay:35ms; }
+  .an-lead-cards .an-lead-card.reveal:nth-child(3){ transition-delay:70ms; }
+  .an-lead-cards .an-lead-card.reveal:nth-child(4){ transition-delay:105ms; }
+  .an-lead-cards .an-lead-card.reveal:nth-child(5){ transition-delay:140ms; }
+  .an-lead-cards .an-lead-card.reveal:nth-child(6){ transition-delay:175ms; }
+  .an-lead-cards .an-lead-card.reveal:nth-child(7){ transition-delay:210ms; }
+  .an-lead-cards .an-lead-card.reveal:nth-child(8){ transition-delay:245ms; }
+
+  .an-month-cards .an-month-card.reveal:nth-child(1){ transition-delay:0ms; }
+  .an-month-cards .an-month-card.reveal:nth-child(2){ transition-delay:30ms; }
+  .an-month-cards .an-month-card.reveal:nth-child(3){ transition-delay:60ms; }
+  .an-month-cards .an-month-card.reveal:nth-child(4){ transition-delay:90ms; }
+  .an-month-cards .an-month-card.reveal:nth-child(5){ transition-delay:120ms; }
+  .an-month-cards .an-month-card.reveal:nth-child(6){ transition-delay:150ms; }
+  .an-month-cards .an-month-card.reveal:nth-child(7){ transition-delay:180ms; }
+  .an-month-cards .an-month-card.reveal:nth-child(8){ transition-delay:210ms; }
+  .an-month-cards .an-month-card.reveal:nth-child(9){ transition-delay:240ms; }
+  .an-month-cards .an-month-card.reveal:nth-child(10){ transition-delay:270ms; }
+  .an-month-cards .an-month-card.reveal:nth-child(11){ transition-delay:300ms; }
+  .an-month-cards .an-month-card.reveal:nth-child(12){ transition-delay:330ms; }
 </style>
 </head>
 <body>
@@ -4599,7 +4636,7 @@ function anRenderMonthCards(year){
     const isBest = i===s.bestIdx, isWorst = i===s.worstIdx;
     const cls = isBest ? 'is-best' : (isWorst ? 'is-worst' : '');
     const badge = isBest ? ' <span class="month-badge best">пик</span>' : (isWorst ? ' <span class="month-badge worst">мин</span>' : '');
-    cards += `<div class="an-month-card ${cls}" id="anMonthCard_${year}_${i}">
+    cards += `<div class="an-month-card reveal ${cls}" id="anMonthCard_${year}_${i}">
       <div class="an-month-card-head" onclick="anToggleMonthDetail('${year}',${i})">
         <div class="an-month-card-title">${AN_MONTHS[i]} ${year}${badge}</div>
         <div class="an-month-card-summary">
