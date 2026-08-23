@@ -4634,6 +4634,7 @@ let anMorphReady = false;
     document.querySelectorAll('.an-chevron-slot').forEach(slot => {
       const mi = document.createElement('morph-icon');
       mi.className = 'an-chevron';
+      mi.setAttribute('reducedMotion', 'user'); // уважаем системную настройку "уменьшить движение"
       mi.icon = AN_CHEVRON_DOWN;
       mi.setAttribute('label', 'Развернуть месяц');
       slot.innerHTML = '';
