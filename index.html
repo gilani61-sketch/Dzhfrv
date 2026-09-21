@@ -985,6 +985,7 @@
   .an-month-cards .an-month-card.reveal:nth-child(11){ transition-delay:300ms; }
   .an-month-cards .an-month-card.reveal:nth-child(12){ transition-delay:330ms; }
 </style>
+<link rel="stylesheet" href="assets/design.css">
 </head>
 <body>
 
@@ -1013,8 +1014,8 @@
   <header class="hero home-hero">
     <div class="wrap">
       <div class="eyebrow"><span class="dot"></span>Обер · Маркетинг</div>
-      <h1 class="hero-title">Маркетинг <span>«Обер»</span>: центр управления бюджетом и каналами</h1>
-      <p class="hero-desc">Здесь собрана финансовая отчётность, статистика по каналам и планирование бюджета — всё для управления маркетингом «Обер» в одном месте.</p>
+      <h1 class="hero-title">Маркетинг «Обер».<span>Всё под контролем.</span></h1>
+      <p class="hero-desc">Бюджет, каналы и результаты — в одном рабочем пространстве. От общей картины до каждой статьи расходов.</p>
 
       <div class="home-cards">
         <div class="home-card" onclick="switchPage('finance')">
@@ -1030,7 +1031,7 @@
           <div class="hc-arrow">Открыть →</div>
         </div>
       </div>
-      <div class="home-soon">Новые разделы появятся здесь позже.</div>
+      
     </div>
   </header>
 </div>
@@ -5127,7 +5128,7 @@ function animateCounter(el){
   if(isNaN(target)) return;
   const decimals = parseInt(el.dataset.decimals || '0', 10);
   const suffix = el.dataset.suffix || '';
-  const duration = 1100;
+  const duration = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : 200;
   const start = performance.now();
   function frame(now){
     const p = Math.min((now-start)/duration, 1);
@@ -5200,5 +5201,6 @@ function growDonut(){
   showErrorBanner((err && err.message) ? err.message : String(err));
 }
 </script>
+<script src="assets/design.js"></script>
 </body>
 </html>
