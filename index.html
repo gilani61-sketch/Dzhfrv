@@ -3424,10 +3424,9 @@ const AN_SALES = {
     { revenue:26787245, receipts:19775, avgCheck:1354.60, avgDepth:2.79, visitors:38457 },
     { revenue:28817356, receipts:19815, avgCheck:1454.32, avgDepth:2.70, visitors:39092 }
   ],
-  // Посетители за 2026 (январь–июнь) — со скриншота переписки, доложены отдельно от
-  // остальной статистики продаж. За июль 2026 цифра пришла тоже (36 748), но привязать
-  // её пока некуда — нет остальной статистики продаж за июль 2026 (выручка/чеки), поэтому
-  // месяц остаётся null целиком, пока не появится полная выгрузка.
+  // Январь–июнь 2026 — ранее загруженные данные. Июль и август — месячные итоги
+  // из отчётов (выручка, чеки, средний чек, глубина и посетители); дневной
+  // детализации для этих двух месяцев пока нет.
   '2026': [
     { revenue:27173253.10, receipts:17221, avgCheck:1389.14, avgDepth:2.74, visitors:34645 },
     { revenue:22793379.54, receipts:15289, avgCheck:1376.18, avgDepth:2.71, visitors:31687 },
@@ -3435,7 +3434,9 @@ const AN_SALES = {
     { revenue:28457184.54, receipts:18931, avgCheck:1498.88, avgDepth:2.80, visitors:39682 },
     { revenue:29861192.69, receipts:20849, avgCheck:1382.99, avgDepth:2.78, visitors:37349 },
     { revenue:31686808.82, receipts:20676, avgCheck:1318.53, avgDepth:2.84, visitors:38760 },
-    null, null, null, null, null, null
+    { revenue:34154970.80, receipts:21204, avgCheck:1452.64, avgDepth:2.81, visitors:36748 },
+    { revenue:30608594.61, receipts:20333, avgCheck:1370.85, avgDepth:2.68, visitors:36994 },
+    null, null, null, null
   ]
 };
 
@@ -4791,8 +4792,7 @@ function anRenderVisitorsCompare(){
         `По ${commonIdx.length} общим ${rmWordForm(commonIdx.length,'месяцу','месяцам','месяцам')} посетителей в 2026 году ${totalD>=0?'больше':'меньше'} на <b style="color:${totalD>=0?'var(--green)':'var(--red)'}">${totalD>=0?'+':''}${totalD.toFixed(1)}%</b> (${fmt(sum25)} → ${fmt(sum26)}).`,
         `Сильнее всего трафик вырос в <b>${AN_MONTHS[bestJump.i]}</b> (${fmt(bestJump.a)} → ${fmt(bestJump.b)}, <b style="color:var(--green)">+${bestJump.d.toFixed(1)}%</b>).`,
         `Сильнее всего просел в <b>${AN_MONTHS[worstDrop.i]}</b> (${fmt(worstDrop.a)} → ${fmt(worstDrop.b)}, <b style="color:var(--red)">${worstDrop.d.toFixed(1)}%</b>).`,
-        `2026 обогнал 2025 по посетителям в ${risingMonths.length} из ${commonIdx.length} ${rmWordForm(commonIdx.length,'месяце','месяцах','месяцах')} (${risingMonths.length?risingMonths.map(i=>AN_MONTHS[i]).join(', ').toLowerCase():'—'}), просел в ${fallingMonths.length} (${fallingMonths.length?fallingMonths.map(i=>AN_MONTHS[i]).join(', ').toLowerCase():'—'}).`,
-        `Цифра за июль 2026 (36 748 посетителей) пока не включена в сравнение — нет остальной статистики продаж за этот месяц (выручка, чеки), не с чем сопоставлять. Добавится автоматически, как только появится полная выгрузка за июль.`
+        `2026 обогнал 2025 по посетителям в ${risingMonths.length} из ${commonIdx.length} ${rmWordForm(commonIdx.length,'месяце','месяцах','месяцах')} (${risingMonths.length?risingMonths.map(i=>AN_MONTHS[i]).join(', ').toLowerCase():'—'}), просел в ${fallingMonths.length} (${fallingMonths.length?fallingMonths.map(i=>AN_MONTHS[i]).join(', ').toLowerCase():'—'}).`
       ];
       insightsEl.innerHTML = `<div class="card-title">Инсайты — посетители 2025 vs 2026</div><ul class="an-insight-list">${bullets.map(b=>`<li>${b}</li>`).join('')}</ul>`;
     }
@@ -5089,7 +5089,7 @@ function anRenderCompare(){
     concEl.innerHTML = `
       <div class="card-title">Выводы по сравнению периодов</div>
       ${growthBlock}
-      <div class="callout"><b>Про сопоставимость:</b> 2025 год пересчитан из полной ежедневной выгрузки, средний чек и глубина чека теперь на одной методике с 2026 годом (ранее показатели за 2025 год были рассчитаны неверно и не совпадали по масштабу — это исправлено). Посетители за 2026 (январь–июнь) добавлены отдельно и уже участвуют в колонках «Посет. 2026» и «Конв. 2026» — за июль 2026 данные пришли, но без остальной статистики продаж месяц пока не входит в сравнение.</div>
+      <div class="callout"><b>Про сопоставимость:</b> 2025 год пересчитан из полной ежедневной выгрузки. Месячные итоги за июль и август 2026 года включены в сравнение; детализация по дням за эти месяцы пока не загружена. Средний чек в сводном сравнении рассчитывается как выручка ÷ количество чеков.</div>
     `;
   }
   anRenderVisitorsCompare();
