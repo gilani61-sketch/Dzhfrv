@@ -985,7 +985,7 @@
   .an-month-cards .an-month-card.reveal:nth-child(11){ transition-delay:300ms; }
   .an-month-cards .an-month-card.reveal:nth-child(12){ transition-delay:330ms; }
 </style>
-<link rel="stylesheet" href="assets/design.css">
+<link rel="stylesheet" href="assets/blocks.css">
 </head>
 <body>
 
@@ -1016,6 +1016,7 @@
       <div class="eyebrow"><span class="dot"></span>Обер · Маркетинг</div>
       <h1 class="hero-title">Маркетинг «Обер».<span>Всё под контролем.</span></h1>
       <p class="hero-desc">Бюджет, каналы и результаты — в одном рабочем пространстве. От общей картины до каждой статьи расходов.</p>
+      <div class="ws-overview" id="workspaceOverview" aria-label="Последний загруженный месяц продаж"></div>
 
       <div class="home-cards">
         <div class="home-card" onclick="switchPage('finance')">
@@ -2064,7 +2065,7 @@
     </div>
 
     <div class="an-year-pane" id="analytics-2026">
-      <div class="period-badge is-2026"><span class="dot"></span>2026 · Текущий год, факт + план</div>
+      <div class="period-badge is-2026"><span class="dot"></span>2026 · Продажи: факт за январь–сентябрь</div>
       <div class="kpi-grid cols-6" id="anKpi2026"></div>
       <div class="an-insight-row" id="anInsight2026"></div>
       <div class="card reveal">
@@ -2137,7 +2138,7 @@
           <div class="line-chart-wrap" id="anCompareLine"></div>
         </div>
         <div class="card reveal">
-          <div class="card-title">Средний чек — 2025 и 2026</div>
+          <div class="card-title">Расчётный средний чек — 2025 и 2026</div>
           <div class="card-desc">Выручка ÷ количество чеков, помесячно.</div>
           <div class="line-chart-wrap" id="anCompareLineCheck"></div>
         </div>
@@ -2332,7 +2333,7 @@
 <footer>
   <div class="wrap">
     <div class="f-text">Обер · Маркетинг · финансы, статистика и планирование</div>
-    <div class="f-text mono">Обновлено июль 2026</div>
+    <div class="f-text mono">Продажи: факт по сентябрь 2026 включительно</div>
   </div>
 </footer>
 
@@ -3606,9 +3607,11 @@ function anYearStats(year){
 }
 
 function anKpiTile(accent, label, count, decimals, suffix, sub){
+  const hasValue = count != null && Number.isFinite(count);
+  const value = hasValue ? count.toLocaleString('ru-RU', { minimumFractionDigits:decimals, maximumFractionDigits:decimals }) + suffix : '—';
   return `<div class="kpi reveal" style="--kpi-accent:${accent}">
     <div class="kpi-label">${label}</div>
-    <div class="kpi-value mono" data-count="${count}" data-decimals="${decimals}" data-suffix="${suffix}">0${suffix}</div>
+    <div class="kpi-value mono"${hasValue ? ` data-count="${count}" data-decimals="${decimals}" data-suffix="${suffix}"` : ''}>${value}</div>
     <div class="kpi-sub">${sub}</div>
   </div>`;
 }
@@ -3618,13 +3621,14 @@ function anRenderKpi(year){
   if(!el) return;
   const s = anYearStats(year);
   const monthsWord = rmWordForm(s.avail.length, 'месяц', 'месяца', 'месяцев');
+  const period = `${AN_MONTHS_SHORT[s.avail[0]]}–${AN_MONTHS_SHORT[s.avail[s.avail.length-1]]} ${year}`;
   el.innerHTML = [
-    anKpiTile('var(--amber)', 'Общая выручка', Math.round(s.totalRevenue), 0, ' ₽', `за ${s.avail.length} ${monthsWord}`),
-    anKpiTile('var(--blue)', 'Чеков пробито', s.totalReceipts, 0, '', 'сумма по загруженным месяцам'),
-    anKpiTile('var(--green)', 'Средний чек', Math.round(s.avgCheck), 0, ' ₽', 'выручка / чеков (сопоставимо между годами)'),
+    anKpiTile('var(--amber)', 'Общая выручка', Math.round(s.totalRevenue), 0, ' ₽', `${period} · ${s.avail.length} ${monthsWord}`),
+    anKpiTile('var(--blue)', 'Чеков пробито', s.totalReceipts, 0, '', `${period} · сумма за период`),
+    anKpiTile('var(--green)', 'Расчётный средний чек', s.avgCheck, 2, ' ₽', 'выручка ÷ количество чеков за период'),
     anKpiTile('var(--amber)', 'Глубина чека', s.avgDepth, 2, '', 'средневзвеш. по источнику'),
-    anKpiTile('var(--blue)', 'Посетители', s.totalVisitors == null ? 0 : s.totalVisitors, 0, '', s.totalVisitors == null ? 'нет данных за период' : `за ${s.avail.length} ${monthsWord}`),
-    anKpiTile('var(--green)', 'Конверсия в чек', s.conversion == null ? 0 : s.conversion, 1, '%', s.conversion == null ? 'нет данных о посетителях' : 'посетители → пробитый чек')
+    anKpiTile('var(--blue)', 'Посетители', s.totalVisitors, 0, '', s.totalVisitors == null ? 'нет данных за период' : period),
+    anKpiTile('var(--green)', 'Конверсия в чек', s.conversion, 1, '%', s.conversion == null ? 'нет данных о посетителях' : 'чеки ÷ посетители за период')
   ].join('');
 }
 
@@ -3646,6 +3650,26 @@ function anRenderInsight(year){
   el.innerHTML = chips.join('');
 }
 
+// Home overview derives from the same monthly sales records as Analytics.
+function renderWorkspaceOverview(){
+  const el = document.getElementById('workspaceOverview');
+  const year = Object.keys(AN_SALES).sort().reverse().find(y=>AN_SALES[y].some(Boolean));
+  if(!el || !year) return;
+  const mi = AN_SALES[year].reduce((last,m,i)=>m?i:last,-1);
+  const month = AN_SALES[year][mi], prev = mi>0 ? AN_SALES[year][mi-1] : null;
+  const deltaText = key => {
+    if(!prev || prev[key]==null || !prev[key] || month[key]==null) return 'нет сопоставимого предыдущего месяца';
+    const d = (month[key]-prev[key])/prev[key]*100;
+    return `<span class="ws-trend ${d<0?'down':''}">${d>=0?'+':''}${d.toFixed(1).replace('.',',')}%</span> к предыдущему месяцу`;
+  };
+  el.innerHTML = `<div class="ws-overview-head"><h2>Последний месяц продаж</h2><span>${AN_MONTHS[mi]} ${year} · месячный отчёт</span></div><div class="kpi-grid">${[
+    anKpiTile('var(--amber)','Выручка',month.revenue,2,' ₽',deltaText('revenue')),
+    anKpiTile('var(--blue)','Количество чеков',month.receipts,0,'',deltaText('receipts')),
+    anKpiTile('var(--green)','Посетители',month.visitors,0,'',deltaText('visitors'))
+  ].join('')}</div><p class="ws-overview-note">Продажи розничного подразделения. Маркетинговые расходы и план бюджета находятся в разделе «Финансы».</p>`;
+}
+renderWorkspaceOverview();
+
 // ---------- Заявки: отдельный BI-раздел (не входит в KPI продаж), готов к автоматическому
 // пересчёту, как только AN_LEADS['2025']/['2026'] заполнятся выгрузкой из Bitrix24/Авито ----------
 let anLeadsSelectedChannel = null;
@@ -3653,7 +3677,7 @@ let anLeadsSelectedChannel = null;
 function anLeadsYearTotals(year){
   const months = AN_LEADS[year];
   if(!months) return null;
-  const totals = {}; AN_LEADS_CHANNELS.forEach(c=> totals[c.key] = { leads:0, sales:0, hasSales:false });
+  const totals = {}; AN_LEADS_CHANNELS.forEach(c=> totals[c.key] = { leads:0, sales:0, hasSales:false, hasLeads:false });
   let any = false;
   months.forEach(m=>{
     if(!m) return;
@@ -3661,6 +3685,7 @@ function anLeadsYearTotals(year){
       const d = m[c.key];
       if(!d) return;
       any = true;
+      if(d.leads!=null) totals[c.key].hasLeads = true;
       totals[c.key].leads += (d.leads||0);
       if(d.sales!=null){ totals[c.key].sales += d.sales; totals[c.key].hasSales = true; }
     });
@@ -3677,7 +3702,7 @@ function anLeadsCombinedTotals(){
   AN_LEADS_CHANNELS.forEach(c=>{
     const a = t25?t25.totals[c.key]:{leads:0,sales:0,hasSales:false};
     const b = t26?t26.totals[c.key]:{leads:0,sales:0,hasSales:false};
-    totals[c.key] = { leads:a.leads+b.leads, sales:a.sales+b.sales, hasSales:a.hasSales||b.hasSales };
+    totals[c.key] = { leads:a.leads+b.leads, sales:a.sales+b.sales, hasSales:a.hasSales||b.hasSales, hasLeads:a.hasLeads||b.hasLeads };
   });
   const grand = AN_LEADS_CHANNELS.reduce((s,c)=> s+totals[c.key].leads, 0);
   return { totals, grand, t25, t26 };
@@ -3709,9 +3734,9 @@ function anRenderLeadsKpi(){
     if(withConv.length){ bestConvChannel = withConv[0].c.label; bestConvVal = withConv[0].conv.toFixed(1)+'% в продажу'; }
   }
   el.innerHTML = [
-    anKpiTile('var(--amber)', 'Всего заявок', hasAny?grand:0, 0, '', hasAny?'2025 + 2026, все источники':'нет данных — ждём Bitrix/Авито'),
-    anKpiTile('var(--blue)', 'Заявок за 2025', combo&&combo.t25?combo.t25.grand:0, 0, '', combo&&combo.t25?'':'нет данных'),
-    anKpiTile('var(--green)', 'Заявок за 2026', combo&&combo.t26?combo.t26.grand:0, 0, '', combo&&combo.t26?'':'нет данных'),
+    anKpiTile('var(--amber)', 'Заявки в загруженных отчётах', hasAny?grand:null, 0, '', hasAny?'2025 + 2026 · доступные месяцы и каналы':'нет данных — ждём Bitrix/Авито'),
+    anKpiTile('var(--blue)', 'Заявок за 2025', combo&&combo.t25?combo.t25.grand:null, 0, '', combo&&combo.t25?'сумма загруженных месяцев и каналов':'нет данных'),
+    anKpiTile('var(--green)', 'Заявок за 2026', combo&&combo.t26?combo.t26.grand:null, 0, '', combo&&combo.t26?'сумма загруженных месяцев и каналов':'нет данных'),
     `<div class="kpi reveal" style="--kpi-accent:var(--amber)"><div class="kpi-label">Лучший источник</div><div class="kpi-value" style="font-family:'Rubik'; font-size:18px;">${topChannel}</div><div class="kpi-sub">${topShare||'—'}</div></div>`,
     `<div class="kpi reveal" style="--kpi-accent:var(--green)"><div class="kpi-label">Лучшая конверсия в продажу</div><div class="kpi-value" style="font-family:'Rubik'; font-size:18px;">${bestConvChannel}</div><div class="kpi-sub">${bestConvVal||'нет данных о продажах'}</div></div>`,
     anKpiTile('var(--blue)', 'Источников отслеживается', AN_LEADS_CHANNELS.length, 0, '', AN_LEADS_CHANNELS.map(c=>c.label).join(', '))
@@ -3853,7 +3878,7 @@ function anRenderLeadsChannels(){
   const combo = anLeadsCombinedTotals();
   el.innerHTML = AN_LEADS_CHANNELS.map(c=>{
     const t = combo ? combo.totals[c.key] : null;
-    const hasData = !!(t && t.leads>0);
+    const hasData = !!(t && t.hasLeads);
     const pct = hasData && combo.grand>0 ? (t.leads/combo.grand*100).toFixed(1)+'%' : '—';
     return `<div class="an-lead-card reveal" id="anLeadCard_${c.key}" style="--lead-accent:${c.color}" onclick="anSelectLeadsChannel('${c.key}')">
       <div class="an-lead-icon" style="background:${c.color}22; color:${c.color};">${c.label.slice(0,2).toUpperCase()}</div>
@@ -4375,6 +4400,7 @@ function renderLineChart(wrapId, series, opts){
   const W = 640, H = opts.height || 180, padX = 8, padY = 14;
   const allVals = [];
   series.forEach(s=> s.values.forEach(v=>{ if(v!=null) allVals.push(v); }));
+  if(!allVals.length){ wrap.innerHTML='<div class="an-leads-empty" style="padding:24px">Нет данных за этот период.</div>'; return; }
   const max = allVals.length ? Math.max(...allVals) : 1;
   const min = allVals.length ? Math.min(0, Math.min(...allVals)) : 0;
   const range = (max-min) || 1;
@@ -4399,7 +4425,7 @@ function renderLineChart(wrapId, series, opts){
       if(current===null){ current = 'M'+pt; segments.push(current); }
       else { segments[segments.length-1] += ' L'+pt; }
       current = segments[segments.length-1];
-      dotsSvg += `<circle class="line-chart-dot" cx="${xOf(i).toFixed(1)}" cy="${yOf(v).toFixed(1)}" r="3.5" fill="${s.color}"><title>${labels[i]}: ${fmt(v)}${opts.suffix||''}</title></circle>`;
+      dotsSvg += `<circle class="line-chart-dot" cx="${xOf(i).toFixed(1)}" cy="${yOf(v).toFixed(1)}" r="3.5" fill="${s.color}"><title>${s.label} · ${labels[i]}: ${fmt(v)}${opts.suffix||''}</title></circle>`;
     });
     segments.forEach(d=>{
       pathsSvg += `<path class="line-chart-path" d="${d}" pathLength="1000" stroke="${s.color}"></path>`;
@@ -4416,7 +4442,8 @@ function renderLineChart(wrapId, series, opts){
   const legendSvg = series.length>1 ? `<div class="an-legend">${series.map(s=>`<div class="an-legend-item"><i style="background:${s.color}"></i>${s.label}</div>`).join('')}</div>` : '';
 
   wrap.innerHTML = `
-    <svg class="line-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <div class="ws-chart-axis"><span>Диапазон: ${fmt(min)}${opts.suffix||''}</span><span>${fmt(max)}${opts.suffix||''}</span></div>
+    <svg class="line-chart-svg" role="img" aria-label="${series.map(s=>s.label).join(', ')} · ${labels[0]}–${labels[n-1]}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
       ${gridSvg}
       ${pathsSvg}
       ${dotsSvg}
@@ -4539,7 +4566,10 @@ function anYoyDelta(year, mi, field){
   const cur = AN_SALES['2026'][mi], prev = AN_SALES['2025'][mi];
   if(!cur || !prev) return null;
   let curVal, prevVal;
-  if(field==='conversion'){
+  if(field==='avgCheck'){
+    if(!cur.receipts || !prev.receipts) return null;
+    curVal = cur.revenue/cur.receipts; prevVal = prev.revenue/prev.receipts;
+  } else if(field==='conversion'){
     if(cur.visitors==null || prev.visitors==null) return null;
     curVal = cur.receipts/cur.visitors*100; prevVal = prev.receipts/prev.visitors*100;
   } else {
@@ -4550,7 +4580,7 @@ function anYoyDelta(year, mi, field){
 }
 
 const AN_MD_FIELDS = [
-  ['revenue','Выручка',' ₽',0], ['receipts','Чеков','',0], ['avgCheck','Ср. чек',' ₽',0],
+  ['revenue','Выручка',' ₽',2], ['receipts','Чеков','',0], ['avgCheck','Средний чек · отчёт',' ₽',2],
   ['avgDepth','Глубина чека','',2], ['visitors','Посетители','',0], ['conversion','Конверсия','%',1]
 ];
 
@@ -4565,7 +4595,7 @@ function anRenderMonthDetail(year, mi){
     const val = valuesByField[key];
     const delta = anMomDelta(year, mi, key);
     const deltaHtml = delta==null ? '<span class="an-mom flat">нет пред. месяца</span>' : `<span class="an-mom ${delta>=0?'up':'down'}">${delta>=0?'+':''}${delta.toFixed(1)}% к пред. мес.</span>`;
-    const valText = val==null ? '—' : (dec>0 ? val.toFixed(dec) : fmt(Math.round(val))) + suffix;
+    const valText = val==null ? '—' : val.toLocaleString('ru-RU', { minimumFractionDigits:dec, maximumFractionDigits:dec }) + suffix;
     return `<div class="an-md-tile"><div class="an-md-label">${label}</div><div class="an-md-value">${valText}</div>${deltaHtml}</div>`;
   }).join('');
 
@@ -4588,7 +4618,7 @@ function anRenderMonthDetail(year, mi){
   const yoyChips = AN_MD_FIELDS.map(([key,label])=>{
     const yd = anYoyDelta(year, mi, key);
     if(yd==null) return '';
-    return `<span class="an-yoy-chip ${yd>=0?'up':'down'}">${label}: ${yd>=0?'+':''}${yd.toFixed(1)}%</span>`;
+    return `<span class="an-yoy-chip ${yd>=0?'up':'down'}">${key==='avgCheck'?'Средний чек · расчёт':label}: ${yd>=0?'+':''}${yd.toFixed(1)}%</span>`;
   }).filter(Boolean).join('');
   const dynamicsHtml = yoyChips ? `<div class="an-month-subhead">Динамика год к году</div><div class="an-month-dynamics-row">${yoyChips}</div>` : '';
 
@@ -4606,8 +4636,9 @@ function anRenderMonthDetail(year, mi){
   }
 
   bodyEl.innerHTML = `<div class="an-month-detail">
-    <div class="an-month-subhead">Основные показатели</div>
+    <div class="an-month-subhead">Основные показатели · ${AN_MONTHS[mi]} ${year}</div>
     <div class="an-md-kpis">${kpiHtml}</div>
+    <div class="ws-overview-note">Средний чек взят из месячного отчёта. В сводке и сравнении используется отдельный показатель: выручка ÷ количество чеков.</div>
     <div class="an-month-subhead">Заявки за месяц</div>
     ${leadsHtml}
     ${dynamicsHtml}
@@ -4958,16 +4989,24 @@ function anRenderCompareSummary(commonIdx, agg){
   // сравнение (весь 2025 год против неполного 2026), которое выглядело бы как обвал заявок,
   // хотя на деле это просто меньше загруженных месяцев.
   let leadsA=0, leadsB=0, hasLeadsA=false, hasLeadsB=false;
+  const matchedLeadMonths = [], matchedLeadChannels = new Set();
   commonIdx.forEach(i=>{
     const ma = AN_LEADS['2025'] && AN_LEADS['2025'][i];
     const mb = AN_LEADS['2026'] && AN_LEADS['2026'][i];
-    if(ma){ hasLeadsA = true; AN_LEADS_CHANNELS.forEach(c=>{ if(ma[c.key]) leadsA += ma[c.key].leads||0; }); }
-    if(mb){ hasLeadsB = true; AN_LEADS_CHANNELS.forEach(c=>{ if(mb[c.key]) leadsB += mb[c.key].leads||0; }); }
+    let matched = false;
+    AN_LEADS_CHANNELS.forEach(c=>{
+      const a = ma && ma[c.key], b = mb && mb[c.key];
+      if(a?.leads==null || b?.leads==null) return;
+      leadsA += a.leads; leadsB += b.leads;
+      hasLeadsA = hasLeadsB = matched = true;
+      matchedLeadChannels.add(c.label);
+    });
+    if(matched) matchedLeadMonths.push(AN_MONTHS[i]);
   });
 
   if(noteEl){
     noteEl.textContent = commonIdx.length
-      ? `Все строки — сумма/пересчёт за ${commonIdx.length} общих ${rmWordForm(commonIdx.length,'месяц','месяца','месяцев')}, где есть выгрузка за оба года: ${commonIdx.map(i=>AN_MONTHS[i]).join(', ').toLowerCase()}. Так сравнение честное — не полный год против неполного.`
+      ? `Продажи — сумма/пересчёт за ${commonIdx.length} общих ${rmWordForm(commonIdx.length,'месяц','месяца','месяцев')}: ${commonIdx.map(i=>AN_MONTHS[i]).join(', ').toLowerCase()}. Заявки — только по совпадающим месяцам и каналам; период указан в строке.`
       : 'Нет ни одного месяца, загруженного одновременно за оба года.';
   }
   const dCls = v => v>1 ? 'up' : (v<-1 ? 'down' : 'flat');
@@ -4981,7 +5020,7 @@ function anRenderCompareSummary(commonIdx, agg){
     { label:'Глубина чека', sub:'позиций в чеке', a:agg.depthA, b:agg.depthB, fmtv:v=>v!=null?v.toFixed(2):'—' },
     { label:'Посетители', sub:'штук', a:agg.sum25vis, b:agg.sum26vis, fmtv:v=>v!=null?fmt(v):'—' },
     { label:'Конверсия', sub:'чеков ÷ посетителей', a:agg.cvA, b:agg.cvB, fmtv:v=>v!=null?v.toFixed(1)+'%':'—' },
-    { label:'Заявки', sub:'по каналам, за общие месяцы', a: hasLeadsA?leadsA:null, b: hasLeadsB?leadsB:null, fmtv:v=>v!=null?fmt(v):'—' }
+    { label:'Заявки', sub:matchedLeadMonths.length ? `совпадающие месяцы и каналы: ${matchedLeadMonths.join(', ').toLowerCase()} · ${[...matchedLeadChannels].join(', ')}` : 'нет совпадающих месяцев и каналов', a: hasLeadsA?leadsA:null, b: hasLeadsB?leadsB:null, fmtv:v=>v!=null?fmt(v):'—' }
   ];
 
   rowsEl.innerHTML = rows.map(r=>{
@@ -5129,20 +5168,8 @@ function animateCounter(el){
   if(isNaN(target)) return;
   const decimals = parseInt(el.dataset.decimals || '0', 10);
   const suffix = el.dataset.suffix || '';
-  const duration = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : 200;
-  const start = performance.now();
-  function frame(now){
-    const p = Math.min((now-start)/duration, 1);
-    const eased = 1 - Math.pow(1-p, 3);
-    const val = target*eased;
-    const formatted = decimals>0
-      ? val.toFixed(decimals).replace('.', ',')
-      : Math.round(val).toLocaleString('ru-RU');
-    el.textContent = formatted + suffix;
-    if(p<1) requestAnimationFrame(frame);
-    else el.textContent = (decimals>0 ? target.toFixed(decimals).replace('.', ',') : Math.round(target).toLocaleString('ru-RU')) + suffix;
-  }
-  requestAnimationFrame(frame);
+  // Financial values appear immediately so readers never see partial totals.
+  el.textContent = target.toLocaleString('ru-RU', { minimumFractionDigits:decimals, maximumFractionDigits:decimals }) + suffix;
 }
 
 function growBars(){
