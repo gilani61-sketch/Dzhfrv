@@ -1,0 +1,20 @@
+/* Colorful analytical layer over the restrained Ober workspace. */
+.ws-donut-card{position:relative;overflow:hidden;background:linear-gradient(150deg,#fff 70%,#fffaf5);border-color:#dfe2e8}
+.ws-donut-card .card-title{font-size:17px}.ws-donut-card .card-desc{max-width:620px}
+.ws-donut-card .donut-wrap{display:grid;grid-template-columns:minmax(160px,.9fr) minmax(0,1fr);gap:20px;padding-block:12px;align-items:center}.ws-donut-card .donut-center{width:min(100%,240px);height:auto;aspect-ratio:1;justify-self:center}.ws-donut-card .donut-svg{width:100%;height:auto}
+.donut-svg circle[data-target-dash]{transition:opacity 180ms ease,stroke-width 180ms ease;cursor:pointer;outline:none}
+.donut-svg circle[data-target-dash]:focus-visible{stroke-width:18;filter:drop-shadow(0 1px 3px #0002)}
+.donut-svg circle.dimmed{opacity:.22}.donut-svg circle.emph{stroke-width:17;opacity:1}
+.ws-donut-card .rank-list{max-height:330px;padding:4px;scrollbar-gutter:stable;min-width:0;overflow-x:hidden}
+.ws-donut-card .rank-row{grid-template-columns:18px minmax(0,1fr) auto;border:0;border-radius:10px;padding:10px 8px;gap:3px 8px;cursor:pointer;transition:background 160ms ease;min-height:54px}.ws-donut-card .rank-row .idx{grid-row:1/3}.ws-donut-card .rank-row .name{display:flex;align-items:center;min-width:0;gap:7px}.ws-donut-card .rank-row .swatch{margin:0}.ws-donut-card .rank-row .pct{width:auto}.ws-donut-card .rank-row .amt{grid-column:2/4;width:auto;text-align:left;white-space:nowrap}
+.ws-donut-card .rank-row:hover,.ws-donut-card .rank-row.hovered,.ws-donut-card .rank-row.ws-active{background:color-mix(in srgb,var(--row-color,#f47721) 9%,white)}
+.ws-donut-card .swatch{width:10px;height:10px;border-radius:3px;flex-shrink:0}.ws-donut-card .rank-row .amt{font-weight:500;font-size:12px}.ws-donut-card .rank-row .pct{font-variant-numeric:tabular-nums}
+.ws-donut-info{background:#f5f6f8;border:1px solid transparent;border-radius:10px;color:#6f737b;font-size:12px;line-height:1.5;padding:12px 14px;margin-top:16px;min-height:44px;transition:background 180ms ease,color 180ms ease}
+.ws-donut-info.is-active{background:#fff3e9;border-color:#f4772129;color:#15191e;font-weight:500}
+.kpi,.home-card,.an-lead-card{transition:box-shadow 180ms ease,border-color 180ms ease,transform 180ms ease}
+.kpi:hover{border-color:#c9cdd6;box-shadow:0 5px 18px #15191e07}.home-card:hover{border-color:#f4772180;box-shadow:0 8px 24px #15191e09}
+.home-card .hc-icon,.ui-icon-box{transition:background 180ms ease,color 180ms ease}.home-card:hover .hc-icon{color:#f47721;background:#fff1e6}
+.home-card .hc-arrow{display:flex;align-items:center;gap:6px;transition:color 180ms ease}.home-card:hover .hc-arrow{color:#c94f0d}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){.kpi.reveal:hover,.home-card:hover{transform:translateY(-2px)!important}}
+@media(max-width:600px){.ws-donut-card .donut-wrap{grid-template-columns:1fr}.ws-donut-card .rank-list{width:100%;max-height:300px}.ws-donut-card .card-title{font-size:15px}.ws-donut-card .rank-row{padding:10px 4px;gap:3px 7px}.ws-donut-card .rank-row .amt{font-size:12px}.ws-donut-info{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.donut-svg circle,.ws-donut-info,.kpi,.home-card,.an-lead-card{transition:none!important;animation:none!important}}

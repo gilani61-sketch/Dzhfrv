@@ -987,6 +987,7 @@
 </style>
 <link rel="stylesheet" href="assets/blocks.css">
 <link rel="stylesheet" href="assets/brex.css">
+<link rel="stylesheet" href="assets/chart-polish.css">
 </head>
 <body>
 
@@ -2675,7 +2676,7 @@ function renderDonut(svgId, labels, values, colors, grand, circlesArr, onHover){
     circle.addEventListener('mouseenter', ()=> onHover(i));
     circle.addEventListener('mouseleave', ()=> onHover(-1));
     const title = document.createElementNS('http://www.w3.org/2000/svg','title');
-    title.textContent = `${labels[i]}: ${fmt(val)} ₽ (${(frac*100).toFixed(1)}%)`;
+    title.textContent = `${labels[i]}: ${fmt(val)}${/anLeads|anGis/.test(svgId)?'':' ₽'} (${(frac*100).toFixed(1)}%)`;
     circle.appendChild(title);
     svg.appendChild(circle);
     circlesArr.push(circle);
