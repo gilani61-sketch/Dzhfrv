@@ -20,6 +20,18 @@ script.md — это и сценарий, и раскадровка одновр
 для озвучки. Порядок реплик в script.md и в timings.json совпадает, поэтому
 тайминги ложатся на субтитры один в один.
 
+Внутри сцены можно добавлять элементы библиотеки:
+
+    ## 03.jpg
+    overlay: dust-01.png
+    badge: год | 1909
+    - Редакции возвращали его рассказы
+
+    ## quote
+    quote: Я напишу об этом так, как никто не писал | Мартин Иден
+
+Мета-строки в шапке: palette, endcard, music, overlay.
+
 Без timings.json длительности считаются по длине текста — удобно, чтобы
 посмотреть черновик до того, как тратить символы ElevenLabs.
 """
@@ -47,21 +59,45 @@ def parse_script(p: Path):
         if s.startswith("# "):
             title = s[2:].strip()
         elif s.startswith("## "):
-            cur = {"src": s[3:].strip(), "lines": []}
+            cur = {"src": s[3:].strip(), "lines": [], "overlays": [],
+                   "badge": None, "quote": None}
             scenes.append(cur)
         elif s.startswith("- "):
             if cur is None:
                 sys.exit("✗ реплика до первого '## файл'")
             cur["lines"].append(s[2:].strip())
-        elif ":" in s and not s.startswith("-") and cur is None and s.strip():
+        elif ":" in s and s.strip():
             k, v = s.split(":", 1)
-            k = k.strip().lower()
-            if k in ("author", "mode", "preset", "watermark", "music", "slug", "fps"):
-                meta[k] = v.strip()
+            k, v = k.strip().lower(), v.strip()
+            if cur is None:
+                if k in ("author", "mode", "preset", "watermark", "music",
+                         "slug", "fps", "palette", "endcard", "overlay"):
+                    meta.setdefault(k, [] if k == "overlay" else v)
+                    if k == "overlay":
+                        meta["overlay"].append(v)
+            else:
+                if k == "overlay":
+                    cur["overlays"].append(v)
+                elif k == "badge" and "|" in v:
+                    lab, val = v.split("|", 1)
+                    cur["badge"] = {"label": lab.strip(), "value": val.strip()}
+                elif k == "quote":
+                    txt, _, src = v.partition("|")
+                    cur["quote"] = {"text": txt.strip(),
+                                    "source": src.strip() or None}
 
     if not scenes:
         sys.exit("✗ в script.md нет сцен ('## файл')")
     return title, meta, scenes
+
+
+ROLE_RE = re.compile(r"^\[([A-Za-z0-9_-]+)\]\s*")
+EMO_RE = re.compile(r"\[[^\]]*\]\s*")
+
+
+def clean(text: str) -> str:
+    """Субтитр не должен содержать служебных тегов роли и эмоции."""
+    return EMO_RE.sub("", ROLE_RE.sub("", text)).strip()
 
 
 def main():
@@ -98,7 +134,7 @@ def main():
             start = t0 - PAD_HEAD if si else 0.0
             for _ in sc["lines"]:
                 tm = timings[k]
-                caps.append({"text": tm["text"],
+                caps.append({"text": clean(tm["text"]),
                              "at": round(tm["at"] - start, 2),
                              "dur": round(tm["dur"], 2)})
                 k += 1
@@ -107,14 +143,23 @@ def main():
         else:
             local = PAD_HEAD if si else 0.6
             for ln in sc["lines"]:
-                d = max(MIN_D, round(len(ln) / CPS, 2))
-                caps.append({"text": ln, "at": round(local, 2), "dur": d})
+                d = max(MIN_D, round(len(clean(ln)) / CPS, 2))
+                caps.append({"text": clean(ln), "at": round(local, 2), "dur": d})
                 local += d + 0.3
                 k += 1
             dur = round(local + PAD_TAIL - 0.3, 2)
 
         dur = max(dur, MIN_SCENE)
-        out_scenes.append({"src": sc["src"], "dur": dur, "captions": caps})
+        node = {"src": sc["src"], "dur": dur, "captions": caps}
+        if sc.get("overlays"):
+            node["overlays"] = [{"src": o, "blend": "screen", "drift": True}
+                                if o.startswith("leak") else {"src": o}
+                                for o in sc["overlays"]]
+        if sc.get("badge"):
+            node["badge"] = sc["badge"]
+        if sc.get("quote"):
+            node["quote"] = sc["quote"]
+        out_scenes.append(node)
         clock += dur
 
     spec = {
@@ -130,6 +175,13 @@ def main():
         "watermark": meta.get("watermark", "@juliapolskayaa"),
         "voice": f"proj/{slug}/audio/voice.mp3" if (proj / "audio" / "voice.mp3").exists() else None,
         "music": f"proj/{slug}/audio/{meta['music']}" if meta.get("music") else None,
+        "palette": meta.get("palette", "literature"),
+        "overlays": [{"src": o, "blend": "screen", "drift": True}
+                     if o.startswith("leak") else {"src": o}
+                     for o in meta.get("overlay", [])],
+        "endCard": ({"handle": meta.get("watermark", "@juliapolskayaa"),
+                     "line": meta["endcard"], "dur": 2.5}
+                    if meta.get("endcard") else None),
         "musicGainDb": -12,
         "grain": True,
         "scenes": out_scenes,
@@ -150,7 +202,8 @@ def main():
             print(f"      {len(t):>3}  {t}")
         print("      в референсе субтитр всегда в одну строку — лучше разбить на два кадра")
 
-    missing = [s["src"] for s in out_scenes if not (proj / "shots" / s["src"]).exists()]
+    missing = [s["src"] for s in out_scenes
+               if not s.get("quote") and not (proj / "shots" / s["src"]).exists()]
     if missing:
         print(f"  ⚠ нет кадров: {', '.join(missing)}")
     print(f"\nРендер:\n  bash scripts/render.sh {slug}")

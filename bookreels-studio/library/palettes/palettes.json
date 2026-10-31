@@ -1,0 +1,58 @@
+{
+  "$meta": {
+    "note": "Палитры по рубрикам. Кадр всегда цветной сам по себе — эти цвета только для текста, плашек, акцентов и фонов титульных карточек.",
+    "usage": "В script.md строкой: palette: literature"
+  },
+  "palettes": {
+    "literature": {
+      "name": "Литература",
+      "mood": "сдержанно, бумага и типографская краска",
+      "ink": "#FFFFFF",
+      "accent": "#E8C9A0",
+      "accentAlt": "#8FB8D8",
+      "deep": "#0E1A24",
+      "paper": "#F2EAD9",
+      "scrimTint": "rgba(8,14,20,0.62)"
+    },
+    "painting": {
+      "name": "Живопись",
+      "mood": "музейный свет, тёплая охра, глубокая тень",
+      "ink": "#FBF6EC",
+      "accent": "#C9A227",
+      "accentAlt": "#A8503C",
+      "deep": "#14100C",
+      "paper": "#EFE3CC",
+      "scrimTint": "rgba(20,14,8,0.64)"
+    },
+    "biography": {
+      "name": "Биографии",
+      "mood": "архивное фото, серебро и сепия",
+      "ink": "#F7F7F5",
+      "accent": "#C4B49A",
+      "accentAlt": "#6E8CA0",
+      "deep": "#17181A",
+      "paper": "#E8E4DC",
+      "scrimTint": "rgba(12,13,15,0.62)"
+    },
+    "nocturne": {
+      "name": "Ночь",
+      "mood": "море, луна, холод — как финал «Мартина Идена»",
+      "ink": "#EAF2FA",
+      "accent": "#9FC4E8",
+      "accentAlt": "#D8C7A0",
+      "deep": "#070E18",
+      "paper": "#D7E2EE",
+      "scrimTint": "rgba(4,8,16,0.66)"
+    },
+    "punch": {
+      "name": "Разборы",
+      "mood": "резко и современно — под режим punch",
+      "ink": "#FFFFFF",
+      "accent": "#FFD54A",
+      "accentAlt": "#FF5A3C",
+      "deep": "#0A0A0B",
+      "paper": "#FFFFFF",
+      "scrimTint": "rgba(0,0,0,0.55)"
+    }
+  }
+}

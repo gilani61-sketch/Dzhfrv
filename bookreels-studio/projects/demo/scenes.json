@@ -11,22 +11,33 @@
   "watermark": "@juliapolskayaa",
   "voice": null,
   "music": null,
+  "palette": "nocturne",
+  "overlays": [
+    {
+      "src": "vignette-cine.png"
+    }
+  ],
+  "endCard": {
+    "handle": "@juliapolskayaa",
+    "line": "ещё о книгах",
+    "dur": 2.5
+  },
   "musicGainDb": -12,
   "grain": true,
   "scenes": [
     {
       "src": "01.jpg",
-      "dur": 5.53,
+      "dur": 4.72,
       "captions": [
         {
-          "text": "Он пришёл в этот дом матросом",
+          "text": "Он пришёл сюда матросом",
           "at": 0.6,
-          "dur": 2.23
+          "dur": 1.77
         },
         {
-          "text": "и остался в нём навсегда",
-          "at": 3.13,
-          "dur": 1.85
+          "text": "и остался навсегда",
+          "at": 2.67,
+          "dur": 1.5
         }
       ]
     },
@@ -39,6 +50,13 @@
           "at": 0.25,
           "dur": 1.5
         }
+      ],
+      "overlays": [
+        {
+          "src": "leak-cold-bl.png",
+          "blend": "screen",
+          "drift": true
+        }
       ]
     },
     {
@@ -46,11 +64,24 @@
       "dur": 3.5,
       "captions": [
         {
-          "text": "Редакции возвращали его рассказы",
+          "text": "Рукописи возвращали",
           "at": 0.25,
-          "dur": 2.46
+          "dur": 1.5
         }
-      ]
+      ],
+      "badge": {
+        "label": "год",
+        "value": "1909"
+      }
+    },
+    {
+      "src": "quote",
+      "dur": 3.5,
+      "captions": [],
+      "quote": {
+        "text": "Он добился всего, чего хотел — и перестал хотеть",
+        "source": "Джек Лондон"
+      }
     },
     {
       "src": "04.jpg",
@@ -60,6 +91,11 @@
           "text": "А потом пришла слава",
           "at": 0.25,
           "dur": 1.54
+        }
+      ],
+      "overlays": [
+        {
+          "src": "dust-01.png"
         }
       ]
     },

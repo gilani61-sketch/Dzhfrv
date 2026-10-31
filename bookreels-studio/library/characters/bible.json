@@ -1,0 +1,32 @@
+{
+  "$meta": {
+    "why": "Главная причина, по которой AI-ролики разваливаются — персонаж в кадре 7 выглядит другим человеком, чем в кадре 1. Лечится одним: описание внешности пишется РАЗ и вставляется в каждый промпт дословно, без синонимов и перестановок.",
+    "how": "В shotlist.md пиши {{char:martin}} — скрипт подставит поле prompt целиком.",
+    "rules": [
+      "Не больше 3 главных персонажей на ролик — зритель не удержит.",
+      "В описании: возраст, волосы, одежда, телосложение. Без эмоций и действий — они меняются от кадра к кадру.",
+      "Одежду не меняй внутри ролика. Если по сюжету надо — заведи второго персонажа: martin-young / martin-rich.",
+      "Этническую и внешнюю принадлежность задавай явно, иначе генератор будет её менять от кадра к кадру."
+    ]
+  },
+  "characters": {
+    "_example_martin": {
+      "name": "Мартин Иден",
+      "project": "demo",
+      "prompt": "a young man in his mid-20s, broad shoulders, tanned weathered face, dark tousled hair, thick eyebrows, wearing a worn navy sailor's jacket over a white collarless shirt",
+      "notes": "Матрос в начале романа. После успеха — см. _example_martin_late"
+    },
+    "_example_martin_late": {
+      "name": "Мартин Иден (после славы)",
+      "project": "demo",
+      "prompt": "the same young man in his mid-20s, broad shoulders, tanned weathered face, dark tousled hair, thick eyebrows, now wearing a tailored dark three-piece suit with a white shirt, hollow tired eyes",
+      "notes": "Одежда сменилась — лицо и телосложение слово в слово те же."
+    },
+    "_example_ruth": {
+      "name": "Руфь Морз",
+      "project": "demo",
+      "prompt": "a pale young woman, early 20s, delicate features, honey-blonde hair pinned up, wearing a high-collared cream lace blouse and long skirt",
+      "notes": ""
+    }
+  }
+}

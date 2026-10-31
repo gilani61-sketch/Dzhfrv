@@ -7,6 +7,9 @@ import { Shot } from "./components/Shot";
 import { Grain, Vignette } from "./components/Grain";
 import { TitleCard } from "./components/TitleCard";
 import { Captions, Scrim, Watermark } from "./components/Captions";
+import { Overlay, GrainTile } from "./components/Overlays";
+import { QuoteCard, Badge, EndCard } from "./components/Cards";
+import { getPalette } from "./library";
 import { T, fontFaceCss } from "./theme";
 import type { ReelSpec, PanDir } from "./types";
 
@@ -41,6 +44,7 @@ export const Reel: React.FC<{ spec: ReelSpec }> = ({ spec }) => {
     return { ...s, from, durF, xf, pan: s.pan ?? DEFAULT_PANS[i % DEFAULT_PANS.length] };
   });
 
+  const total = totalFrames(spec, fps);
   const tc = spec.titleCard;
   const tcAt = Math.round((tc?.at ?? 0) * fps);
   const tcDur = Math.round((tc?.dur ?? 4) * fps);
@@ -59,7 +63,16 @@ export const Reel: React.FC<{ spec: ReelSpec }> = ({ spec }) => {
       {placed.map((s, i) => (
         <Sequence key={i} from={s.from} durationInFrames={s.durF} name={`shot ${i + 1}`}>
           <CrossfadeIn frames={s.xf}>
-            <Shot src={s.src} durF={s.durF} pan={s.pan} projectSlug={spec.slug} />
+            {s.quote ? (
+              <QuoteCard text={s.quote.text} source={s.quote.source}
+                         paper={s.quote.paper} preset={spec.preset}
+                         palette={spec.palette} />
+            ) : (
+              <Shot src={s.src} durF={s.durF} pan={s.pan} projectSlug={spec.slug} />
+            )}
+            {(s.overlays ?? []).map((o, oi) => (
+              <Overlay key={oi} {...o} durF={s.durF} />
+            ))}
           </CrossfadeIn>
         </Sequence>
       ))}
@@ -87,7 +100,37 @@ export const Reel: React.FC<{ spec: ReelSpec }> = ({ spec }) => {
         </AbsoluteFill>
       ) : null}
 
-      {spec.grain !== false ? <Grain /> : null}
+      {(spec.overlays ?? []).map((o, i) => (
+        <Overlay key={`go${i}`} {...o} durF={total} />
+      ))}
+
+      {placed.map((s, i) =>
+        s.badge ? (
+          <Sequence
+            key={`b${i}`}
+            from={s.from + Math.round((s.badge.at ?? 0.3) * fps)}
+            durationInFrames={Math.round((s.badge.dur ?? 2.6) * fps)}
+            name={`badge ${i + 1}`}
+          >
+            <Badge label={s.badge.label} value={s.badge.value}
+                   preset={spec.preset} palette={spec.palette} />
+          </Sequence>
+        ) : null
+      )}
+
+      {spec.endCard ? (
+        <Sequence
+          from={total - Math.round((spec.endCard.dur ?? 2.5) * fps)}
+          durationInFrames={Math.round((spec.endCard.dur ?? 2.5) * fps)}
+          name="endcard"
+        >
+          <EndCard handle={spec.endCard.handle} line={spec.endCard.line}
+                   mark={spec.endCard.mark} preset={spec.preset}
+                   palette={spec.palette} />
+        </Sequence>
+      ) : null}
+
+      {spec.grain !== false ? <GrainTile /> : null}
 
       {spec.voice ? <Audio src={staticFile(spec.voice)} /> : null}
       {spec.music ? (
@@ -125,5 +168,7 @@ export const totalFrames = (spec: ReelSpec, fps: number) => {
     const xf = i === 0 ? 0 : s.xfade ?? xfadeDefault;
     cursor = Math.max(0, cursor - xf) + durF;
   });
+  // финальная плашка идёт ПОСЛЕ последней сцены, а не поверх неё
+  if (spec.endCard) cursor += Math.round((spec.endCard.dur ?? 2.5) * fps);
   return Math.max(cursor, 30);
 };

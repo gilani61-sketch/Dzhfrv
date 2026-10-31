@@ -123,3 +123,53 @@ bash scripts/render.sh <slug>
 | Шрифт, размер, цвет | `brand/tokens.json` |
 | Скорость камеры, переходы | `brand/tokens.json` → `motion` |
 | Вёрстка титра/субтитра | `engine/src/components/` |
+
+---
+
+## Расширенный синтаксис script.md
+
+Шапка:
+
+```markdown
+# Мартин Иден
+author: Джек Лондон
+mode: cinematic          # cinematic | punch | editorial
+preset: reel             # reel | wide | square
+palette: nocturne        # из library/palettes/
+watermark: @juliapolskayaa
+endcard: ещё о книгах    # финальная плашка; без строки — плашки нет
+music: calm-piano-01.mp3
+overlay: vignette-cine.png   # на весь ролик, можно несколько строк
+```
+
+Сцена:
+
+```markdown
+## 03.jpg
+overlay: leak-warm-tr.png     # оверлей только на эту сцену
+badge: год | 1909             # плашка с фактом
+- Рукописи возвращали         # субтитр и реплика озвучки
+```
+
+Карточка цитаты вместо кадра:
+
+```markdown
+## quote
+quote: Он добился всего, чего хотел — и перестал хотеть | Джек Лондон
+```
+
+Прямая речь другим голосом:
+
+```markdown
+- [character-male] Я напишу об этом так, как никто не писал
+```
+
+Роль берётся из `library/voices/voices.json` и **в субтитр не попадает** —
+она нужна только озвучке. Модель `eleven_v3` понимает ещё и теги эмоций:
+`- [character-male] [с горечью] Я напишу об этом`.
+
+Проверить разбор по ролям, ничего не синтезируя:
+
+```bash
+python3 scripts/tts_eleven.py projects/<slug> --dry-run
+```

@@ -15,7 +15,24 @@ export type Scene = {
   pan?: PanDir;
   /** переход на входе в сцену, кадров; по умолчанию из токенов */
   xfade?: number;
+  /** оверлеи поверх этой сцены — засветки, пыль, виньетка */
+  overlays?: OverlayRef[];
+  /** плашка с фактом/датой */
+  badge?: BadgeSpec;
+  /** карточка цитаты вместо кадра */
+  quote?: QuoteSpec;
 };
+
+export type OverlayRef = {
+  /** имя файла из library/overlays/ */
+  src: string;
+  opacity?: number;
+  blend?: "normal" | "screen" | "overlay" | "multiply" | "soft-light";
+  drift?: boolean;
+};
+
+export type BadgeSpec = { label: string; value: string; at?: number; dur?: number };
+export type QuoteSpec = { text: string; source?: string; at?: number; dur?: number; paper?: string };
 
 export type Caption = {
   text: string;
@@ -41,6 +58,12 @@ export type ReelSpec = {
   fps?: number;
   titleCard?: TitleCardSpec;
   watermark?: string | null;
+  /** ключ палитры из library/palettes/palettes.json */
+  palette?: string;
+  /** оверлеи на весь ролик */
+  overlays?: OverlayRef[];
+  /** финальная плашка */
+  endCard?: { handle: string; line?: string; dur?: number; mark?: string } | null;
   /** путь к озвучке относительно staticFile(), например "proj/martin/voice.mp3" */
   voice?: string | null;
   music?: string | null;

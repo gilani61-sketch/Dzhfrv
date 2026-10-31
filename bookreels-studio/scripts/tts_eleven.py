@@ -1,141 +1,191 @@
 #!/usr/bin/env python3
 """
-Озвучка сценария твоим голосом из ElevenLabs.
-
-Читает script.md проекта, синтезирует каждую реплику отдельным файлом,
-склеивает в voice.mp3 и возвращает точные тайминги в timings.json —
-на них потом раскладываются субтитры.
-
-Нужно: переменная окружения ELEVENLABS_API_KEY и id голоса.
+Озвучка сценария через ElevenLabs. Поддерживает несколько голосов в одном
+ролике: повествование твоим голосом, прямая речь героев — другими.
 
     export ELEVENLABS_API_KEY=...
-    python3 scripts/tts_eleven.py projects/martin-eden --voice-id <ID>
+    python3 scripts/tts_eleven.py projects/martin-eden
 
-Без ключа скрипт ничего не трогает и честно говорит, чего не хватает.
+Голоса берутся из library/voices/voices.json. Реплика без роли читается
+голосом по умолчанию; роль указывается в квадратных скобках в начале строки:
+
+    - Он пришёл в этот дом матросом          ← голос по умолчанию
+    - [character-male] Я напишу об этом      ← голос character-male
+
+Модель eleven_v3 понимает теги эмоций прямо в тексте:
+
+    - [character-male] [с горечью] Я напишу об этом
+
+Реплики кэшируются по хэшу текста и настроек: правка одной строки
+не перегенерит весь ролик и не сожжёт символы заново.
 """
-import argparse, json, os, subprocess, sys, urllib.request, urllib.error
+import argparse, hashlib, json, os, subprocess, sys, urllib.request, urllib.error
 from pathlib import Path
 
 API = "https://api.elevenlabs.io/v1"
-DEFAULT_MODEL = "eleven_multilingual_v2"
+ROOT = Path(__file__).resolve().parent.parent
+VOICES = ROOT / "library" / "voices" / "voices.json"
 
 
-def die(msg, code=1):
+def die(msg):
     print(f"✗ {msg}", file=sys.stderr)
-    sys.exit(code)
+    sys.exit(1)
+
+
+def load_voices():
+    if not VOICES.exists():
+        die(f"нет {VOICES}")
+    d = json.loads(VOICES.read_text(encoding="utf-8"))
+    return d.get("default", "julia"), d.get("model", "eleven_v3"), d["voices"]
 
 
 def read_lines(script_path: Path):
-    """Реплики — строки, начинающиеся с '- '. Остальное (заголовки, заметки) игнорим."""
+    """Реплики — строки с '- '. Роль — в [скобках] в начале."""
     if not script_path.exists():
-        die(f"нет файла {script_path}")
+        die(f"нет {script_path}")
     out = []
     for raw in script_path.read_text(encoding="utf-8").splitlines():
         s = raw.strip()
-        if s.startswith("- "):
-            t = s[2:].strip()
-            if t:
-                out.append(t)
+        if not s.startswith("- "):
+            continue
+        t = s[2:].strip()
+        if not t:
+            continue
+        role = None
+        if t.startswith("["):
+            close = t.find("]")
+            if close > 0:
+                tag = t[1:close].strip()
+                # эмоциональный тег (кириллица/пробелы) — не роль, оставляем в тексте
+                if tag.replace("-", "").replace("_", "").isascii() and " " not in tag:
+                    role = tag
+                    t = t[close + 1:].strip()
+        out.append((role, t))
     if not out:
-        die(f"в {script_path} нет реплик (строк, начинающихся с '- ')")
+        die(f"в {script_path} нет реплик (строк с '- ')")
     return out
 
 
-def synth(text, voice_id, key, model, stability, similarity, style):
+def synth(text, voice_id, key, model, st):
     body = json.dumps({
         "text": text,
         "model_id": model,
         "voice_settings": {
-            "stability": stability,
-            "similarity_boost": similarity,
-            "style": style,
+            "stability": st.get("stability", 0.45),
+            "similarity_boost": st.get("similarity_boost", 0.8),
+            "style": st.get("style", 0.1),
             "use_speaker_boost": True,
         },
     }).encode()
     req = urllib.request.Request(
-        f"{API}/text-to-speech/{voice_id}",
-        data=body,
+        f"{API}/text-to-speech/{voice_id}", data=body,
         headers={"xi-api-key": key, "Content-Type": "application/json",
-                 "Accept": "audio/mpeg"},
-    )
+                 "Accept": "audio/mpeg"})
     try:
         with urllib.request.urlopen(req, timeout=180) as r:
             return r.read()
     except urllib.error.HTTPError as e:
-        die(f"ElevenLabs {e.code}: {e.read().decode('utf-8', 'replace')[:400]}")
+        detail = e.read().decode("utf-8", "replace")[:400]
+        die(f"ElevenLabs {e.code}: {detail}")
+    except urllib.error.URLError as e:
+        die(f"нет связи с ElevenLabs: {e.reason}\n"
+            "  Если это отказ прокси — хост api.elevenlabs.io надо разрешить\n"
+            "  в настройках сетевого доступа окружения.")
 
 
-def dur(path: Path) -> float:
-    out = subprocess.run(
-        ["ffprobe", "-v", "error", "-show_entries", "format=duration",
-         "-of", "default=nw=1:nk=1", str(path)],
-        capture_output=True, text=True, check=True)
-    return float(out.stdout.strip())
+def dur(p: Path) -> float:
+    o = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                        "-of", "default=nw=1:nk=1", str(p)],
+                       capture_output=True, text=True, check=True)
+    return float(o.stdout.strip())
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("project", help="папка проекта, напр. projects/martin-eden")
-    ap.add_argument("--voice-id", default=os.environ.get("ELEVEN_VOICE_ID"))
-    ap.add_argument("--model", default=DEFAULT_MODEL)
-    ap.add_argument("--gap", type=float, default=0.42,
-                    help="пауза между репликами, сек")
-    ap.add_argument("--stability", type=float, default=0.45)
-    ap.add_argument("--similarity", type=float, default=0.80)
-    ap.add_argument("--style", type=float, default=0.10)
+    ap.add_argument("project")
+    ap.add_argument("--model", default=None, help="перекрыть модель из voices.json")
+    ap.add_argument("--gap", type=float, default=0.42)
+    ap.add_argument("--dry-run", action="store_true",
+                    help="показать разбор по ролям, ничего не синтезировать")
     a = ap.parse_args()
+
+    default_role, model, voices = load_voices()
+    model = a.model or model
+    proj = Path(a.project)
+    lines = read_lines(proj / "script.md")
+
+    # проверяем роли до первого запроса, чтобы не потратить символы зря
+    used = {r or default_role for r, _ in lines}
+    for r in sorted(used):
+        if r not in voices:
+            die(f"роль '{r}' не описана в library/voices/voices.json")
+        if not voices[r].get("voice_id") or voices[r]["voice_id"] == "ЗАПОЛНИ":
+            die(f"у роли '{r}' не заполнен voice_id в library/voices/voices.json")
+
+    if a.dry_run:
+        print(f"модель: {model}")
+        for i, (r, t) in enumerate(lines, 1):
+            print(f"  {i:>3}  [{r or default_role:<16}] {t}")
+        print(f"\n{len(lines)} реплик, ролей {len(used)}, "
+              f"{sum(len(t) for _, t in lines)} символов")
+        return
 
     key = os.environ.get("ELEVENLABS_API_KEY")
     if not key:
         die("нет ELEVENLABS_API_KEY в окружении")
-    if not a.voice_id:
-        die("не задан --voice-id (или ELEVEN_VOICE_ID)")
 
-    proj = Path(a.project)
-    lines = read_lines(proj / "script.md")
     adir = proj / "audio"
     parts = adir / "parts"
     parts.mkdir(parents=True, exist_ok=True)
 
-    print(f"→ {len(lines)} реплик, голос {a.voice_id}")
-    timings, t = [], 0.0
+    print(f"→ {len(lines)} реплик, модель {model}, ролей {len(used)}")
+    timings, t, fresh = [], 0.0, 0
 
-    for i, line in enumerate(lines, 1):
-        f = parts / f"{i:03d}.mp3"
+    for i, (role, text) in enumerate(lines, 1):
+        r = role or default_role
+        v = voices[r]
+        st = v.get("settings", {})
+        h = hashlib.sha1(
+            f"{text}|{v['voice_id']}|{model}|{json.dumps(st, sort_keys=True)}"
+            .encode()).hexdigest()[:10]
+        f = parts / f"{i:03d}-{h}.mp3"
+
         if not f.exists():
-            f.write_bytes(synth(line, a.voice_id, key, a.model,
-                                a.stability, a.similarity, a.style))
-            print(f"  {i:>3}/{len(lines)}  {line[:52]}")
+            for old in parts.glob(f"{i:03d}-*.mp3"):
+                old.unlink()                      # текст поменялся — старое не нужно
+            f.write_bytes(synth(text, v["voice_id"], key, model, st))
+            fresh += 1
+            print(f"  {i:>3}/{len(lines)}  [{r}] {text[:46]}")
         else:
             print(f"  {i:>3}/{len(lines)}  (кэш)")
+
         d = dur(f)
-        timings.append({"i": i, "text": line, "at": round(t, 3),
-                        "dur": round(d, 3)})
+        timings.append({"i": i, "role": r, "text": text,
+                        "at": round(t, 3), "dur": round(d, 3)})
         t += d + a.gap
 
-    # склейка через concat-фильтр с паузами
-    listf = adir / "_concat.txt"
     sil = adir / "_sil.mp3"
     subprocess.run(["ffmpeg", "-v", "error", "-f", "lavfi", "-i",
-                    f"anullsrc=r=44100:cl=mono", "-t", str(a.gap),
+                    "anullsrc=r=44100:cl=mono", "-t", str(a.gap),
                     "-q:a", "9", str(sil), "-y"], check=True)
+    listf = adir / "_concat.txt"
     with listf.open("w") as fh:
-        for i in range(1, len(lines) + 1):
-            fh.write(f"file '{(parts / f'{i:03d}.mp3').resolve()}'\n")
-            if i != len(lines):
+        for i, tm in enumerate(timings, 1):
+            f = next(parts.glob(f"{i:03d}-*.mp3"))
+            fh.write(f"file '{f.resolve()}'\n")
+            if i != len(timings):
                 fh.write(f"file '{sil.resolve()}'\n")
 
     voice = adir / "voice.mp3"
     subprocess.run(["ffmpeg", "-v", "error", "-f", "concat", "-safe", "0",
                     "-i", str(listf), "-c:a", "libmp3lame", "-q:a", "2",
                     str(voice), "-y"], check=True)
-
     (adir / "timings.json").write_text(
         json.dumps(timings, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    print(f"\n✓ {voice}  ({dur(voice):.1f} с)")
-    print(f"✓ {adir/'timings.json'}")
-    print("\nДальше: python3 scripts/build_scenes.py", a.project)
+    print(f"\n✓ {voice}  ({dur(voice):.1f} с, новых реплик {fresh})")
+    print(f"✓ {adir / 'timings.json'}")
+    print(f"\nДальше:\n  python3 scripts/build_scenes.py {a.project}")
 
 
 if __name__ == "__main__":

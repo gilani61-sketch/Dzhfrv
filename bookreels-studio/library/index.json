@@ -1,0 +1,53 @@
+{
+  "$meta": {
+    "note": "Генерируется scripts/gen_library.py — руками не править."
+  },
+  "backgrounds": [
+    "backgrounds/canvas-linen.jpg",
+    "backgrounds/gradient-biography.jpg",
+    "backgrounds/gradient-literature.jpg",
+    "backgrounds/gradient-nocturne.jpg",
+    "backgrounds/gradient-painting.jpg",
+    "backgrounds/gradient-punch.jpg",
+    "backgrounds/paper-aged.jpg",
+    "backgrounds/paper-cold.jpg",
+    "backgrounds/paper-warm.jpg"
+  ],
+  "brand": [
+    "brand/mark-book.svg",
+    "brand/mark-clapper.svg",
+    "brand/mark-frame.svg"
+  ],
+  "characters": [
+    "characters/bible.json"
+  ],
+  "elements": [
+    "elements/dividers/rule-diamond.svg",
+    "elements/dividers/rule-dots.svg",
+    "elements/dividers/rule-thin.svg",
+    "elements/frames/frame-corners.svg",
+    "elements/frames/frame-hairline.svg",
+    "elements/frames/frame-museum.svg",
+    "elements/quotes/quote-serif.svg"
+  ],
+  "overlays": [
+    "overlays/dust-01.png",
+    "overlays/dust-02.png",
+    "overlays/dust-03.png",
+    "overlays/grain-coarse.png",
+    "overlays/grain-fine.png",
+    "overlays/leak-amber-top.png",
+    "overlays/leak-cold-bl.png",
+    "overlays/leak-warm-tr.png",
+    "overlays/scrim-bottom.png",
+    "overlays/vignette-cine.png",
+    "overlays/vignette-soft.png",
+    "overlays/vignette-strong.png"
+  ],
+  "palettes": [
+    "palettes/palettes.json"
+  ],
+  "voices": [
+    "voices/voices.json"
+  ]
+}
