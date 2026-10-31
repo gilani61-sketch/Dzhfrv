@@ -1,0 +1,5 @@
+engine/node_modules/
+engine/.remotion/
+projects/*/out/
+projects/*/audio/parts/
+projects/*/audio/_*

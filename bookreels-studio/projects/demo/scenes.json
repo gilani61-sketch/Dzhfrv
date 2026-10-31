@@ -1,0 +1,78 @@
+{
+  "slug": "demo",
+  "mode": "cinematic",
+  "preset": "reel",
+  "titleCard": {
+    "title": "Мартин Иден",
+    "author": "Джек Лондон",
+    "at": 0,
+    "dur": 4.0
+  },
+  "watermark": "@juliapolskayaa",
+  "voice": null,
+  "music": null,
+  "musicGainDb": -12,
+  "grain": true,
+  "scenes": [
+    {
+      "src": "01.jpg",
+      "dur": 5.53,
+      "captions": [
+        {
+          "text": "Он пришёл в этот дом матросом",
+          "at": 0.6,
+          "dur": 2.23
+        },
+        {
+          "text": "и остался в нём навсегда",
+          "at": 3.13,
+          "dur": 1.85
+        }
+      ]
+    },
+    {
+      "src": "02.jpg",
+      "dur": 3.5,
+      "captions": [
+        {
+          "text": "Руфь сначала ждала",
+          "at": 0.25,
+          "dur": 1.5
+        }
+      ]
+    },
+    {
+      "src": "03.jpg",
+      "dur": 3.5,
+      "captions": [
+        {
+          "text": "Редакции возвращали его рассказы",
+          "at": 0.25,
+          "dur": 2.46
+        }
+      ]
+    },
+    {
+      "src": "04.jpg",
+      "dur": 3.5,
+      "captions": [
+        {
+          "text": "А потом пришла слава",
+          "at": 0.25,
+          "dur": 1.54
+        }
+      ]
+    },
+    {
+      "src": "05.jpg",
+      "dur": 3.5,
+      "captions": [
+        {
+          "text": "Но сам Мартин — уже нет",
+          "at": 0.25,
+          "dur": 1.77
+        }
+      ]
+    }
+  ]
+}
