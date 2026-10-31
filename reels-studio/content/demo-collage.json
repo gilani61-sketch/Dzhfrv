@@ -1,0 +1,34 @@
+{
+  "slug": "demo-collage",
+  "style": "collage",
+  "handle": "@archive",
+  "lockup": { "kicker": "Как это сделано", "brand": "Коллаж", "show": false },
+  "scenes": [
+    { "type": "cover", "title": "Эпоха пара\nи первых\nбрендов", "kicker": "1850—1910", "dur": 3,
+      "bg": { "src": "media/footage/demo-06.mp4", "move": "panR" } },
+
+    { "type": "collage", "bg": "charcoal", "dur": 3.2, "in": "paper",
+      "headline": "Сначала был\nзаказ.",
+      "caption": "Ремесло становится производством",
+      "strips": [ { "y": 58, "h": 7, "tone": "cream" }, { "y": 84, "h": 5, "tone": "gold" } ],
+      "layers": [
+        { "src": "media/stills/demo-34.jpg", "x": 50, "y": 34, "w": 86, "depth": 0.2, "treat": "duotone", "anim": "rise", "rotate": -1.5 }
+      ] },
+
+    { "type": "collage", "bg": "indigo", "dur": 3, "in": "halftone",
+      "caption": "Потом — имя на вывеске",
+      "strips": [ { "y": 20, "h": 6, "tone": "cream" } ],
+      "layers": [
+        { "src": "media/stills/demo-88.jpg", "x": 46, "y": 52, "w": 74, "depth": 0.7, "treat": "cutout", "anim": "pop", "rotate": 2 }
+      ] },
+
+    { "type": "statement", "text": "Бренд — это\nобещание,\nкоторое повторили\nтысячу раз.", "bg": "charcoal", "dur": 3.4, "in": "slide" },
+
+    { "type": "split", "dur": 3.2, "in": "shutter",
+      "top": { "src": "media/stills/demo-12.jpg", "move": "panL" },
+      "bottom": { "src": "media/stills/demo-watch.jpg", "move": "push" },
+      "topLabel": "БЫЛО", "bottomLabel": "СТАЛО" },
+
+    { "type": "outro", "line": "Продолжение —\nв следующей части", "cta": "@ARCHIVE", "dur": 2.8, "in": "filmroll" }
+  ]
+}

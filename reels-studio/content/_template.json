@@ -1,0 +1,24 @@
+{
+  "slug": "zamenit-na-svoy-slug",
+  "style": "chronicle",
+  "handle": "@archive",
+  "lockup": { "kicker": "РУБРИКА", "brand": "Бренд", "show": true },
+  "guides": false,
+  "musicGain": 0.22,
+  "scenes": [
+    { "type": "cover", "title": "Крючок\nв две строки", "kicker": "ГОД · ГОРОД", "brand": "Бренд", "dur": 3,
+      "bg": { "src": "media/footage/demo-01.mp4", "move": "push" } },
+
+    { "type": "footage", "src": "media/footage/demo-02.mp4", "caption": "Подпись к плану", "dur": 3, "in": "dip" },
+
+    { "type": "numeral", "value": "1904", "note": "Год, с которого всё началось", "dur": 2.5, "in": "flash" },
+
+    { "type": "still", "src": "media/stills/demo-12.jpg", "caption": "Фото с медленным наездом", "move": "push", "dur": 3 },
+
+    { "type": "statement", "text": "Крупная мысль\nв две-три строки", "bg": "charcoal", "dur": 2.5, "in": "paper" },
+
+    { "type": "quote", "text": "Цитата, которая\nдержит паузу.", "author": "Имя Фамилия", "dur": 4 },
+
+    { "type": "outro", "line": "Что останется в голове", "cta": "СОХРАНИ, ЧТОБЫ НЕ ПОТЕРЯТЬ", "dur": 3 }
+  ]
+}
