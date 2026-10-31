@@ -1,12 +1,14 @@
 {
   "$meta": {
     "note": "Реестр голосов ElevenLabs. voice_id не секрет — его можно хранить здесь. API-ключ здесь НЕ хранится, он берётся из переменной окружения ELEVENLABS_API_KEY.",
-    "usage": "В script.md: voice: julia — или для реплики: - [narrator] Текст"
+    "usage": "В script.md: voice: julia — или для реплики: - [narrator] Текст",
+    "models": "Имя модели не угадывается: скрипт спрашивает список у API (--list-models) и берёт первую доступную из modelPreference. Так новая версия подхватится сама, как только появится в аккаунте."
   },
   "default": "julia",
-  "model": "eleven_v3",
+  "model": null,
   "modelNotes": {
-    "eleven_v3": "самая выразительная, понимает теги эмоций в квадратных скобках — [шёпотом], [с горечью]",
+    "как это работает": "сверху — самая желанная версия; берётся первая, которую вернул API аккаунта",
+    "eleven_v3": "выразительная, понимает теги эмоций в квадратных скобках — [шёпотом], [с горечью]",
     "eleven_multilingual_v2": "стабильнее и дешевле, теги игнорирует — для длинных ровных начиток",
     "eleven_turbo_v2_5": "быстрая и дешёвая, качество ниже — для черновиков"
   },
@@ -14,26 +16,48 @@
     "julia": {
       "label": "Юлия — основной голос канала",
       "voice_id": "ЗАПОЛНИ",
-      "settings": { "stability": 0.45, "similarity_boost": 0.8, "style": 0.1 },
+      "settings": {
+        "stability": 0.45,
+        "similarity_boost": 0.8,
+        "style": 0.1
+      },
       "use": "повествование во всех рубриках"
     },
     "narrator-calm": {
       "label": "Ровный рассказчик (для длинных биографий)",
       "voice_id": "",
-      "settings": { "stability": 0.65, "similarity_boost": 0.75, "style": 0.0 },
+      "settings": {
+        "stability": 0.65,
+        "similarity_boost": 0.75,
+        "style": 0.0
+      },
       "use": "когда нужен нейтральный тон, а не авторский"
     },
     "character-male": {
       "label": "Мужской — для прямой речи героя",
       "voice_id": "",
-      "settings": { "stability": 0.4, "similarity_boost": 0.8, "style": 0.35 },
+      "settings": {
+        "stability": 0.4,
+        "similarity_boost": 0.8,
+        "style": 0.35
+      },
       "use": "цитаты от первого лица, диалоги"
     },
     "character-female": {
       "label": "Женский — для прямой речи героини",
       "voice_id": "",
-      "settings": { "stability": 0.4, "similarity_boost": 0.8, "style": 0.35 },
+      "settings": {
+        "stability": 0.4,
+        "similarity_boost": 0.8,
+        "style": 0.35
+      },
       "use": "цитаты от первого лица, диалоги"
     }
-  }
+  },
+  "modelPreference": [
+    "eleven_v4",
+    "eleven_v3",
+    "eleven_multilingual_v2",
+    "eleven_turbo_v2_5"
+  ]
 }

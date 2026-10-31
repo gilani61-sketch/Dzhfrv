@@ -36,7 +36,47 @@ def load_voices():
     if not VOICES.exists():
         die(f"нет {VOICES}")
     d = json.loads(VOICES.read_text(encoding="utf-8"))
-    return d.get("default", "julia"), d.get("model", "eleven_v3"), d["voices"]
+    return d
+
+
+def api_get(path, key):
+    req = urllib.request.Request(f"{API}{path}", headers={"xi-api-key": key})
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            return json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        die(f"ElevenLabs {e.code}: {e.read().decode('utf-8', 'replace')[:300]}")
+    except urllib.error.URLError as e:
+        die(f"нет связи с ElevenLabs: {e.reason}\n"
+            "  Если это отказ прокси — хост api.elevenlabs.io надо разрешить\n"
+            "  в настройках сетевого доступа окружения.")
+
+
+def list_models(key):
+    """Что реально доступно аккаунту — имена моделей не угадываем."""
+    return [(m.get("model_id"), m.get("name", ""),
+             bool(m.get("can_do_text_to_speech", True)))
+            for m in api_get("/models", key)]
+
+
+def pick_model(key, preference, override=None):
+    """Берём первую доступную из списка предпочтений — новая версия
+    подхватится сама, как только появится в аккаунте."""
+    if override:
+        return override
+    avail = [mid for mid, _, tts in list_models(key) if tts and mid]
+    for want in preference:
+        if want in avail:
+            return want
+    if not avail:
+        die("аккаунт не вернул ни одной TTS-модели")
+    print(f"  ⚠ ни одна из {preference} недоступна, беру {avail[0]}")
+    return avail[0]
+
+
+def list_account_voices(key):
+    return [(v.get("voice_id"), v.get("name", ""), v.get("category", ""))
+            for v in api_get("/voices", key).get("voices", [])]
 
 
 def read_lines(script_path: Path):
@@ -103,14 +143,37 @@ def dur(p: Path) -> float:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("project")
-    ap.add_argument("--model", default=None, help="перекрыть модель из voices.json")
+    ap.add_argument("--model", default=None,
+                    help="явно задать модель; по умолчанию берётся лучшая доступная")
+    ap.add_argument("--list-models", action="store_true",
+                    help="показать модели, доступные аккаунту, и выйти")
+    ap.add_argument("--list-voices", action="store_true",
+                    help="показать голоса аккаунта с их voice_id, и выйти")
     ap.add_argument("--gap", type=float, default=0.42)
     ap.add_argument("--dry-run", action="store_true",
                     help="показать разбор по ролям, ничего не синтезировать")
     a = ap.parse_args()
 
-    default_role, model, voices = load_voices()
-    model = a.model or model
+    cfg = load_voices()
+    default_role = cfg.get("default", "julia")
+    voices = cfg["voices"]
+    preference = cfg.get("modelPreference") or ["eleven_multilingual_v2"]
+
+    if a.list_models or a.list_voices:
+        key = os.environ.get("ELEVENLABS_API_KEY")
+        if not key:
+            die("нет ELEVENLABS_API_KEY в окружении")
+        if a.list_models:
+            print("модели аккаунта:")
+            for mid, name, tts in list_models(key):
+                print(f"  {'✓' if tts else '·'} {mid:<32} {name}")
+            print(f"\nпредпочтение из voices.json: {' → '.join(preference)}")
+        if a.list_voices:
+            print("\nголоса аккаунта:")
+            for vid, name, cat in list_account_voices(key):
+                print(f"  {vid:<24} {name}  ({cat})")
+        return
+
     proj = Path(a.project)
     lines = read_lines(proj / "script.md")
 
@@ -119,13 +182,18 @@ def main():
     for r in sorted(used):
         if r not in voices:
             die(f"роль '{r}' не описана в library/voices/voices.json")
-        if not voices[r].get("voice_id") or voices[r]["voice_id"] == "ЗАПОЛНИ":
-            die(f"у роли '{r}' не заполнен voice_id в library/voices/voices.json")
+        if not a.dry_run and (not voices[r].get("voice_id")
+                              or voices[r]["voice_id"] == "ЗАПОЛНИ"):
+            die(f"у роли '{r}' не заполнен voice_id в library/voices/voices.json\n"
+                "  узнать id своих голосов:\n"
+                f"    python3 scripts/tts_eleven.py {a.project} --list-voices")
 
     if a.dry_run:
-        print(f"модель: {model}")
+        print(f"модель: будет выбрана из {' → '.join(preference)}")
         for i, (r, t) in enumerate(lines, 1):
-            print(f"  {i:>3}  [{r or default_role:<16}] {t}")
+            vid = voices[r or default_role].get("voice_id") or ""
+            mark = " " if vid and vid != "ЗАПОЛНИ" else "!"
+            print(f"  {i:>3} {mark} [{r or default_role:<16}] {t}")
         print(f"\n{len(lines)} реплик, ролей {len(used)}, "
               f"{sum(len(t) for _, t in lines)} символов")
         return
@@ -133,6 +201,8 @@ def main():
     key = os.environ.get("ELEVENLABS_API_KEY")
     if not key:
         die("нет ELEVENLABS_API_KEY в окружении")
+
+    model = pick_model(key, preference, a.model)
 
     adir = proj / "audio"
     parts = adir / "parts"
