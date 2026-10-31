@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>cine · библиотека</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; padding:56px 56px 80px; background:#07090e; color:#e8eef8;
+         font:400 15px/1.5 'Inter','Inter Display',sans-serif; }
+  h1 { font:800 44px/1.1 'Inter Display',sans-serif; margin:0 0 6px; letter-spacing:-1px; }
+  h2 { font:800 26px/1.2 'Inter Display',sans-serif; margin:54px 0 18px;
+       padding-bottom:10px; border-bottom:1px solid #1d2432; letter-spacing:-.4px; }
+  .sub { color:#8fa3bd; margin:0 0 10px; }
+  .grid { display:grid; gap:22px; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); }
+  .tile { background:#0b0f16; border:1px solid #1a2130; border-radius:14px; padding:14px; }
+  .tile canvas { width:100%; height:auto; display:block; border-radius:8px; background:#05070b; }
+  .tile .name { font:600 13px 'JetBrains Mono',monospace; color:#9fd0ff; margin-top:10px; }
+  .tile .use { font-size:12px; color:#7d8ea6; margin-top:3px; }
+  .pal { display:flex; gap:0; border-radius:10px; overflow:hidden; height:62px; }
+  .pal i { flex:1; }
+  .swatchrow { display:grid; gap:18px; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); }
+</style></head>
+<body>
+<h1>cine · библиотека</h1>
+<p class="sub">Всё, из чего собираются ролики. Тайл = функция или пресет, подпись = как её звать в коде.</p>
+<div id="root"></div>
+
+<script type="module">
+import { palettes, type, motion, grade, safeArea } from './brand/tokens.js';
+import { elements } from './elements/ui.js';
+import { characters } from './characters/characters.js';
+import { backgrounds } from './backgrounds/presets.js';
+import { markNames, loadMark, drawMark, preloadMarks } from './brand/logos/index.js';
+
+const root = document.getElementById('root');
+const section = (title, sub) => {
+  const h = document.createElement('h2'); h.textContent = title; root.append(h);
+  if (sub) { const p = document.createElement('p'); p.className = 'sub'; p.textContent = sub; root.append(p); }
+  const g = document.createElement('div'); g.className = 'grid'; root.append(g); return g;
+};
+const tile = (grid, name, use, w, h, draw) => {
+  const d = document.createElement('div'); d.className = 'tile';
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  try { draw(c.getContext('2d'), w, h); } catch (e) { console.error(name, e); }
+  const n = document.createElement('div'); n.className = 'name'; n.textContent = name;
+  const u = document.createElement('div'); u.className = 'use'; u.textContent = use;
+  d.append(c, n, u); grid.append(d); return c;
+};
+
+await document.fonts.load("800 40px 'Inter Display'");
+await document.fonts.load("600 30px 'JetBrains Mono'");
+await preloadMarks('#9fd0ff');
+
+/* ---- палитры ---- */
+{
+  const h = document.createElement('h2'); h.textContent = 'Палитры'; root.append(h);
+  const p = document.createElement('p'); p.className = 'sub';
+  p.textContent = 'palette(name) из library/brand/tokens.js — один стиль на весь ролик.'; root.append(p);
+  const g = document.createElement('div'); g.className = 'swatchrow'; root.append(g);
+  for (const [name, pal] of Object.entries(palettes)) {
+    const d = document.createElement('div'); d.className = 'tile';
+    const bar = document.createElement('div'); bar.className = 'pal';
+    for (const k of ['void', 'accent', 'accent2', 'hot', 'ok', 'muted', 'ink']) {
+      const i = document.createElement('i');
+      i.style.background = '#' + pal[k].toString(16).padStart(6, '0');
+      i.title = k; bar.append(i);
+    }
+    const n = document.createElement('div'); n.className = 'name'; n.textContent = name;
+    const u = document.createElement('div'); u.className = 'use';
+    u.textContent = 'void · accent · accent2 · hot · ok · muted · ink';
+    d.append(bar, n, u); g.append(d);
+  }
+}
+
+/* ---- знаки ---- */
+{
+  const g = section('Знаки', 'library/brand/logos — SVG, тонируются на лету: loadMark(name, color)');
+  for (const name of markNames)
+    tile(g, name, 'drawMark(g,w,h,{name})', 260, 260, (c, w, h) => {
+      c.fillStyle = '#05070b'; c.fillRect(0, 0, w, h);
+      drawMark(c, w, h, { name, color: '#9fd0ff', pad: 36 });
+    });
+}
+
+/* ---- элементы ---- */
+{
+  const g = section('Элементы интерфейса', 'library/elements/ui.js — рисуются в canvas и уходят в сцену текстурой');
+  tile(g, 'glassPanel', 'база всех карточек', 520, 300, (c, w, h) => elements.glassPanel(c, w, h, {}));
+  tile(g, 'browserWindow', 'окно сайта, блоки задаются данными', 620, 420, (c, w, h) =>
+    elements.browserWindow(c, w, h, { url: 'example.com', blocks: [
+      { type: 'heading', text: 'Create' }, { type: 'tiles', count: 3, size: 110 },
+      { type: 'input', placeholder: 'Опиши картинку…', button: 'Generate' }] }));
+  tile(g, 'codePane', 'панель кода с посимвольным набором', 620, 330, (c, w, h) =>
+    elements.codePane(c, w, h, { title: 'client.py', badge: 'generated', progress: 0.8, lines: [
+      [['from ', 'kw'], ['mj ', 'id'], ['import ', 'kw'], ['Client', 'cls']], [],
+      [['c ', 'id'], ['= ', 'op'], ['Client', 'cls'], ['(', 'op'], ['SESSION', 'const'], [')', 'op']],
+      [['job ', 'id'], ['= ', 'op'], ['c', 'id'], ['.', 'op'], ['imagine', 'fn'], ['(', 'op'], ['"собор"', 'str'], [')', 'op']]] }));
+  tile(g, 'terminal', 'промпт, который печатается', 620, 220, (c, w, h) =>
+    elements.terminal(c, w, h, { text: 'Открой midjourney.com и собери клиент на Python', shown: 38, caret: true }));
+  tile(g, 'logRow', 'строка сетевого лога', 620, 80, (c, w, h) =>
+    elements.logRow(c, w, h, { method: 'POST', path: '/api/app/submit-jobs', status: '202' }));
+  tile(g, 'chipRow', 'теги, языки, фичи', 620, 110, (c, w, h) =>
+    elements.chipRow(c, w, h, { labels: ['Python', 'TypeScript', 'Go', '+ ещё 7'], lit: 0.75 }));
+  tile(g, 'statTile', 'цифра результата', 400, 300, (c, w, h) =>
+    elements.statTile(c, w, h, { value: '×10', label: 'быстрее', tone: 'ok' }));
+  tile(g, 'quoteCard', 'цитата / отзыв', 560, 320, (c, w, h) =>
+    elements.quoteCard(c, w, h, { text: 'Парсер ломается от любой новой кнопки.', author: 'тред' }));
+  tile(g, 'phoneFrame', 'экран в кадре', 300, 560, (c, w, h) =>
+    elements.phoneFrame(c, w, h, { screen: (g2) => {
+      g2.fillStyle = '#0d1626'; g2.fillRect(22, 22, w - 44, h - 44);
+      elements.chipRow(g2, w, 200, { labels: ['reels'], lit: 1 }); } }));
+  tile(g, 'button', 'кнопка, tone: solid | ghost', 400, 120, (c, w, h) => {
+    c.clearRect(0, 0, w, h); elements.button(c, 240, 72, { label: 'Generate', at: [20, 24] });
+    elements.button(c, 120, 72, { label: 'Ещё', tone: 'ghost', at: [276, 24], size: 28 }); });
+  tile(g, 'progressRing', 'проценты, таймер, загрузка', 300, 300, (c, w, h) =>
+    elements.progressRing(c, w, h, { t: 0.68, label: '68' }));
+  tile(g, 'cursorArrow + clickRing', 'курсор и волна клика', 300, 300, (c, w, h) => {
+    c.clearRect(0, 0, w, h); elements.clickRing(c, w, h, {});
+    c.save(); c.translate(w * 0.42, h * 0.38); c.scale(1.4, 1.4);
+    elements.cursorArrow(c, 90, 110, {}); c.restore(); });
+  tile(g, 'arrow', 'указатель, связь', 420, 140, (c, w, h) => elements.arrow(c, w, h, {}));
+  tile(g, 'cornerBrackets', 'кадрирование, фокус внимания', 420, 280, (c, w, h) =>
+    elements.cornerBrackets(c, w, h, {}));
+  tile(g, 'rule', 'разделитель со свечением', 520, 40, (c, w, h) => elements.rule(c, w, h, {}));
+}
+
+/* ---- персонажи ---- */
+{
+  const g = section('Персонажи', 'library/characters/characters.js — живут в той же оптике, что и мир');
+  tile(g, 'agentOrb', 'агент: смотрит и думает', 320, 320, (c, w, h) => characters.agentOrb(c, w, h, { t: 0.2 }));
+  tile(g, 'serverStack', '«та сторона» — сервер', 320, 420, (c, w, h) => characters.serverStack(c, w, h, { t: 0.4 }));
+  tile(g, 'userSilhouette', 'человек в кадре', 320, 380, (c, w, h) => characters.userSilhouette(c, w, h, {}));
+  tile(g, 'uiGhost', 'пустая оболочка интерфейса', 420, 380, (c, w, h) => characters.uiGhost(c, w, h, {}));
+  tile(g, 'packetSprite', 'пакет данных', 260, 260, (c, w, h) => characters.packetSprite(c, w, h, {}));
+}
+
+/* ---- фоны ---- */
+{
+  const g = section('Фоны', 'library/backgrounds/presets.js — параметры мира: туманность, коридор, пыль, пакеты');
+  for (const [name, b] of Object.entries(backgrounds)) {
+    tile(g, name, `пыль ${b.dust} · коридор ${b.corridor[1]} · пакеты ${b.packets}`, 300, 420, (c, w, h) => {
+      const img = c.createImageData(w, h);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const u = x / w - 0.5, v = y / h - 0.5, r = Math.hypot(u * 1.0, v * 1.9);
+        const n = Math.max(0, 1 - r * 1.5);
+        const well = Math.exp(-r * r * 9);
+        const k = (y * w + x) * 4;
+        for (let ch = 0; ch < 3; ch++) {
+          const val = b.base[ch] + b.nebula[ch] * Math.pow(n, 2.4) * b.nebulaStrength[0] * 9
+                    + (ch === 2 ? 1 : ch === 0 ? 0.4 : 0.6) * well * b.well * 3;
+          img.data[k + ch] = Math.min(255, Math.pow(val, 1 / 2.2) * 255);
+        }
+        img.data[k + 3] = 255;
+      }
+      c.putImageData(img, 0, 0);
+    });
+  }
+}
+
+/* ---- типографика и тайминги ---- */
+{
+  const g = section('Типографика и тайминги', 'library/brand/tokens.js — числа, от которых пляшут все ролики');
+  tile(g, 'type.size', 'hero / title / subtitle / body / caption', 620, 420, (c, w, h) => {
+    c.fillStyle = '#05070b'; c.fillRect(0, 0, w, h);
+    let y = 70;
+    for (const [k, v] of Object.entries(type.size)) {
+      c.font = `800 ${Math.min(v, 92) * 0.62}px 'Inter Display',sans-serif`;
+      c.fillStyle = '#e8eef8'; c.textBaseline = 'alphabetic';
+      c.fillText(k, 24, y);
+      c.font = "500 20px 'JetBrains Mono',monospace"; c.fillStyle = '#7d8ea6';
+      c.fillText(`${v}px`, w - 110, y);
+      y += Math.min(v, 92) * 0.72;
+    }
+  });
+  tile(g, 'motion', 'fps, суб-кадры, выдержка, шаг станций', 620, 420, (c, w, h) => {
+    c.fillStyle = '#05070b'; c.fillRect(0, 0, w, h);
+    c.font = "500 24px 'JetBrains Mono',monospace"; c.textBaseline = 'top';
+    let y = 28;
+    const rows = [
+      ['fps', motion.fps], ['sub-frames', motion.sub], ['shutter', motion.shutter],
+      ['stagger', Object.values(motion.stagger).join(' / ')],
+      ['dur', Object.values(motion.dur).join(' / ')],
+      ['station gap', motion.station.gap], ['hold', motion.station.hold.join(' → ')],
+      ['bloom', grade.bloom], ['grain', grade.grain], ['vignette', grade.vignette],
+      ['safe top', safeArea.top], ['safe bottom', safeArea.bottom],
+    ];
+    for (const [k, v] of rows) {
+      c.fillStyle = '#7d8ea6'; c.fillText(k, 24, y);
+      c.fillStyle = '#9fd0ff'; c.fillText(String(v), 300, y);
+      y += 32;
+    }
+  });
+}
+
+window.__sheetReady = true;
+</script>
+</body></html>

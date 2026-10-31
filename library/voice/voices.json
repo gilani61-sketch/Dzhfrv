@@ -1,0 +1,38 @@
+{
+  "provider": "elevenlabs",
+  "api": "https://api.elevenlabs.io/v1",
+  "defaultModel": "eleven_multilingual_v2",
+  "note": "voice_id подставить из аккаунта: node tools/voice.mjs list. Роли ниже — это назначение, а не конкретный голос: один и тот же voice_id можно повесить на несколько ролей.",
+  "roles": {
+    "self": {
+      "voice_id": "",
+      "label": "мой голос",
+      "use": "основная закадровая дорожка, личные ролики от первого лица",
+      "settings": { "stability": 0.45, "similarity_boost": 0.85, "style": 0.35, "speed": 1.0 }
+    },
+    "narrator": {
+      "voice_id": "",
+      "label": "диктор",
+      "use": "нейтральный закадр для продуктовых и обучающих роликов",
+      "settings": { "stability": 0.55, "similarity_boost": 0.80, "style": 0.20, "speed": 1.0 }
+    },
+    "hype": {
+      "voice_id": "",
+      "label": "энергичный",
+      "use": "хук первых трёх секунд, анонсы, запуски",
+      "settings": { "stability": 0.30, "similarity_boost": 0.75, "style": 0.65, "speed": 1.08 }
+    },
+    "calm": {
+      "voice_id": "",
+      "label": "спокойный",
+      "use": "объяснения, кейсы, длинные сцены",
+      "settings": { "stability": 0.70, "similarity_boost": 0.80, "style": 0.10, "speed": 0.96 }
+    },
+    "agent": {
+      "voice_id": "",
+      "label": "голос агента",
+      "use": "реплики ИИ в кадре, короткие системные фразы",
+      "settings": { "stability": 0.60, "similarity_boost": 0.70, "style": 0.45, "speed": 1.0 }
+    }
+  }
+}

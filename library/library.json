@@ -1,0 +1,88 @@
+{
+  "name": "cine library",
+  "version": 1,
+  "note": "Каталог студии. Картинка всего набора: out/library-sheet.png (node tools/sheet.mjs).",
+  "brand": {
+    "tokens": "library/brand/tokens.js",
+    "palettes": ["cold-tech", "neon-night", "warm-doc", "mono-noir"],
+    "fonts": { "display": "Inter Display", "body": "Inter", "mono": "JetBrains Mono" },
+    "logos": {
+      "dir": "library/brand/logos",
+      "loader": "library/brand/logos/index.js",
+      "marks": {
+        "mark-reverse": "разворот запроса, { } — для reverse-engineering тем",
+        "mark-aperture": "диафрагма — знак самого движка",
+        "mark-node": "узлы и связи — агенты, графы, пайплайны",
+        "mark-spark": "искра — ИИ, генерация, магия",
+        "mark-shield": "щит с галкой — надёжность, безопасность, гарантия"
+      }
+    }
+  },
+  "elements": {
+    "module": "library/elements/ui.js",
+    "items": {
+      "glassPanel": "стеклянная карточка — база почти всего",
+      "browserWindow": "окно сайта; содержимое задаётся блоками heading/tiles/input/rows",
+      "button": "кнопка, tone: solid | ghost, есть состояние нажатия",
+      "logRow": "строка сетевого лога: метод, путь, статус",
+      "codePane": "панель кода с подсветкой и посимвольным набором",
+      "chipRow": "ряд чипов с поочерёдным зажиганием",
+      "terminal": "терминал с печатающимся промптом",
+      "statTile": "крупная цифра с подписью",
+      "quoteCard": "цитата с автором",
+      "phoneFrame": "рамка телефона с произвольным экраном",
+      "cursorArrow": "курсор",
+      "clickRing": "волна от клика",
+      "arrow": "стрелка-указатель",
+      "cornerBrackets": "уголки кадрирования",
+      "progressRing": "кольцо прогресса",
+      "rule": "разделитель со свечением к центру"
+    }
+  },
+  "characters": {
+    "module": "library/characters/characters.js",
+    "items": {
+      "agentOrb": "агент: светящийся глаз, смотрит и думает",
+      "serverStack": "стойка серверов — «та сторона»",
+      "userSilhouette": "человек в кадре, без лица и без стока",
+      "uiGhost": "пустая оболочка интерфейса — то, что вот-вот сменится",
+      "packetSprite": "пакет данных как маленький курьер"
+    }
+  },
+  "backgrounds": {
+    "module": "library/backgrounds/presets.js",
+    "items": {
+      "deep-space": "глубокий космос, еле заметная туманность — дефолт",
+      "ember": "сцена разогрета, тёплый блок",
+      "clean-studio": "почти пусто, вся работа на типографике",
+      "grid-void": "много коридора, читается скорость",
+      "data-storm": "воздух забит пакетами — потоки данных",
+      "neon-night": "неон — hype, запуски"
+    }
+  },
+  "sfx": {
+    "module": "library/sfx/kit.py",
+    "items": {
+      "drone": "нижний гул, держит сцену",
+      "pad": "воздух над дроном",
+      "boom": "кинематографичный удар",
+      "riser": "разгон перед склейкой",
+      "whoosh": "пролёт мимо камеры",
+      "glass": "слом, стекло",
+      "tick": "клавиша, клик, засечка",
+      "blip": "появление элемента",
+      "shimmer": "хвост после финального удара",
+      "typing": "готовая россыпь кликов набора",
+      "Track": "микшер: add / add_many / bed / master / write",
+      "duck": "пригибает музыку под голосом"
+    }
+  },
+  "voice": {
+    "registry": "library/voice/voices.json",
+    "tool": "tools/voice.mjs",
+    "provider": "elevenlabs",
+    "roles": ["self", "narrator", "hype", "calm", "agent"],
+    "requires": ["ELEVENLABS_API_KEY в секретах среды", "api.elevenlabs.io в Allowed domains"],
+    "scriptFormat": "films/<film>/voice.json — реплики с полем at (секунда в ролике)"
+  }
+}
