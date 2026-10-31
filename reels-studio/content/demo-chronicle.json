@@ -21,7 +21,7 @@
 
     { "type": "footage", "src": "media/footage/demo-05.mp4", "caption": "Их назвали Santos", "dur": 2.6, "in": "dip" },
 
-    { "type": "still", "src": "media/stills/demo-watch.jpg", "caption": "И с тех пор не меняли форму",
+    { "type": "still", "src": "media/stills/demo-watch.jpg", "caption": "С тех пор форму не меняли",
       "move": "push", "dur": 3, "in": "fade" },
 
     { "type": "quote", "text": "Вещь выживает,\nесли решает\nчью-то задачу.", "author": "правило архива", "dur": 3.6, "in": "paper" },

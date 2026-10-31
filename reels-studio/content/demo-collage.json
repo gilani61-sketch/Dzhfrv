@@ -10,9 +10,9 @@
     { "type": "collage", "bg": "charcoal", "dur": 3.2, "in": "paper",
       "headline": "Сначала был\nзаказ.",
       "caption": "Ремесло становится производством",
-      "strips": [ { "y": 58, "h": 7, "tone": "cream" }, { "y": 84, "h": 5, "tone": "gold" } ],
+      "strips": [ { "y": 58, "h": 7, "tone": "cream" }, { "y": 76, "h": 4, "tone": "gold" } ],
       "layers": [
-        { "src": "media/stills/demo-34.jpg", "x": 50, "y": 34, "w": 86, "depth": 0.2, "treat": "duotone", "anim": "rise", "rotate": -1.5 }
+        { "src": "media/stills/demo-34.jpg", "x": 50, "y": 52, "w": 86, "depth": 0.2, "treat": "duotone", "anim": "rise", "rotate": -1.5 }
       ] },
 
     { "type": "collage", "bg": "indigo", "dur": 3, "in": "halftone",
@@ -29,6 +29,6 @@
       "bottom": { "src": "media/stills/demo-watch.jpg", "move": "push" },
       "topLabel": "БЫЛО", "bottomLabel": "СТАЛО" },
 
-    { "type": "outro", "line": "Продолжение —\nв следующей части", "cta": "@ARCHIVE", "dur": 2.8, "in": "filmroll" }
+    { "type": "outro", "line": "Продолжение —\nв следующей части", "cta": "ЧАСТЬ ВТОРАЯ — ЗАВТРА", "dur": 2.8, "in": "filmroll" }
   ]
 }

@@ -8,6 +8,7 @@
 ## Быстрый старт
 ```bash
 npm install
+npm run check                       # проверить сценарии
 npm run studio                      # превью и правка на таймлайне
 npm run render -- demo-chronicle    # рендер в out/
 ```

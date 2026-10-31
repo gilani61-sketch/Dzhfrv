@@ -161,7 +161,8 @@ export const StatementText: React.FC<{
       {lines.map((line, i) => {
         const p = ramp(f, start + i * 4, 14, EASE.archive);
         return (
-          <div key={i} style={{ overflow: 'hidden', paddingBottom: '0.06em' }}>
+          // маска строки: запас снизу под кириллические выносные (д, щ, ц, у)
+          <div key={i} style={{ overflow: 'hidden', paddingBottom: '0.2em', marginBottom: '-0.12em' }}>
             <div
               style={{
                 ...typeStyle(step, color),

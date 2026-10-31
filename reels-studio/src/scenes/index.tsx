@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, interpolate, staticFile, useCurrentFrame } from 'remotion';
 import type { Scene } from '../schema/reel';
 import type { StylePreset } from '../styles';
 import { COLOR, GRID, SAFE, TIME, TYPE, DEPTH } from '../design/tokens';
@@ -117,7 +117,7 @@ export const CollageScene: React.FC<SceneProps<Extract<Scene, { type: 'collage' 
             opacity: a.opacity,
           }}>
             <Cutout seed={i * 31 + 5} border={l.treat === 'cutout' ? 14 : 0} rotate={0}>
-              <img src={l.src.startsWith('http') ? l.src : `/${l.src}`}
+              <img src={l.src.startsWith('http') ? l.src : staticFile(l.src)}
                    style={{ width: '100%', display: 'block', filter: treat, clipPath: roughClip(i * 17 + 3, 0.9) }} />
             </Cutout>
           </div>
@@ -127,10 +127,20 @@ export const CollageScene: React.FC<SceneProps<Extract<Scene, { type: 'collage' 
       <Halftone opacity={preset.halftone || 0.12} />
 
       {scene.headline ? (
-        <div style={{ position: 'absolute', left: SAFE.side, right: SAFE.side, top: 420 }}>
-          <StatementText text={scene.headline} start={4} step="title"
-                         color={bgTone === 'cream' ? COLOR.ink : COLOR.bone} align="left" />
-        </div>
+        <>
+          {/* подложка под заголовком: текст читается поверх любой вырезки */}
+          <div style={{
+            position: 'absolute', left: 0, right: 0, top: 300, height: 480,
+            background: bgTone === 'cream'
+              ? 'linear-gradient(180deg, rgba(244,238,226,.92) 55%, rgba(244,238,226,0) 100%)'
+              : 'linear-gradient(180deg, rgba(18,17,16,.88) 55%, rgba(18,17,16,0) 100%)',
+            pointerEvents: 'none',
+          }} />
+          <div style={{ position: 'absolute', left: SAFE.side, right: SAFE.side, top: 420 }}>
+            <StatementText text={scene.headline} start={4} step="title"
+                           color={bgTone === 'cream' ? COLOR.ink : COLOR.bone} align="left" />
+          </div>
+        </>
       ) : null}
       {scene.caption ? (
         <Caption text={scene.caption} start={TIME.inFast}
@@ -269,7 +279,7 @@ export const GalleryScene: React.FC<SceneProps<Extract<Scene, { type: 'gallery' 
           width: '100%', height: '100%', overflow: 'hidden',
           boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.25), 0 0 0 10px rgba(122,74,48,.9)',
         }}>
-          <img src={scene.src.startsWith('http') ? scene.src : `/${scene.src}`}
+          <img src={scene.src.startsWith('http') ? scene.src : staticFile(scene.src)}
                style={{
                  width: '100%', height: '100%', objectFit: 'cover',
                  transform: scene.detail

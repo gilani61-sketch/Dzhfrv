@@ -7,7 +7,9 @@
     "studio": "remotion studio src/index.ts",
     "render": "node scripts/render.mjs",
     "still": "node scripts/still.mjs",
-    "new": "node scripts/new-reel.mjs"
+    "new": "node scripts/new-reel.mjs",
+    "check": "node scripts/check.mjs",
+    "sheet": "node scripts/sheet.mjs"
   },
   "dependencies": {
     "@remotion/bundler": "4.0.539",
