@@ -1,0 +1,14 @@
+{
+  "name": "cine",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shader-driven cinematic video engine (three.js + ffmpeg). Not Remotion.",
+  "scripts": {
+    "preview": "node tools/render.mjs --preview 1.9,7.3,14.2,21.8",
+    "render": "node tools/render.mjs",
+    "score": "python3 films/reverse-api-engineer/sound.py",
+    "mux": "tools/mux.sh",
+    "progress": "cat out/.progress"
+  }
+}
