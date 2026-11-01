@@ -26,6 +26,8 @@ npm run render -- demo-chronicle    # рендер в out/
 | [`docs/07-voice.md`](docs/07-voice.md) | озвучка через ElevenLabs |
 | [`library/README.md`](library/README.md) | библиотека: элементы, карточки брендов, палитры эпох |
 | [`HANDOFF.md`](HANDOFF.md) | установка на своей машине и текущее состояние |
+| [`references/README.md`](references/README.md) | оба исходных референса и что из них взято |
+| [`SESSION-LOG.md`](SESSION-LOG.md) | журнал: решения, проверки, исправленные дефекты |
 | `out/style-guide.png` | визуальный образец дизайн-системы |
 | `out/elements.png` | все элементы библиотеки одной страницей |
 
