@@ -44,7 +44,7 @@ const bl = (o, v) => { if (o.material?.uniforms?.uExtraBlur) o.material.uniforms
  * resolve into focus, hold, then get carried past the lens.
  */
 function words(group, t, cfg) {
-  const { tIn, tOut, stagger = 0.055, dur = 0.85, outDur = 0.55,
+  const { tIn, tOut, stagger = 0.055, dur = 0.85, outDur = 0.78,
     mode = 'depth', drift = 0.10, outMode = 'past' } = cfg;
   const ws = group.userData.words;
   ws.forEach((m, i) => {
@@ -64,15 +64,18 @@ function words(group, t, cfg) {
     y += Math.sin(hold * 0.55 + i) * 0.012 * drift * 10;
     z += hold * drift * 0.055;
 
+    let vis = 1 - o;
     if (o > 0) {
-      if (outMode === 'past') { z += o * 7.0; s *= 1 + o * 0.35; }
-      else { y -= o * 0.35; }
-      blur += o * 1.6;
+      if (outMode === 'past') {
+        z += o * 6.0; s *= 1 + o * 0.30;
+        vis = 1 - Math.pow(o, 2.2);   // держим видимость, пока слово летит мимо
+      } else { y -= o * 0.35; }
+      blur += o * 2.6;                // уходящее растворяется в смазе, а не дробится
     }
 
     m.position.set(home.x + x, home.y + y, z);
     m.scale.setScalar(s);
-    op(m, clamp01(a) * (1 - o));
+    op(m, clamp01(a) * vis);
     bl(m, blur);
   });
 }
@@ -148,11 +151,17 @@ export async function boot(canvas) {
 
   /* --- station groups ---------------------------------------------- */
   const scenes = [];
+  /**
+   * Контент станции появляется раньше, чем камера доезжает, и уходит позже,
+   * чем она тронулась дальше: на разгоне в кадре всегда что-то есть —
+   * уходящее проносится мимо линзы, а следующее уже летит навстречу из глубины.
+   */
+  const LEAD = 0.45, TAIL = 0.25;
   const addStation = (i, build) => {
     const g = new THREE.Group();
     g.position.z = ST[i].z;
     scene.add(g);
-    const api = build(g, ST[i]);
+    const api = build(g, { ...ST[i], t0: ST[i].t0 - LEAD, t1: ST[i].t1 + TAIL });
     scenes.push({ ...ST[i], group: g, ...api });
   };
 
@@ -254,7 +263,7 @@ export async function boot(canvas) {
         card.rotation.x = lerp(0.14, -0.008, ca);
         card.scale.setScalar(lerp(1.1, 1, ca) * (1 + co * 0.25));
         op(card, ca * (1 - co));
-        bl(card, (1 - ca) * 1.1 + co * 1.5);
+        bl(card, (1 - ca) * 1.1 + co * 2.6);
 
         // typing, then the click
         const tp = span(t, st.t0 + 0.75, st.t0 + 2.05);
@@ -311,7 +320,7 @@ export async function boot(canvas) {
           m.position.x = lerp(0.5, 0, a);
           m.position.z = lerp(-1.6, 0, a) + o * 5.5;
           op(m, a * (1 - o) * clamp01((m.position.y + 0.92) * 3.2) * (1 - clamp01((m.position.y - 1.02) * 3)));
-          bl(m, (1 - a) * 1.4 + o * 1.4);
+          bl(m, (1 - a) * 1.4 + o * 2.6);
         });
         words(title, t, { tIn: st.t0 + 0.5, tOut: st.t1 - 0.45, mode: 'rise', stagger: 0.04 });
       },
@@ -344,7 +353,7 @@ export async function boot(canvas) {
         panel.rotation.x = lerp(-0.22, 0.01, a);
         panel.scale.setScalar(lerp(1.08, 1, a) * (1 + o * 0.22));
         op(panel, a * (1 - o));
-        bl(panel, (1 - a) * 1.2 + o * 1.5);
+        bl(panel, (1 - a) * 1.2 + o * 2.6);
 
         codeProgress = ease.outCubic(span(t, st.t0 + 0.5, st.t0 + 2.3));
         drawCode(panel.userData.ctx, 900, 460, codeProgress);
@@ -355,7 +364,7 @@ export async function boot(canvas) {
         chips.userData.texture.needsUpdate = true;
         const cf = fade(chips, t, st.t0 + 1.75, st.t1 - 0.5, 0.45);
         chips.position.z = 0.1 + cf.o * 5.5;
-        bl(chips, cf.o * 1.4);
+        bl(chips, cf.o * 2.6);
 
         words(title, t, { tIn: st.t0 + 0.65, tOut: st.t1 - 0.45, mode: 'rise', stagger: 0.04 });
       },
@@ -417,7 +426,7 @@ export async function boot(canvas) {
         panel.position.z = lerp(-2.4, 0, a) + o * 6.0;
         panel.rotation.x = lerp(-0.18, 0.008, a);
         op(panel, a * (1 - o));
-        bl(panel, (1 - a) * 1.1 + o * 1.5);
+        bl(panel, (1 - a) * 1.1 + o * 2.6);
 
         const tp = span(t, st.t0 + 0.45, st.t0 + 2.3);
         const shown = Math.round(PROMPT.length * ease.outCubic(tp));
@@ -480,7 +489,7 @@ export async function boot(canvas) {
   const camZ = [[-1.0, ST[0].z + 13.5]];
   const camX = [[-1.0, 0.10]], camY = [[-1.0, -0.07]];
   ST.forEach((s, i) => {
-    camZ.push([s.t0 + 0.28, s.z + 8.2]);
+    camZ.push([s.t0 + 0.26, s.z + 8.3]);
     camZ.push([s.t1 - 0.46, s.z + 6.0]);
     const sx = (i % 2 === 0 ? 1 : -1) * 0.085;
     camX.push([s.t0 + 0.28, sx]); camX.push([s.t1 - 0.46, -sx * 0.5]);
@@ -539,27 +548,34 @@ export async function boot(canvas) {
 
     dust.material.uniforms.uTime.value = t;
     dust.material.uniforms.uZ.value = camera.position.z;
-    dust.material.uniforms.uAmount.value = 0.42 + wh * 0.35;
+    dust.material.uniforms.uAmount.value = 0.42 + wh * 0.45;
 
     corridor.userData.mat.uniforms.uTime.value = t;
     corridor.userData.mat.uniforms.uZ.value = camera.position.z;
     corridor.position.z = camera.position.z - 70;
-    corridor.userData.mat.uniforms.uAmount.value = lerp(0.16, 0.45, clamp01(span(t, 8.6, 10.2))) * (1 - 0.5 * span(t, 22.6, 24.0));
+    corridor.userData.mat.uniforms.uAmount.value =
+      lerp(0.16, 0.45, clamp01(span(t, 8.6, 10.2))) * (1 + wh * 0.7) * (1 - 0.5 * span(t, 22.6, 24.0));
 
     // packets swell through the "records every request" beat
     const pk = clamp01(span(t, 8.4, 9.9)) * (1 - clamp01(span(t, 15.6, 17.0)) * 0.55)
-             + wh * 0.35 + clamp01(span(t, 22.8, 24.0)) * 0.35;
+             + wh * 0.60 + clamp01(span(t, 22.8, 24.0)) * 0.35;
     packets.material.uniforms.uTime.value = t;
     packets.material.uniforms.uZ.value = camera.position.z;
     packets.material.uniforms.uAmount.value = clamp01(pk) * 1.15;
-    packets.material.uniforms.uStretch.value = 0.6 + wh * 3.2;
-    packets.material.uniforms.uSpeed.value = 18 + wh * 26;
+    packets.material.uniforms.uStretch.value = 0.6 + wh * 4.5;
+    packets.material.uniforms.uSpeed.value = 18 + wh * 32;
 
-    // stations
-    scenes.forEach((s, idx) => {
-      const live = t > s.t0 - 1.6 && t < s.t1 + 1.2;
+    // stations — на разгоне линза мажет всё, иначе суб-кадры видны копиями
+    const rush = Math.max(0, wh - 0.18) * 1.05;
+    scenes.forEach((s) => {
+      const live = t > s.t0 - 2.2 && t < s.t1 + 1.6;
       s.group.visible = live;
-      if (live) s.update(t);
+      if (!live) return;
+      s.group.traverse(o => { const u = o.material?.uniforms?.uExtraBlur; if (u) u.value = 0; });
+      s.update(t);
+      if (rush > 0.03) {
+        s.group.traverse(o => { const u = o.material?.uniforms?.uExtraBlur; if (u) u.value += rush; });
+      }
     });
 
     // grade
@@ -576,17 +592,25 @@ export async function boot(canvas) {
   /* ------------------------------------------------------------------ *
    *  Frame renderer — motion blur by sub-sample accumulation
    * ------------------------------------------------------------------ */
+  /** Чем быстрее движение, тем больше суб-кадров: иначе смаз рассыпается на копии. */
+  function subSamples(t) {
+    let e = 0;
+    for (let i = 1; i < ST.length; i++) e = Math.max(e, Math.exp(-Math.pow((t - ST[i].t0) * 1.7, 2)));
+    return SUB + Math.round(e * 7);
+  }
+
   function renderFrame(frame) {
     const base = frame / FPS;
+    const subs = subSamples(base);
     post.beginAccum();
-    for (let s = 0; s < SUB; s++) {
-      const t = base + (SHUTTER / FPS) * (s / SUB);
+    for (let s = 0; s < subs; s++) {
+      const t = base + (SHUTTER / FPS) * ((s + 0.5) / subs);
       update(t);
       renderer.setRenderTarget(post.rtScene);
       renderer.setClearColor(0x000000, 1);
       renderer.clear(true, true, true);
       renderer.render(scene, camera);
-      post.addAccum(1 / SUB);
+      post.addAccum(1 / subs);
     }
     post.render(base);
   }
