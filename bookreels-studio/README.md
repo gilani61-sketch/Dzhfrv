@@ -15,6 +15,8 @@ bash scripts/render.sh martin-eden
 
 ```
 bookreels-studio/
+├── START-HERE.md          ← установка на своём компьютере
+├── CLAUDE.md              ← контекст проекта, читается Claude Code при старте
 ├── README.md              ← ты здесь
 ├── PIPELINE.md            ← как делается ролик, по шагам
 ├── docs/
@@ -46,6 +48,7 @@ bookreels-studio/
 ├── scripts/
 │   ├── new_project.sh     ← создать ролик
 │   ├── gen_library.py     ← перегенерировать текстуры и оверлеи
+│   ├── setup_links.py     ← связать движок с папками (после распаковки)
 │   ├── tts_eleven.py      ← озвучка твоим голосом
 │   ├── build_scenes.py    ← script.md → scenes.json
 │   └── render.sh          ← рендер + нормализация звука
