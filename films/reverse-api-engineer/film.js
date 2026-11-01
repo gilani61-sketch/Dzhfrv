@@ -445,7 +445,7 @@ export async function boot(canvas) {
     mark.position.set(0, 0.78, 0);
     const name = TXT('Reverse API Engineer', { size: 86, weight: 800, maxWidth: 560 });
     name.position.set(0, -0.14, 0.1);
-    const sub = TXT('бесплатно · открытый код', { size: 44, weight: 600, color: 0xa9c4e2, maxWidth: 620 });
+    const sub = TXT('бесплатно · открытый код', { size: 38, weight: 600, color: 0xa9c4e2, maxWidth: 560 });
     sub.position.set(0, -0.76, 0.1);
     const cta = makeCanvasMesh(600, 118, (c, w2, h2) => {
       const r = 55;

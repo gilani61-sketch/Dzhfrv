@@ -26,6 +26,8 @@ const flag = (name, def = null) => {
 const film = flag('--film', 'reverse-api-engineer');
 const preview = argv.includes('--preview') ? flag('--preview').split(',').map(Number) : null;
 const outFile = path.resolve(ROOT, flag('-o', `out/${film}.silent.mp4`));
+const fromSec = flag('--from') == null ? null : Number(flag('--from'));
+const toSec = flag('--to') == null ? null : Number(flag('--to'));
 
 if (!fs.existsSync(path.join(ROOT, 'films', film, 'index.html'))) {
   console.error(`no such film: films/${film}/index.html`);
@@ -70,21 +72,26 @@ if (preview) {
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   const ff = spawn('ffmpeg', [
     '-y', '-loglevel', 'error', '-f', 'image2pipe', '-c:v', 'png', '-r', String(meta.fps),
-    '-i', 'pipe:0', '-c:v', 'libx264', '-preset', 'medium', '-crf', '14',
+    '-i', 'pipe:0', '-c:v', 'libx264', '-preset', 'medium', '-crf', '14', '-g', '30', '-keyint_min', '30',
     '-pix_fmt', 'yuv420p', '-profile:v', 'high', '-movflags', '+faststart',
     '-r', String(meta.fps), outFile,
   ], { stdio: ['pipe', 'inherit', 'inherit'] });
 
+  // диапазон кадров: можно перерендерить только кусок и склеить
+  const first = fromSec == null ? 0 : Math.round(fromSec * meta.fps);
+  const last = toSec == null ? meta.total : Math.round(toSec * meta.fps);
+  if (first || last !== meta.total) console.log(`range: frames ${first}…${last - 1}`);
+
   const t0 = Date.now();
-  for (let i = 0; i < meta.total; i++) {
+  for (let i = first; i < last; i++) {
     await page.evaluate(n => __film.renderFrame(n), i);
     const buf = await page.screenshot({ type: 'png' });
     if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once('drain', r));
     if (i % 15 === 0) {
       const el = (Date.now() - t0) / 1000;
-      const eta = el / Math.max(1, i) * (meta.total - i);
+      const eta = el / Math.max(1, i - first) * (last - i);
       fs.writeFileSync(path.join(ROOT, 'out', '.progress'),
-        `${i}/${meta.total}  ${el.toFixed(0)}s elapsed  eta ${(eta / 60).toFixed(1)}m\n`);
+        `${i - first}/${last - first}  ${el.toFixed(0)}s elapsed  eta ${(eta / 60).toFixed(1)}m\n`);
     }
   }
   ff.stdin.end();
