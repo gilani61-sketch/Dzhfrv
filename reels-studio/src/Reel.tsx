@@ -6,6 +6,7 @@ import { CANVAS, COLOR, TIME } from './design/tokens';
 import { useArchiveFonts } from './design/fonts';
 import { Grain, Dust, Vignette, FilmGate, Halation } from './overlays/Film';
 import { Lockup } from './components/Type';
+import { Decor } from './components/Element';
 import { Guides } from './components/Guides';
 import {
   enterStyle, exitStyle, transitionFrames, tornClipPath, halationAmount, dipAmount,
@@ -90,6 +91,8 @@ const SceneShell: React.FC<{ p: Placed; reel: Reel }> = ({ p, reel }) => {
                     : s.type === 'gallery' ? <GalleryScene scene={s} {...common} />
                       : s.type === 'outro' ? <OutroScene scene={s} handle={reel.handle} {...common} />
                         : null}
+
+      <Decor items={(s as any).decor} />
     </AbsoluteFill>
   );
 };

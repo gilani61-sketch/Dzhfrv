@@ -29,6 +29,20 @@ const sceneBase = {
   lockup: z.boolean().optional(),
   /** звуковой акцент из public/media/audio/sfx */
   sfx: z.string().optional(),
+  /** что говорит голос в этой сцене; из этого собирается озвучка (scripts/voice.mjs) */
+  say: z.string().optional(),
+  /** графические элементы из библиотеки поверх сцены */
+  decor: z.array(z.object({
+    /** имя файла в public/library/elements, напр. stamp-archive.svg */
+    name: z.string(),
+    /** центр и ширина в процентах холста */
+    x: z.number(), y: z.number(), w: z.number(),
+    rotate: z.number().optional(),
+    tone: z.enum(['gold', 'oxide', 'indigo', 'cream', 'bone', 'ink', 'sepia', 'tea', 'rust']).optional(),
+    opacity: z.number().min(0).max(1).optional(),
+    anim: z.enum(['none', 'stampIn', 'fadeIn', 'draw', 'drift', 'pop']).optional(),
+    start: z.number().optional(),
+  })).optional(),
 };
 
 const media = {
@@ -154,8 +168,10 @@ export const reelSchema = z.object({
     show: z.boolean().default(true),
   }).default({ show: true }),
   handle: z.string().default('@archive'),
-  /** закадровый голос: public/media/audio/vo/... */
+  /** закадровый голос: public/media/audio/vo/... (пишется скриптом voice.mjs) */
   voice: z.string().optional(),
+  /** id голоса ElevenLabs для этого ролика; иначе берётся ELEVENLABS_VOICE_ID */
+  voiceId: z.string().optional(),
   /** музыка: public/media/audio/music/... */
   music: z.string().optional(),
   musicGain: z.number().min(0).max(1).default(0.22),

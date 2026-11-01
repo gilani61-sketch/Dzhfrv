@@ -1,0 +1,87 @@
+{
+  "stamp-archive.svg": {
+    "w": 300,
+    "h": 300,
+    "aspect": 1
+  },
+  "stamp-checked.svg": {
+    "w": 300,
+    "h": 300,
+    "aspect": 1
+  },
+  "stamp-origin.svg": {
+    "w": 620,
+    "h": 130,
+    "aspect": 4.7692
+  },
+  "stamp-no-1.svg": {
+    "w": 240,
+    "h": 130,
+    "aspect": 1.8462
+  },
+  "corner-marks.svg": {
+    "w": 1080,
+    "h": 1920,
+    "aspect": 0.5625
+  },
+  "rule-double.svg": {
+    "w": 900,
+    "h": 16,
+    "aspect": 56.25
+  },
+  "rule-dotted.svg": {
+    "w": 900,
+    "h": 8,
+    "aspect": 112.5
+  },
+  "divider-ornament.svg": {
+    "w": 520,
+    "h": 60,
+    "aspect": 8.6667
+  },
+  "sprocket-strip.svg": {
+    "w": 120,
+    "h": 1920,
+    "aspect": 0.0625
+  },
+  "arrow-hand.svg": {
+    "w": 360,
+    "h": 180,
+    "aspect": 2
+  },
+  "arrow-straight.svg": {
+    "w": 320,
+    "h": 90,
+    "aspect": 3.5556
+  },
+  "tape.svg": {
+    "w": 300,
+    "h": 92,
+    "aspect": 3.2609
+  },
+  "paperclip.svg": {
+    "w": 120,
+    "h": 260,
+    "aspect": 0.4615
+  },
+  "burst.svg": {
+    "w": 900,
+    "h": 900,
+    "aspect": 1
+  },
+  "ribbon.svg": {
+    "w": 760,
+    "h": 150,
+    "aspect": 5.0667
+  },
+  "frame-deco.svg": {
+    "w": 900,
+    "h": 620,
+    "aspect": 1.4516
+  },
+  "index-card.svg": {
+    "w": 720,
+    "h": 440,
+    "aspect": 1.6364
+  }
+}

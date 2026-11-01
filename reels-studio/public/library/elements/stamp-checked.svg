@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300" fill="none">
+<g opacity="0.92">
+  <circle cx="150" cy="150" r="128" stroke="currentColor" stroke-width="5"/><circle cx="150" cy="150" r="115" stroke="currentColor" stroke-width="2"/><circle cx="150" cy="150" r="82" stroke="currentColor" stroke-width="2.5" stroke-dasharray="7 6"/>
+  <defs>
+    <path id="t2" d="M 48 150 A 102 102 0 0 1 252 150"/>
+    <path id="b2" d="M 48 150 A 102 102 0 0 0 252 150"/>
+  </defs>
+  <text font-family="Oswald, Arial Narrow, sans-serif" font-size="26" font-weight="600"
+        letter-spacing="5" fill="currentColor">
+    <textPath href="#t2" startOffset="50%" text-anchor="middle">ПРОВЕРЕНО</textPath>
+  </text>
+  <text font-family="Oswald, Arial Narrow, sans-serif" font-size="22" font-weight="500"
+        letter-spacing="4" fill="currentColor">
+    <textPath href="#b2" startOffset="50%" text-anchor="middle">ФАКТ · FACT</textPath>
+  </text>
+  <path d="M 116 150 L 184 150" stroke="currentColor" stroke-width="3"/>
+  <path d="M 140 134 L 150 124 L 160 134" stroke="currentColor" stroke-width="3"/>
+</g></svg>

@@ -5,6 +5,7 @@ import { ReelVideo, reelDuration } from './Reel';
 import { loadReels } from './registry';
 import { reelSchema } from './schema/reel';
 import { StyleGuide } from './StyleGuide';
+import { ElementSheet } from './ElementSheet';
 
 export const RemotionRoot: React.FC = () => {
   const reels = loadReels();
@@ -24,6 +25,13 @@ export const RemotionRoot: React.FC = () => {
           schema={undefined}
         />
       ))}
+
+      <Still
+        id="elements"
+        component={ElementSheet as any}
+        width={CANVAS.width}
+        height={2150}
+      />
 
       <Still
         id="style-guide"

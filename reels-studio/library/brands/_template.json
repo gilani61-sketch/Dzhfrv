@@ -1,0 +1,19 @@
+{
+  "slug": "zamenit",
+  "name": "Название бренда",
+  "founded": { "year": null, "city": "", "country": "" },
+  "founders": [],
+  "category": "",
+  "era": "belle-epoque",
+  "palette": { "primary": "", "secondary": "", "note": "цвета самого бренда, если они часть истории" },
+  "typeface": { "logo": "", "note": "какой шрифт/каллиграфия в логотипе и почему" },
+  "anchorYear": null,
+  "hook": "Одна фраза: из какой чужой проблемы вырос бренд.",
+  "beats": [
+    { "year": null, "what": "", "verified": false, "source": "" }
+  ],
+  "takeaway": "Вывод ролика одной строкой.",
+  "assets": { "logos": [], "stills": [], "footage": [] },
+  "rights": "Кто владеет логотипом и кадрами, что можно показывать.",
+  "status": "draft"
+}
