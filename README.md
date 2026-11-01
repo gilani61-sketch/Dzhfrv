@@ -89,9 +89,14 @@ python3 films/<имя>/sound.py                       # подмешает го�
 ```bash
 node tools/render.mjs --preview 1.9,7.3,14.2,21.8   # контрольные кадры
 node tools/render.mjs --film reverse-api-engineer   # полный проход (~25 мин на 26 с)
+node tools/render.mjs --from 23.2 --to 26.0 -o out/tail.mp4   # только один блок
 python3 films/reverse-api-engineer/sound.py         # out/<film>.score.wav
 tools/mux.sh reverse-api-engineer                   # out/<film>.mp4
 cat out/.progress                                   # прогресс идущего рендера
+
+Перерендерить один блок и вклеить его, не переделывая весь ролик:
+ключевые кадры ставятся каждые 30, поэтому части режутся и склеиваются
+через `ffmpeg -f concat -c copy` без потери качества.
 ```
 
 ## Как завести новый ролик
