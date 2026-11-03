@@ -18,3 +18,70 @@
 @media(hover:hover) and (prefers-reduced-motion:no-preference){.kpi.reveal:hover,.home-card:hover{transform:translateY(-2px)!important}}
 @media(max-width:600px){.ws-donut-card .donut-wrap{grid-template-columns:1fr}.ws-donut-card .rank-list{width:100%;max-height:300px}.ws-donut-card .card-title{font-size:15px}.ws-donut-card .rank-row{padding:10px 4px;gap:3px 7px}.ws-donut-card .rank-row .amt{font-size:12px}.ws-donut-info{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.donut-svg circle,.ws-donut-info,.kpi,.home-card,.an-lead-card{transition:none!important;animation:none!important}}
+
+/* Ober editorial dashboard: warm canvas, ink navigation, orange actions. */
+:root { --ober-canvas:#f4f3ef; --ober-ink:#20211f; --ober-line:#e1dfd8; --ober-accent:#c74708; }
+body { background:var(--ober-canvas)!important; color:var(--ober-ink); }
+#workspaceNav { background:#222320!important; color:#f8f6f0!important; border-color:#353631!important; }
+#workspaceNav button,#workspaceNav a,#workspaceNav [data-page] { color:inherit!important; }
+#workspaceNav [aria-selected="true"],#workspaceNav .active { background:#424039!important; box-shadow:inset 3px 0 #ff7935; }
+.card,.kpi,.ws-home-card,.an-month-card { border-color:var(--ober-line)!important; border-radius:12px!important; box-shadow:none!important; }
+.kpi-value,.hero-total .value { font-variant-numeric:tabular-nums; letter-spacing:-.045em; }
+.sec-title,.hero-title { letter-spacing:-.045em; text-wrap:balance; }
+.sec-eyebrow,.kpi-label { letter-spacing:.055em; }
+.card-title { font-weight:700; }
+th { background:#efeee8!important; color:var(--ober-ink)!important; }
+tr:hover td { background:#faf6ee; }
+:where(button,a,select,input,[tabindex]):focus-visible { outline:2px solid var(--ober-accent); outline-offset:3px; }
+@media(max-width:600px) { .card,.kpi { border-radius:10px!important; } .sec-title { text-wrap:pretty; } }
+
+/* Finance 2026: Sigma-inspired surfaces, scoped to the existing report. */
+#year-2026 { --finance-surface:#fff; --finance-divider:#e6e4de; }
+#year-2026 :is(.card,.kpi,.hero-figure) { background:var(--finance-surface); border:1px solid var(--finance-divider); border-radius:16px!important; }
+#year-2026 .kpi-grid { gap:12px; }
+#year-2026 .kpi { padding:clamp(14px,2vw,24px); min-width:0; }
+#year-2026 .kpi-value { font-size:clamp(20px,3vw,34px); overflow-wrap:anywhere; }
+#year-2026 .hero-total .value { color:#bd430b; font-size:clamp(30px,6vw,68px); }
+#year-2026 :is(#matrix2026,#average2026) .card { overflow-x:auto; }
+#year-2026 :is(#matrix2026,#average2026) table { min-width:max-content; font-variant-numeric:tabular-nums; }
+#matrix2026 :is(th,td):first-child { position:sticky; left:0; z-index:1; background:#fff; box-shadow:1px 0 var(--finance-divider); }
+#year-2026 .rank-row { border-bottom:1px solid var(--finance-divider); }
+@media(max-width:600px) {
+  #year-2026 .kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  #matrix2026 :is(th,td):first-child { max-width:140px; white-space:normal; }
+}
+
+/* Ober workspace: Tabler-inspired dashboard grids, adapted to existing views. */
+:root{--workspace-gap:20px;--workspace-surface:#fff;--workspace-border:#e1dfd8}
+.ws-topbar{background:var(--workspace-surface);border-bottom:1px solid var(--workspace-border)}
+.page-pane .wrap{max-width:1440px}
+.page-pane .card,.page-pane .kpi,.page-pane .home-card{background:var(--workspace-surface);border:1px solid var(--workspace-border)}
+.page-pane section{padding-block:18px}
+.page-pane .sec-head{margin-bottom:14px}
+.page-pane .sec-title{font-size:clamp(21px,2.2vw,30px)}
+#page-home .home-hero>.wrap{display:grid;gap:var(--workspace-gap)}
+#page-home .home-hero :is(.hero-title,.hero-desc){margin:0}
+#page-home .home-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0}
+#page-home .home-card{margin:0;min-width:0}
+#page-finance :is(#matrix,#matrix2026,#average,#average2026) .card{overflow-x:auto}
+#page-finance :is(#matrix,#matrix2026) table{min-width:920px}
+#page-finance :is(#matrix,#matrix2026) :is(th,td):first-child{position:sticky;left:0;z-index:1;background:#fff}
+@media(min-width:1100px){
+ #page-home .home-hero>.wrap{grid-template-columns:minmax(0,2fr) minmax(240px,1fr);align-items:start}
+ #page-home .home-hero :is(.eyebrow,.hero-title,.hero-desc){grid-column:1/-1;justify-self:start}
+ #page-home .home-cards{grid-template-columns:1fr}
+ #page-finance .year-pane.active{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);padding-inline:clamp(20px,3vw,44px);gap:var(--workspace-gap);max-width:1480px;margin:auto}
+ #page-finance .year-pane.active>*{grid-column:1/-1;min-width:0}
+ #page-finance .year-pane.active>:is(#dynamics,#structure,#dynamics2026,#structure2026){grid-column:auto;display:flex;min-width:0}
+ #page-finance .year-pane.active>:is(#dynamics,#structure,#dynamics2026,#structure2026)>.wrap{display:flex;flex-direction:column}
+ #page-finance .year-pane.active>:is(#dynamics,#structure,#dynamics2026,#structure2026) .card{flex:1}
+ #page-finance .year-pane.active>*>.wrap{padding-inline:0}
+ #page-finance .year-pane.active .kpi-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:600px){
+ :root{--workspace-gap:14px}
+ #page-home .home-cards{grid-template-columns:1fr}
+ .page-pane .sec-head{align-items:flex-start}
+ .page-pane .kpi-grid.cols-6{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #page-finance :is(#matrix,#matrix2026) :is(th,td):first-child{max-width:130px;white-space:normal}
+}
