@@ -105,3 +105,14 @@ tr:hover td { background:#faf6ee; }
 @media(max-width:1100px){#page-analytics .reference-details-grid{grid-template-columns:1fr}#page-analytics .an-month-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:800px){#page-analytics .reference-chart-grid{grid-template-columns:1fr}#analytics-hub>.wrap>.year-tabs{top:68px}}
 @media(max-width:600px){#page-analytics .an-month-cards{grid-template-columns:1fr}#page-analytics .kpi-grid.cols-6{grid-template-columns:repeat(2,minmax(0,1fr))}#page-analytics .kpi-grid.cols-6>.kpi{grid-column:auto}#page-analytics .reference-details-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Explicit direction colors, above the monochrome theme. */
+:root{--trend-up:#137547;--trend-down:#bb3341;--trend-flat:#69717c}
+body :is(.delta,.an-cs-diff,.an-cs-pct,.an-mom,.an-yoy-chip,.ws-trend).up,body .ws-trend:not(.down):not(.flat){color:var(--trend-up)!important}
+body :is(.delta,.an-cs-diff,.an-cs-pct,.an-mom,.an-yoy-chip,.ws-trend).down{color:var(--trend-down)!important}
+body :is(.delta,.an-cs-diff,.an-cs-pct,.an-mom,.an-yoy-chip,.ws-trend).flat{color:var(--trend-flat)!important}
+body :is(.an-cs-pct,.an-yoy-chip).up{background:#e7f4ec!important}
+body :is(.an-cs-pct,.an-yoy-chip).down{background:#fcebed!important}
+body :is(.an-cs-pct,.an-yoy-chip).flat{background:#f0f1f3!important}
+body .an-cs-row:has(.an-cs-pct.up) .an-cs-val[data-label="2026"]{color:var(--trend-up)!important;font-weight:600}
+body .an-cs-row:has(.an-cs-pct.down) .an-cs-val[data-label="2026"]{color:var(--trend-down)!important;font-weight:600}

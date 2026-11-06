@@ -111,6 +111,19 @@
   sync();
   // Keyboard access for the original pointer-driven controls. No new actions.
   const upgrade = root => {
+    // Direction reflects the displayed change, including changes below 1%.
+    root.querySelectorAll('.delta,.an-cs-pct,.an-mom,.an-yoy-chip,.ws-trend').forEach(el=>{
+      const match=el.textContent.match(/([+−-]?\s*\d+(?:[.,]\d+)?)\s*%/);
+      if(!match) return;
+      const value=Number(match[1].replace(/\s/g,'').replace('−','-').replace(',','.'));
+      const direction=value>0?'up':value<0?'down':'flat';
+      if(!el.classList.contains(direction)||['up','down','flat'].some(c=>c!==direction&&el.classList.contains(c))){
+        el.classList.remove('up','down','flat');el.classList.add(direction);
+      }
+      el.title=(value>0?'Рост показателя':value<0?'Снижение показателя':'Без изменений')+'; для расходов цвет обозначает направление, а не эффективность';
+      const diff=el.closest('.an-cs-row')?.querySelector('.an-cs-diff');
+      if(diff&&!diff.classList.contains(direction)){diff.classList.remove('up','down','flat');diff.classList.add(direction);}
+    });
     root.querySelectorAll('.an-lead-icon:not([data-icon-ready])').forEach(el=>{
       const label=el.parentElement.querySelector('.an-lead-name')?.textContent || '';
       const type=/Instagram/.test(label)?'camera':/Telegram/.test(label)?'send':/WhatsApp/.test(label)?'message':/Авито/.test(label)?'grid':/Звонки/.test(label)?'phone':/Сайт/.test(label)?'globe':'pin';
