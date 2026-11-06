@@ -55,7 +55,7 @@
     top.querySelector('#workspaceTitle').textContent={home:'Обзор маркетинга',finance:'Финансы',analytics:'Аналитика'}[page];
     const badge=document.getElementById('analytics-2026')?.querySelector('.period-badge')?.textContent||'';
     const current=badge.replace(/^2026\s*·\s*/,'');
-    top.querySelector('#workspacePeriod').textContent=page==='finance'?(year==='2025'?'Янв–дек 2025 · расходы':'Янв–июль: расходы · июль–дек: план'):page==='analytics'?(year==='2025'?'Янв–дек 2025 · продажи':year==='2026'?current:year==='compare'?'Общие месяцы 2025 и 2026':'2025 + 2026 · загруженные отчёты'):'Продажи · по сентябрь 2026';
+    top.querySelector('#workspacePeriod').textContent=page==='finance'?(year==='2025'?'Янв–дек 2025 · расходы':'Янв–сентябрь: расходы · июль–дек: план'):page==='analytics'?(year==='2025'?'Янв–дек 2025 · продажи':year==='2026'?current:year==='compare'?'Общие месяцы 2025 и 2026':'2025 + 2026 · загруженные отчёты'):'Продажи · по сентябрь 2026';
     skip.href=page==='home'?'#workspaceOverview':page==='finance'?(year==='2025'?'#pulse':'#pulse2026'):'#analytics-hub';
     const links=contextual.querySelector('.ws-nav-links');links.textContent='';
     let items;

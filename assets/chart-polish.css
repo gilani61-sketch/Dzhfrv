@@ -85,3 +85,23 @@ tr:hover td { background:#faf6ee; }
  .page-pane .kpi-grid.cols-6{grid-template-columns:repeat(2,minmax(0,1fr))}
  #page-finance :is(#matrix,#matrix2026) :is(th,td):first-child{max-width:130px;white-space:normal}
 }
+
+/* Complete analytics workspace: overview, visual analysis, monthly drill-down. */
+#analytics-hub>.wrap{max-width:1480px}
+#analytics-hub>.wrap>.year-tabs{position:sticky;top:66px;z-index:15;background:#f4f3ef;padding:10px 0;border-bottom:1px solid #e1dfd8;display:flex;gap:8px;flex-wrap:wrap}
+#page-analytics .reference-chart-grid,#page-analytics .reference-details-grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:20px;margin-block:20px}
+#page-analytics :is(.reference-chart-grid,.reference-details-grid)>.card{margin:0!important;min-width:0}
+#page-analytics .reference-details-grid{grid-template-columns:minmax(0,1fr) minmax(260px,.7fr)}
+#page-analytics .an-month-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#page-analytics .an-month-card{margin:0;min-width:0;align-self:start}
+#page-analytics .an-month-card.is-expanded{grid-column:1/-1}
+#page-analytics .an-insight-row{display:flex;gap:8px;flex-wrap:wrap;margin-block:14px}
+#page-analytics .kpi-grid.cols-6{grid-template-columns:repeat(3,minmax(0,1fr))}
+#page-analytics .an-month-quicknav{display:flex;flex-wrap:wrap;gap:8px;padding-block:8px}
+#page-analytics :is(#analytics-compare,#analytics-leads)>.card{margin-block:20px!important}
+#page-analytics .cc-table-wrap{max-width:100%;overflow:auto}
+#page-analytics .an-year-pane .sec-head{gap:16px}
+@media(min-width:1600px){#page-analytics .kpi-grid.cols-6{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media(max-width:1100px){#page-analytics .reference-details-grid{grid-template-columns:1fr}#page-analytics .an-month-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:800px){#page-analytics .reference-chart-grid{grid-template-columns:1fr}#analytics-hub>.wrap>.year-tabs{top:68px}}
+@media(max-width:600px){#page-analytics .an-month-cards{grid-template-columns:1fr}#page-analytics .kpi-grid.cols-6{grid-template-columns:repeat(2,minmax(0,1fr))}#page-analytics .kpi-grid.cols-6>.kpi{grid-column:auto}#page-analytics .reference-details-grid{grid-template-columns:minmax(0,1fr)}}
