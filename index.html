@@ -2958,7 +2958,7 @@ function renderBarsChart(elId, months, monthsShort, monthly, grand, onClick){
 }
 
 // ---------- Donut chart (pure SVG, no external library) ----------
-function renderDonut(svgId, labels, values, colors, grand, circlesArr, onHover){
+function renderDonut(svgId, labels, values, colors, grand, circlesArr, onHover, formatValue = fmt){
   const svg = document.getElementById(svgId);
   if(!svg) return;
   const r = 40, cx = 50, cy = 50;
@@ -2984,7 +2984,7 @@ function renderDonut(svgId, labels, values, colors, grand, circlesArr, onHover){
     circle.addEventListener('mouseenter', ()=> onHover(i));
     circle.addEventListener('mouseleave', ()=> onHover(-1));
     const title = document.createElementNS('http://www.w3.org/2000/svg','title');
-    title.textContent = `${labels[i]}: ${fmt(val)}${/anLeads|anGis/.test(svgId)?'':' ₽'} (${(frac*100).toFixed(1)}%)`;
+    title.textContent = `${labels[i]}: ${formatValue(val)}${/anLeads|anGis/.test(svgId)?'':' ₽'} (${(frac*100).toFixed(1)}%)`;
     circle.appendChild(title);
     svg.appendChild(circle);
     circlesArr.push(circle);
@@ -3948,10 +3948,10 @@ function anRenderInsight(year){
   const chips = [];
   chips.push(`<div class="an-insight-chip">Доступно данных: <b>${s.avail.length} из 12</b> месяцев</div>`);
   if(s.bestIdx !== null){
-    chips.push(`<div class="an-insight-chip up">Пиковый месяц: <b>${AN_MONTHS[s.bestIdx]} · ${fmt(AN_SALES[year][s.bestIdx].revenue)} ₽</b></div>`);
+    chips.push(`<div class="an-insight-chip up">Пиковый месяц: <b>${AN_MONTHS[s.bestIdx]} · ${anRevenueFmt.format(AN_SALES[year][s.bestIdx].revenue)} ₽</b></div>`);
   }
   if(s.worstIdx !== null && s.worstIdx !== s.bestIdx){
-    chips.push(`<div class="an-insight-chip down">Минимальный месяц: <b>${AN_MONTHS[s.worstIdx]} · ${fmt(AN_SALES[year][s.worstIdx].revenue)} ₽</b></div>`);
+    chips.push(`<div class="an-insight-chip down">Минимальный месяц: <b>${AN_MONTHS[s.worstIdx]} · ${anRevenueFmt.format(AN_SALES[year][s.worstIdx].revenue)} ₽</b></div>`);
   }
   if(s.missing.length){
     chips.push(`<div class="an-insight-chip">Нет выгрузки за: <b>${s.missing.join(', ').toLowerCase()}</b></div>`);
@@ -4691,7 +4691,7 @@ function anRenderSummary(year){
   }
   el.innerHTML = `
     <div class="card-title">Аналитика и выводы — ${year}</div>
-    <p>За ${s.avail.length} загруженных ${rmWordForm(s.avail.length,'месяц','месяца','месяцев')} выручка составила <b class="mono" style="color:var(--amber)">${fmt(s.totalRevenue)} ₽</b>, пробито <b class="mono">${fmt(s.totalReceipts)}</b> чеков, средний чек — <b class="mono" style="color:var(--green)">${fmt(Math.round(s.avgCheck))} ₽</b>.</p>
+    <p>За ${s.avail.length} загруженных ${rmWordForm(s.avail.length,'месяц','месяца','месяцев')} выручка составила <b class="mono" style="color:var(--amber)">${anRevenueFmt.format(s.totalRevenue)} ₽</b>, пробито <b class="mono">${fmt(s.totalReceipts)}</b> чеков, средний чек — <b class="mono" style="color:var(--green)">${fmt(Math.round(s.avgCheck))} ₽</b>.</p>
     ${trendText}
     ${s.missing.length ? `<p style="color:var(--ink-mute)">Не хватает выгрузки за: ${s.missing.join(', ').toLowerCase()} — как только эти месяцы появятся, дашборд обновится автоматически.</p>` : ''}
   `;
@@ -4734,7 +4734,7 @@ function renderLineChart(wrapId, series, opts){
       if(current===null){ current = 'M'+pt; segments.push(current); }
       else { segments[segments.length-1] += ' L'+pt; }
       current = segments[segments.length-1];
-      dotsSvg += `<circle class="line-chart-dot" cx="${xOf(i).toFixed(1)}" cy="${yOf(v).toFixed(1)}" r="3.5" fill="${s.color}"><title>${s.label} · ${labels[i]}: ${fmt(v)}${opts.suffix||''}</title></circle>`;
+      dotsSvg += `<circle class="line-chart-dot" cx="${xOf(i).toFixed(1)}" cy="${yOf(v).toFixed(1)}" r="3.5" fill="${s.color}"><title>${s.label} · ${labels[i]}: ${(opts.formatValue || fmt)(v)}${opts.suffix||''}</title></circle>`;
     });
     segments.forEach(d=>{
       pathsSvg += `<path class="line-chart-path" d="${d}" pathLength="1000" stroke="${s.color}"></path>`;
@@ -4822,7 +4822,7 @@ function anRenderDonut(year){
   const colors = chronoIdx.map(i=> AN_MONTH_COLORS[i % AN_MONTH_COLORS.length]);
   const circles = [];
   AN_DONUT_CIRCLES[year] = circles;
-  renderDonut('anDonut'+year, labels, values, colors, s.totalRevenue, circles, i=> setDonutHover(circles, 'anRankList'+year, i));
+  renderDonut('anDonut'+year, labels, values, colors, s.totalRevenue, circles, i=> setDonutHover(circles, 'anRankList'+year, i), anRevenueFmt.format);
   if(centerEl){
     centerEl.innerHTML = `<div class="n mono">${s.avail.length}</div><div class="t">${rmWordForm(s.avail.length,'месяц','месяца','месяцев')}<br>с данными</div>`;
   }
@@ -4836,7 +4836,7 @@ function anRenderDonut(year){
       <span class="idx">${String(mi+1).padStart(2,'0')}</span>
       <span class="name"><span class="swatch" style="background:${color}"></span>${AN_MONTHS[mi]}</span>
       <span class="pct">${pct}%</span>
-      <span class="amt">${fmt(val)} ₽</span>`;
+      <span class="amt">${anRevenueFmt.format(val)} ₽</span>`;
     row.addEventListener('mouseenter', ()=> setDonutHover(circles, 'anRankList'+year, idx));
     row.addEventListener('mouseleave', ()=> setDonutHover(circles, 'anRankList'+year, -1));
     rankEl.appendChild(row);
@@ -5057,7 +5057,7 @@ window.anJumpToMonth = function(year, mi){
 function anRenderYear(year){
   anRenderKpi(year);
   anRenderInsight(year);
-  renderLineChart('anLine'+year, [{ label:'Выручка', color:'var(--amber)', values: AN_SALES[year].map(m=> m ? m.revenue : null) }], { suffix:' ₽' });
+  renderLineChart('anLine'+year, [{ label:'Выручка', color:'var(--amber)', values: AN_SALES[year].map(m=> m ? m.revenue : null) }], { suffix:' ₽', formatValue:anRevenueFmt.format });
   renderSalesBarChart('anBars'+year, AN_SALES[year].map(m=> m ? m.receipts : null));
   anRenderDonut(year);
   anRenderMonthCards(year);
@@ -5186,7 +5186,7 @@ function anRenderPlanFactTable(){
   const pendingCell = flagStyle => `<td class="num" style="${flagStyle}color:var(--ink-mute); font-style:italic;">ожид.</td>`;
 
   const metrics = [
-    { key:'revenue', label:'Выручка', flagship:true, fmtv:v=>v!=null?fmt(v)+' ₽':'—' },
+    { key:'revenue', label:'Выручка', flagship:true, fmtv:v=>v!=null?anRevenueFmt.format(v)+' ₽':'—' },
     { key:'visitors', label:'Посетители', fmtv:v=>v!=null?fmt(v):'—' },
     { key:'receipts', label:'Чеков', fmtv:v=>v!=null?fmt(v):'—' },
     { key:'avgCheck', label:'Средний чек', fmtv:v=>v!=null?fmt(Math.round(v))+' ₽':'—' },
@@ -5420,7 +5420,7 @@ function anRenderCompare(){
   renderLineChart('anCompareLine', [
     { label:'2025', color:'#9AA4B2', values: AN_SALES['2025'].map(m=> m ? m.revenue : null) },
     { label:'2026', color:'var(--amber)', values: AN_SALES['2026'].map(m=> m ? m.revenue : null) }
-  ], { suffix:' ₽' });
+  ], { suffix:' ₽', formatValue:anRevenueFmt.format });
 
   renderLineChart('anCompareLineCheck', [
     { label:'2025', color:'#9AA4B2', values: AN_SALES['2025'].map(m=> m ? Math.round(m.revenue/m.receipts) : null) },
