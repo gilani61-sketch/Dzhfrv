@@ -2868,6 +2868,7 @@ const PALETTE = ["#FF7A45","#4DA8FF","#3ECF8E","#9B8CFF","#FFC24D","#FF6B6B","#4
                   "#8FA6C2","#E8935A","#6FA8DC","#B08968","#7BC96F","#F28FAD","#A0A8B8","#D6A2E8","#6C7A89"];
 
 function fmt(n){ return Math.round(n).toLocaleString('ru-RU'); }
+const anRevenueFmt = new Intl.NumberFormat('ru-RU', {minimumFractionDigits:2, maximumFractionDigits:2});
 function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 const topN = 7;
@@ -3717,22 +3718,21 @@ const AN_MONTHS_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','
 // Index 0 = январь … 11 = декабрь. null = месяц пока не выгружен.
 // avgCheck / avgDepth — как есть из источника (см. предупреждение о несопоставимости методик 2025/2026 на вкладке «Сравнение»).
 const AN_SALES = {
-  // Пересчитано целиком из ежедневной выгрузки за весь 2025 год (Дата/Чеков/Ср.чек/Глубина/Посетители/Конверсия).
-  // Старые помесячные отчёты для 2025 признаны недействительными и полностью заменены.
-  // Выручка = чеков × ср.чек (в источнике нет отдельного столбца выручки); в выгрузке отсутствует один день — 31.03.2025.
+  // Месячная выручка 2025 — итоги месячных отчётов, восстановленные из версии cd5db21.
+  // Другие показатели 2025 и детализация по дням сохранены из ежедневной выгрузки.
   '2025': [
-    { revenue:19926902, receipts:14904, avgCheck:1337.02, avgDepth:3.29, visitors:34210 },
-    { revenue:17660973, receipts:12790, avgCheck:1380.84, avgDepth:3.09, visitors:30008 },
-    { revenue:22592949, receipts:16092, avgCheck:1403.99, avgDepth:3.21, visitors:36266 },
-    { revenue:23222598, receipts:16823, avgCheck:1380.41, avgDepth:3.24, visitors:38217 },
-    { revenue:25841240, receipts:18781, avgCheck:1375.92, avgDepth:3.36, visitors:41551 },
-    { revenue:26343091, receipts:18727, avgCheck:1406.69, avgDepth:3.37, visitors:41241 },
-    { revenue:30764299, receipts:19957, avgCheck:1541.53, avgDepth:3.26, visitors:43286 },
-    { revenue:27497140, receipts:18859, avgCheck:1458.04, avgDepth:2.87, visitors:38495 },
-    { revenue:28120838, receipts:19056, avgCheck:1475.69, avgDepth:2.77, visitors:35791 },
-    { revenue:31826444, receipts:20798, avgCheck:1530.26, avgDepth:2.80, visitors:35094 },
-    { revenue:26787245, receipts:19775, avgCheck:1354.60, avgDepth:2.79, visitors:38457 },
-    { revenue:28817356, receipts:19815, avgCheck:1454.32, avgDepth:2.70, visitors:39092 }
+    { revenue:21397690.95, receipts:14904, avgCheck:1337.02, avgDepth:3.29, visitors:34210 },
+    { revenue:18248426.54, receipts:12790, avgCheck:1380.84, avgDepth:3.09, visitors:30008 },
+    { revenue:22978447.06, receipts:16092, avgCheck:1403.99, avgDepth:3.21, visitors:36266 },
+    { revenue:23883559.30, receipts:16823, avgCheck:1380.41, avgDepth:3.24, visitors:38217 },
+    { revenue:26560021.90, receipts:18781, avgCheck:1375.92, avgDepth:3.36, visitors:41551 },
+    { revenue:26828561.52, receipts:18727, avgCheck:1406.69, avgDepth:3.37, visitors:41241 },
+    { revenue:32473579.21, receipts:19957, avgCheck:1541.53, avgDepth:3.26, visitors:43286 },
+    { revenue:28844546.73, receipts:18859, avgCheck:1458.04, avgDepth:2.87, visitors:38495 },
+    { revenue:30798192.87, receipts:19056, avgCheck:1475.69, avgDepth:2.77, visitors:35791 },
+    { revenue:33986570.96, receipts:20798, avgCheck:1530.26, avgDepth:2.80, visitors:35094 },
+    { revenue:30015118.02, receipts:19775, avgCheck:1354.60, avgDepth:2.79, visitors:38457 },
+    { revenue:31992769.79, receipts:19815, avgCheck:1454.32, avgDepth:2.70, visitors:39092 }
   ],
   // Январь–июнь 2026 — ранее загруженные данные. Июль–сентябрь — месячные итоги
   // из отчётов (выручка, чеки, средний чек, глубина и посетители); дневной
@@ -3932,7 +3932,7 @@ function anRenderKpi(year){
   const monthsWord = rmWordForm(s.avail.length, 'месяц', 'месяца', 'месяцев');
   const period = `${AN_MONTHS_SHORT[s.avail[0]]}–${AN_MONTHS_SHORT[s.avail[s.avail.length-1]]} ${year}`;
   el.innerHTML = [
-    anKpiTile('var(--amber)', 'Общая выручка', Math.round(s.totalRevenue), 0, ' ₽', `${period} · ${s.avail.length} ${monthsWord}`),
+    anKpiTile('var(--amber)', 'Общая выручка', s.totalRevenue, 2, ' ₽', `${period} · ${s.avail.length} ${monthsWord}`),
     anKpiTile('var(--blue)', 'Чеков пробито', s.totalReceipts, 0, '', `${period} · сумма за период`),
     anKpiTile('var(--green)', 'Расчётный средний чек', s.avgCheck, 2, ' ₽', 'выручка ÷ количество чеков за период'),
     anKpiTile('var(--amber)', 'Глубина чека', s.avgDepth, 2, '', 'средневзвеш. по источнику'),
@@ -4939,7 +4939,7 @@ function anRenderMonthDetail(year, mi){
       const day=d[0], rc=d[1], rev=d[2], ac=d[3], ad=d[4], vis=d[5], cv=d[6];
       return `<tr><td>${String(day).padStart(2,'0')}.${String(mi+1).padStart(2,'0')}</td><td class="num">${fmt(rc)}</td><td class="num">${fmt(rev)} ₽</td><td class="num">${fmt(Math.round(ac))} ₽</td><td class="num">${ad.toFixed(2)}</td><td class="num">${fmt(vis)}</td><td class="num">${cv.toFixed(1)}%</td></tr>`;
     }).join('');
-    tableHtml = `<div class="an-daily-table-wrap"><table class="avg-table an-month-table"><thead><tr><th>Дата</th><th class="num">Чеков</th><th class="num">Выручка</th><th class="num">Ср. чек</th><th class="num">Глубина</th><th class="num">Посетители</th><th class="num">Конверсия</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    tableHtml = `<div class="an-daily-table-wrap"><table class="avg-table an-month-table"><thead><tr><th>Дата</th><th class="num">Чеков</th><th class="num">${year==='2025'?'Расчётная выручка':'Выручка'}</th><th class="num">Ср. чек</th><th class="num">Глубина</th><th class="num">Посетители</th><th class="num">Конверсия</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   } else {
     chartHtml = `<div class="an-leads-empty" style="padding:20px 12px;">Ежедневная детализация для этого месяца пока не загружена.</div>`;
   }
@@ -4947,15 +4947,16 @@ function anRenderMonthDetail(year, mi){
   bodyEl.innerHTML = `<div class="an-month-detail">
     <div class="an-month-subhead">Основные показатели · ${AN_MONTHS[mi]} ${year}</div>
     <div class="an-md-kpis">${kpiHtml}</div>
-    <div class="ws-overview-note">Средний чек взят из месячного отчёта. В сводке и сравнении используется отдельный показатель: выручка ÷ количество чеков.</div>
+    <div class="ws-overview-note">${year==='2025'?'Средний чек за 2025 год — из дневной выгрузки.':'Средний чек взят из месячного отчёта.'} В сводке и сравнении используется отдельный показатель: выручка ÷ количество чеков.</div>
     <div class="an-month-subhead">Заявки за месяц</div>
     ${leadsHtml}
     ${dynamicsHtml}
     <div class="an-month-subhead">Детализация по дням</div>
+    ${year==='2025'?'<div class="ws-overview-note">Выручка по дням рассчитана как количество чеков × средний чек. Месячная выручка взята отдельно из отчёта.'+(mi===2?' За 31 марта дневных данных нет.':'')+'</div>':''}
     ${chartHtml}${tableHtml}
   </div>`;
   if(daily && daily.length){
-    renderLineChart('anMonthChart_'+year+'_'+mi, [{ label:'Выручка по дням', color:'var(--amber)', values: daily.map(d=> d[2]) }],
+    renderLineChart('anMonthChart_'+year+'_'+mi, [{ label:year==='2025'?'Расчётная выручка по дням':'Выручка по дням', color:'var(--amber)', values: daily.map(d=> d[2]) }],
       { labels: daily.map(d=>String(d[0])), labelsShort: daily.map(d=>String(d[0])), suffix:' ₽', height:140 });
     if(typeof growLineCharts === 'function') growLineCharts();
   }
@@ -5026,7 +5027,7 @@ function anRenderMonthCards(year){
       <div class="an-month-card-head" onclick="anToggleMonthDetail('${year}',${i})">
         <div class="an-month-card-title">${AN_MONTHS[i]} ${year}${badge}</div>
         <div class="an-month-card-summary">
-          <span><b>${fmt(m.revenue)} ₽</b> выручка</span>
+          <span><b>${anRevenueFmt.format(m.revenue)} ₽</b> выручка</span>
           <span><b>${fmt(m.receipts)}</b> чеков</span>
         </div>
         <span class="an-expand-hint"><span class="an-chevron-slot" id="anChevronSlot_${year}_${i}"><svg class="an-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></span>
@@ -5323,7 +5324,7 @@ function anRenderCompareSummary(commonIdx, agg){
   const pct = (b,a) => (a==null||b==null||a===0) ? null : (b-a)/a*100;
 
   const rows = [
-    { label:'Выручка', sub:'сумма за общие месяцы', a:agg.sum25rev, b:agg.sum26rev, fmtv:v=>v!=null?fmt(v)+' ₽':'—' },
+    { label:'Выручка', sub:'сумма за общие месяцы', a:agg.sum25rev, b:agg.sum26rev, fmtv:v=>v!=null?anRevenueFmt.format(v)+' ₽':'—' },
     { label:'Чеков', sub:'штук', a:agg.sum25rc, b:agg.sum26rc, fmtv:v=>v!=null?fmt(v):'—' },
     { label:'Средний чек', sub:'выручка ÷ чеков', a:agg.acA, b:agg.acB, fmtv:v=>v!=null?fmt(Math.round(v))+' ₽':'—' },
     { label:'Глубина чека', sub:'позиций в чеке', a:agg.depthA, b:agg.depthB, fmtv:v=>v!=null?v.toFixed(2):'—' },
@@ -5387,7 +5388,7 @@ function anRenderCompare(){
       if(b.visitors!=null) sum26vis+=b.visitors; else vis26ok=false;
       rows += `<tr>
         <td>${AN_MONTHS[i]}</td>
-        <td class="num">${fmt(a.revenue)} ₽</td><td class="num">${fmt(b.revenue)} ₽</td><td class="num">${dTxt(pct(b.revenue,a.revenue))}</td>
+        <td class="num">${anRevenueFmt.format(a.revenue)} ₽</td><td class="num">${anRevenueFmt.format(b.revenue)} ₽</td><td class="num">${dTxt(pct(b.revenue,a.revenue))}</td>
         <td class="num">${fmt(a.receipts)}</td><td class="num">${fmt(b.receipts)}</td><td class="num">${dTxt(pct(b.receipts,a.receipts))}</td>
         <td class="num">${fmt(Math.round(acA))} ₽</td><td class="num">${fmt(Math.round(acB))} ₽</td><td class="num">${dTxt(pct(acB,acA))}</td>
         <td class="num">${a.avgDepth.toFixed(2)}</td><td class="num">${b.avgDepth.toFixed(2)}</td><td class="num">${dTxt(pct(b.avgDepth,a.avgDepth))}</td>
@@ -5401,7 +5402,7 @@ function anRenderCompare(){
     if(commonIdx.length){
       rows += `<tr class="an-total-row" style="font-weight:600;">
         <td>Итого по общим месяцам</td>
-        <td class="num">${fmt(sum25rev)} ₽</td><td class="num">${fmt(sum26rev)} ₽</td><td class="num">${dTxt(pct(sum26rev,sum25rev))}</td>
+        <td class="num">${anRevenueFmt.format(sum25rev)} ₽</td><td class="num">${anRevenueFmt.format(sum26rev)} ₽</td><td class="num">${dTxt(pct(sum26rev,sum25rev))}</td>
         <td class="num">${fmt(sum25rc)}</td><td class="num">${fmt(sum26rc)}</td><td class="num">${dTxt(pct(sum26rc,sum25rc))}</td>
         <td class="num">${fmt(Math.round(acA))} ₽</td><td class="num">${fmt(Math.round(acB))} ₽</td><td class="num">${dTxt(pct(acB,acA))}</td>
         <td class="num">—</td><td class="num">—</td><td class="num">—</td>
@@ -5438,7 +5439,7 @@ function anRenderCompare(){
     concEl.innerHTML = `
       <div class="card-title">Выводы по сравнению периодов</div>
       ${growthBlock}
-      <div class="callout"><b>Про сопоставимость:</b> 2025 год пересчитан из полной ежедневной выгрузки. Месячные итоги за июль–сентябрь 2026 года включены в сравнение; детализация по дням за эти месяцы пока не загружена. Средний чек в сводном сравнении рассчитывается как выручка ÷ количество чеков.</div>
+      <div class="callout"><b>Про сопоставимость:</b> Месячная выручка за 2025 год взята из итогов месячных отчётов. Дневная выручка за 2025 год расчётная и может не совпадать с месячным итогом. Месячные итоги за июль–сентябрь 2026 года включены в сравнение; детализация по дням за эти месяцы пока не загружена. Средний чек в сводном сравнении рассчитывается как выручка ÷ количество чеков.</div>
     `;
   }
   anRenderVisitorsCompare();
